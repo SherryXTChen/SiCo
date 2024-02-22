@@ -1,143 +1,125 @@
 import os
+os.environ["FAL_KEY"]  = "150008a7-249c-4575-9fa4-e391f6ad5b33:006bf483d5b59cad3807ebac247f4a82"
+
 import sys
-import json
-import requests
 from PIL import Image
 import numpy as np
 import glob
 import cv2
-import io
 import torch
+import fal
+import base64
 
-def fooocus_api(user_image_path, mask_image_path, garment_image_path, garment_type, relative_fit):
-    # image_prompt v1 example
-    host = "http://127.0.0.1:18888"
 
-    params = {
-        "style_selections": [
-            "Fooocus V2",
-            "Fooocus Enhance",
-            "Fooocus Sharp"
-        ],
-        "loras": json.dumps([
-            {"model_name": "sd_xl_offset_example-lora_1.0.safetensors", "weight": 0.1},
-            {"model_name": "inpaint_v26.fooocus.patch", "weight": 1.0}
-        ]),
-        "guidance_scale": 7.5,
+def image_to_base64_data_uri(image_path):
+    if type(image_path) == str:
+        with open(image_path, "rb") as img_file:
+            img_data = img_file.read()
+    else:
+        img_data = image_path
+    img_base64 = base64.b64encode(img_data).decode("utf-8")
+    mime_type = "image/jpeg"
+    data_uri = f"data:{mime_type};base64,{img_base64}"
+    return data_uri
+
+
+def fal_api(user_image_path, mask_image_path, garment_image_path, garment_type, relative_fit):
+    arguments = {
+        "negative_prompt": "(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)",
+        "num_images": 1,
+        "enable_safety_checker": False
     }
 
-    input_image = open(user_image_path, "rb").read()
+    input_image_uri = image_to_base64_data_uri(user_image_path)
     if garment_image_path is None:
-        input_mask = Image.open(mask_image_path)
-        byte_stream = io.BytesIO()
-        input_mask.save(byte_stream, format='JPEG')
-        input_mask = byte_stream.getvalue()
-
-        url = f"{host}/v1/generation/image-inpaint-outpaint"
-
-        prompt = 'a naked person'
-        additional_params = {
-            "prompt": prompt,
-            "inpaint_additional_prompt": prompt,
+        input_mask_uri = image_to_base64_data_uri(mask_image_path)
+        additional_arguments = {
+            "performance": "Extreme Speed",
+            "inpaint_image_url": input_image_uri,
+            "mask_image_url": input_mask_uri,
+            "prompt": "a naked person",
         }
-        params.update(additional_params)
-
-        files={
-            "input_image": input_image,
-            "input_mask": input_mask,
-        }
+    
     else:
-        cn_img1 = open(garment_image_path, "rb").read()
         input_mask = np.array(Image.open(mask_image_path))
+
         if relative_fit == 0: # regular fit
             input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=1)
             prompt = "a fitted"
         elif relative_fit > 0: # over sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
-            min_x, min_y = indices.min(axis=0)
-            max_x, max_y = indices.max(axis=0)
-
+            min_x, _ = indices.min(axis=0)
+            max_x, _ = indices.max(axis=0)
             input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=5 * relative_fit)
-            input_mask[:max(0, min_x-5)] = 0
-            input_mask[:, :max(0, min_y-5)] = 0
-            input_mask[:, min(input_mask.shape[1], max_y+5)] = 0
+            input_mask[:max(0, min_x-5)] = 0 # remove top
             prompt = "a big baggy loose overfitted"
         else: # under sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
-            min_x, min_y = indices.min(axis=0)
-            max_x, max_y = indices.max(axis=0)
-            remove_leng = (max_x - min_x) / 10 * (-relative_fit)
-            input_mask[min(0, max_x - remove_leng)] = 0
+            min_x, _ = indices.min(axis=0)
+            max_x, _ = indices.max(axis=0)
+            remove_leng = (max_x - min_x) * (-relative_fit) // 6
+            input_mask[max_x - remove_leng:] = 0 # remove bottom
             prompt = "a very tight cropped"
         
-        input_mask = Image.fromarray(input_mask)
-        byte_stream = io.BytesIO()
-        input_mask.save(byte_stream, format='JPEG')
-        input_mask = byte_stream.getvalue()
+        Image.fromarray(input_mask).save(mask_image_path)
+        input_mask_uri = image_to_base64_data_uri(mask_image_path)
+        garment_image_uri = image_to_base64_data_uri(garment_image_path)
 
-        url = f"{host}/v1/generation/image-prompt"
         assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
-        prompt += ' ' + garment_type
-        additional_params = {
+        prompt += garment_type
+
+        additional_arguments = {
+            "performance": "Speed",
+            "inpaint_image_url": input_image_uri,
+            "mask_image_url": input_mask_uri,
             "prompt": "a person wearing " + prompt,
+            "inpaint_mode": "Modify Content (add objects, change background, etc.)",
             "inpaint_additional_prompt": prompt,
-
-            "image_prompts": [{
-                "cn_stop": 1.0,
-                "cn_weight": 1.6,
-                "cn_type": "ImagePrompt",
-                "cn_img": cn_img1,
-            } for _ in range(4)],
-
-            "cn_stop1": 1.0,
-            "cn_weight1": 2.0,
-            "cn_type1": "ImagePrompt",
-            "cn_img1": cn_img1,
-
-            "cn_stop2": 1.0,
-            "cn_weight2": 2.0,
-            "cn_type2": "ImagePrompt",
-            "cn_img2": cn_img1,
-
-            "cn_stop3": 1.0,
-            "cn_weight3": 2.0,
-            "cn_type3": "ImagePrompt",
-            "cn_img3": cn_img1,
-
-            "cn_stop4": 1.0,
-            "cn_weight4": 2.0,
-            "cn_type4": "ImagePrompt",
-            "cn_img4": cn_img1,
-
-            "advanced_params": json.dumps({
-                "mixing_image_prompt_and_inpaint": "true",
-                "inpaint_engine": "v2.6",
-            }),
+            "mixing_image_prompt_and_inpaint": True,
+            "image_prompt_1": {
+                "image_url": garment_image_uri,
+                "type": "ImagePrompt",
+                "stop_at": 1,
+                "weight": 1.6
+            },
+            "image_prompt_2": {
+                "image_url": garment_image_uri,
+                "type": "ImagePrompt",
+                "stop_at": 1,
+                "weight": 1.6
+            },
+            "image_prompt_3": {
+                "image_url": garment_image_uri,
+                "type": "ImagePrompt",
+                "stop_at": 1,
+                "weight": 1.6
+            },
+            "image_prompt_4": {
+                "image_url": garment_image_uri,
+                "type": "ImagePrompt",
+                "stop_at": 1,
+                "weight": 1.6
+            },
         }
-        params.update(additional_params)
 
-        files={
-            "input_image": input_image,
-            "input_mask": input_mask,
-            "cn_img1": cn_img1,
-            "cn_img2": cn_img1,
-            "cn_img3": cn_img1,
-            "cn_img4": cn_img1,
-        }
-        
-   
-    response = requests.post(
-        url=url,
-        data=params,
-        files=files
+
+    arguments.update(additional_arguments)
+    handler = fal.apps.submit(
+        "fal-ai/fooocus",
+        path="/inpaint",
+        arguments=arguments,
     )
-    print(response)
 
-    url = response.json()[0]['url'].replace(':8888/', ':18888/')
+    # for event in handler.iter_events():
+    #     if isinstance(event, fal.apps.InProgress):
+    #         print('Request in progress')
+    #         print(event.logs)
+
+    result = handler.get()
+    url = result['images'][0]['url']
     return url
-
 
 @torch.no_grad()
 def get_body_mask(image_path):
@@ -146,7 +128,6 @@ def get_body_mask(image_path):
     https://dl.fbaipublicfiles.com/densepose/densepose_rcnn_R_50_FPN_s1x/165712039/model_final_162be9.pkl\
     {image_path} dp_segm --output ./cache/densepose.png"
     os.system(command)
-
 
 def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=None):
     body_mask_list = glob.glob('./cache/densepose.*')
@@ -265,7 +246,7 @@ def main():
     Image.fromarray(garment_mask).save(body_mask_path)
 
     # remove existing garment and replace with naked body part
-    url = fooocus_api(
+    url = fal_api(
         user_image_path=user_image_path, 
         mask_image_path=body_mask_path,
         garment_image_path=None,
@@ -279,7 +260,7 @@ def main():
     size_list = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']
     user_size_index = size_list.index(user_size)
     garment_size_index = size_list.index(garment_size)
-    url = fooocus_api(
+    url = fal_api(
         user_image_path=out_path, 
         mask_image_path=garment_mask_path,
         garment_image_path=garment_image_path,
@@ -293,4 +274,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # pass

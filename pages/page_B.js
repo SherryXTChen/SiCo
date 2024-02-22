@@ -1,85 +1,70 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import { RotatingLines } from "react-loader-spinner";
 
-async function updateGallery() {
-    const tryOnResults = document.getElementById('tryOnResults');
-    const apiEndpoint = "api/images"; // Update to match your server's address and endpoint
+async function galleryImage(imageName) {
+    const imageEndpoint = `/api/result/${imageName}`;
+    const imageResponse = await fetch(imageEndpoint);
+    const imageBlob = await imageResponse.blob();
+    return imageBlob;
+}
+
+async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading) {
+    const apiEndpoint = "/api/images";
 
     try {
         const response = await fetch(apiEndpoint);
-        const imageFilenames = await response.json();
-
-        imageFilenames.sort().reverse().forEach(filename => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'picked-item';
-        
-            // Add image
-            const img = document.createElement('img');
-            img.src = "/results/" + filename; // Assuming your server also serves static files from the 'results' directory
-            img.style.width = '500px'; // Set thumbnail size
-            img.style.height = 'auto';
-
-            // continue button
-            const continueButton = document.createElement('button');
-            continueButton.className = 'continue';
-            continueButton.textContent = 'Continue From Here';
-    
-            continueButton.addEventListener('click', function() {
-                document.getElementById('initialImage').innerHTML = `<img src="${img.src}" />`; // Display stored image
-            });
-
-            itemDiv.appendChild(img);
-            itemDiv.appendChild(continueButton);
-            tryOnResults.appendChild(itemDiv);
+        const jsonResponse = await response.json();
+        const imageFiles = jsonResponse.message;
+        await imageFiles.forEach(async (imageName) => {
+            if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
+                const image = await galleryImage(imageName);
+                const itemDiv = (
+                    <div className="picked-item" key={imageName}>
+                        <img src={URL.createObjectURL(image)} width={"500px"} height={"auto"} />
+                        <button className="continue" onClick={() => { setImage(image) }} >Continue From Here</button>
+                    </div>
+                );
+                tryOnResultsRef.current.push(itemDiv);
+                setTryOnResults(tryOnResultsRef.current);
+                setChange(prevState => !prevState);
+            }
         });
-    } catch (error) {
+        setLoading(false);
+        setChange(prevState => !prevState);
+    } catch(error) {
         console.error("Error fetching images:", error);
     }
-    
 };
 
 
-const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image) => {
+const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading) => {
     const handleRemove = () => {
         tryOnItemsRef.current = tryOnItemsRef.current.filter((item) => item.key != product.id);
         setTryOnItems(tryOnItemsRef.current);
-        console.log(product)
-        console.log(image)
-        console.log(product.id)
     };
 
     const handleTryItOn = async () => {
+        setLoading(true);
         const formData = new FormData();
-        // formData.append('userImage', image);
-        // formData.append('productId', product.id);
-        // formData.append('userSize', trueSize);
-        const userImageblob = await fetch(URL.createObjectURL(image)).then(r => r.blob());
-        formData.append('userImage', userImageblob, 'user.jpg');
-        const productImageblob = await fetch(product.image).then(r => r.blob());
-        formData.append('productImage', productImageblob,
-            `${product.id}_${product.name}_${trueSize}_${garmentSize}.jpg`);
+        const userImageBlob = await fetch(URL.createObjectURL(image)).then(r => r.blob());
 
-        // await fetch('/api/hello', {
-        //     method: 'POST',
-        //     body: "Hello World",
-        // })
-        //     .then(response => console.log(response));
-        console.log("testing 1")
-    
+        formData.append('userImage', userImageBlob);
+        const productImageblob = await fetch(product.image).then(r => r.blob());
+        formData.append('productImage', productImageblob);
+        formData.append('garmentInfo', `${product.id}_${product.name}_${trueSize}_${garmentSize}.jpg`)
+
         await fetch('/api/upload', {
-        // fetch('http://127.0.0.1:8080/api/upload', {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-            updateGallery();
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-        console.log("testing 2")
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading);
     };
 
     const item = (
@@ -117,12 +102,15 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
 
 
 const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
-    const sectionContainerRef = React.useRef(null);
-    const [windowWidth, setWindowWidth] = useState(1770);
     const [tryOnItems, setTryOnItems] = useState([]);
+    const [tryOnResults, setTryOnResults] = useState([]);
+    const [change, setChange] = useState(false);
+    const [loading, setLoading] = useState(false);
     const tryOnItemsRef = React.useRef();
+    const tryOnResultsRef = React.useRef();
 
     tryOnItemsRef.current = tryOnItems;
+    tryOnResultsRef.current = tryOnResults;
 
     const products = [
         { id: 1, name: 'dress no long', image: 'garments/dress/020714_1.jpg' },
@@ -141,26 +129,29 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
         { id: 12, name: 'pants none short', image: 'garments/lower_body/013566_1.jpg' },
     ];
 
-    // useEffect(() => {
-    //     const handleResize = () => {
-    //         setWindowWidth(sectionContainerRef.current.offsetWidth);
-    //     };
-    //     window.addEventListener("resize", handleResize);
-    //     return () => {
-    //         window.removeEventListener("resize", handleResize);
-    //     };
-    // }, []);
-    // useEffect(() => {
-    //     if (sectionContainerRef.current) {
-    //         setWindowWidth(sectionContainerRef.current.offsetWidth);
-    //     }
-    // }, [windowWidth]);
-
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
     }
 
     return (<div>
+        {loading && (<div className="overlay">
+            <div style={{ position: "relative" }}>
+                <RotatingLines
+                    visible={true}
+                    height="150"
+                    width="150"
+                    strokeColor="#00BFFF"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    ariaLabel="rotating-lines-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                />
+            </div>
+            <div style={{ position: "relative" }}>
+                <h1>Trying on your clothes...</h1>
+            </div>
+        </div>)}
         <div className="section-container">
             <h2 className="section-title">All Products</h2>
             <div>
@@ -168,7 +159,6 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                     {products.map((product) => (
                         <div key={product.id} className="product">
                             <img src={product.image} alt={product.name} />
-
                             <div className="size-container">
                                 <label htmlFor={`garmentSize-${product.id}`} className="size-label">
                                     Garment Size:
@@ -179,7 +169,6 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                                     ))}
                                 </select>
                             </div>
-
                             <button className="pick-this-button" onClick={() => {
                                 let selectedSize;
                                 if(product.name.startsWith('top')) {
@@ -191,7 +180,7 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                                 } else {
                                     selectedSize = 'N/A';
                                 }
-                                addToTryOnRoom(product, selectedSize, document.getElementById(`garmentSize-${product.id}`).value, setTryOnItems, tryOnItemsRef, image);
+                                addToTryOnRoom(product, selectedSize, document.getElementById(`garmentSize-${product.id}`).value, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading);
                             }}>
                                 Pick This
                             </button>
@@ -256,6 +245,14 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>
                 </>)}
+            </div>
+            <div className="added-items">
+                <h3>Try-On Results</h3>
+                <div id="tryOnResults" ref={tryOnResultsRef} style={{ display: "flex", flexWrap: "wrap" }}>
+                    <div className="products-container">
+                        <div className="try-on-results">{tryOnResults}</div>
+                    </div>
+                </div>
             </div>
             <div className="added-items">
                 <h3>Try-On Items</h3>
