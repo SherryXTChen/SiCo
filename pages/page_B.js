@@ -37,7 +37,7 @@ async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnRe
 };
 
 
-const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading) => {
+const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize) => {
     const handleRemove = () => {
         tryOnItemsRef.current = tryOnItemsRef.current.filter((item) => item.key != product.id);
         setTryOnItems(tryOnItemsRef.current);
@@ -70,19 +70,23 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
     const item = (
         <div className="picked-item" key={product.id}>
             <img src={product.image} alt={product.name} />
-            <div className="size-info">Your True Size: {trueSize}</div>
-            <div className="size-container">
-                <label htmlFor={`garmentSize-${product.id}`} className="size-label">
-                    Garment Size:
-                </label>
-                <select id={`garmentSize-${product.id}`} className="garment-size-select" value={garmentSize}>
-                    {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                        <option key={size} value={size}>
-                            {size}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            {isSelectSize && (
+                <div className="size-info">Your True Size: {trueSize}</div>
+            )}
+            {isSelectSize && (
+                <div className="size-container">
+                    <label htmlFor={`garmentSize-${product.id}`} className="size-label">
+                        Garment Size:
+                    </label>
+                    <select id={`garmentSize-${product.id}`} className="garment-size-select" value={garmentSize}>
+                        {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                            <option key={size} value={size}>
+                                {size}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
             <button className="try-on" onClick={handleTryItOn}>
                 Try It On
             </button>
@@ -101,7 +105,7 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
 };
 
 
-const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
+const Page_B = ({ image, setImage, topSize, bottomSize, dressSize, isSelectSize}) => {
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
@@ -159,7 +163,7 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                     {products.map((product) => (
                         <div key={product.id} className="product">
                             <img src={product.image} alt={product.name} />
-                            <div className="size-container">
+                            {isSelectSize && (<div className="size-container">
                                 <label htmlFor={`garmentSize-${product.id}`} className="size-label">
                                     Garment Size:
                                 </label>
@@ -168,7 +172,7 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                                         <option key={size} value={size}>{size}</option>
                                     ))}
                                 </select>
-                            </div>
+                            </div>)}
                             <button className="pick-this-button" onClick={() => {
                                 let selectedSize;
                                 if(product.name.startsWith('top')) {
@@ -180,7 +184,13 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize }) => {
                                 } else {
                                     selectedSize = 'N/A';
                                 }
-                                addToTryOnRoom(product, selectedSize, document.getElementById(`garmentSize-${product.id}`).value, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading);
+                                let garmentSize;
+                                if(isSelectSize) {
+                                    garmentSize = document.getElementById(`garmentSize-${product.id}`).value;
+                                } else {
+                                    garmentSize = selectedSize;
+                                }
+                                addToTryOnRoom(product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize);
                             }}>
                                 Pick This
                             </button>
