@@ -11,8 +11,10 @@
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-loader-spinner": "^6.1.6",
     "remark": "^14.0.2",
-    "remark-html": "^15.0.1"
+    "remark-html": "^15.0.1",
+    "sharp": "^0.33.2"
   },
   "engines": {
     "node": ">=18"
