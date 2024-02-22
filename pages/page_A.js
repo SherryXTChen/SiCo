@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
-const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue }) => {
+const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize}) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
 
@@ -57,7 +57,7 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
     return (
         <div className="section-container" ref={sectionContainerRef}>
             <h2 className="section-title">User Info</h2>
-            <div>
+            {isUploadImage && (<div>
                 To start, please upload an image of yourself with the following requirements:<br />
                 - the image should be taken under good lighting<br />
                 - the image should contains only yourself without other people<br />
@@ -67,13 +67,16 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                 - you should not wear any coat or jacket in the image<br />
                 Here are some acceptable and unacceptable image examples. <br />
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"}/>
-                <br />
-                Please also enter your body size for tops, bottoms, and dresses if applicable.<br />
-                Your body size for any type of garment is defined by the size of the garment of the same type that leads to a regular fit on your body.<br />
-                For example, if your body size for tops is M, then wearing any top with size M will leads to a regular fit on your body.<br />
-            </div>
-            <div className="user-image-upload" id="uploadArea" style={{position: "relative"}}>
-                {!image && (<><b>Upload a full body image of yourself here</b><br />
+            </div>)}
+
+            {isSelectSize && (<div>
+                Please enter your true size for tops, bottoms, and dresses if applicable.<br />
+                Your true size for any type of garment is defined by the size of the garment of the same type that leads to a regular fit on you.<br />
+                For example, if your true size for tops is M, then wearing any top with size M will leads to a regular fit on you.<br />
+            </div>)}
+
+            {isUploadImage && (<div className="user-image-upload" id="uploadArea" style={{position: "relative"}}>
+                {!image && (<><b>Upload a full-body image of yourself here</b><br />
                 <input
                     type="file"
                     id="imageUpload"
@@ -81,15 +84,15 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                     onChange={handleImageChange}
                     style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
                 {image && (<>
-                    <img src={URL.createObjectURL(image)} style={{ maxWidth: "100%", maxHeight: "100%" }} alt={<b>Upload a full body image of yourself here</b>} />
+                    <img src={URL.createObjectURL(image)} style={{ maxWidth: "100%", maxHeight: "100%" }} alt={<b>Upload a full-body image of yourself here</b>} />
                     <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>
                 </>)}
-            </div>
-            <div>
+            </div>)}
+            {isSelectSize && (<div>
                 <div>
-                    <label htmlFor="topSize">Select Your Body Size for Tops:</label>
+                    <label htmlFor="topSize">Select Your True Size for Tops:</label>
                     <select id="topSize" name="topSize" value={topSize} onChange={handleTopSizeChange}>
                         <option value="XXS">XXS</option>
                         <option value="XS">XS</option>
@@ -101,7 +104,7 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="bottomSize">Select Your Body Size for Bottoms:</label>
+                    <label htmlFor="bottomSize">Select Your True Size for Bottoms:</label>
                     <select id="bottomSize" name="bottomSize" value={bottomSize} onChange={handleBottomSizeChange}>
                         <option value="XXS">XXS</option>
                         <option value="XS">XS</option>
@@ -113,7 +116,7 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="dressSize">Select Your Body Size for Dresses (If Applicable):</label>
+                    <label htmlFor="dressSize">Select Your True Size for Dresses (If Applicable):</label>
                     <select id="dressSize" name="dressSize" value={dressSize} onChange={handleDressSizeChange}>
                         <option value="N/A">N/A</option>
                         <option value="XXS">XXS</option>
@@ -125,7 +128,7 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                         <option value="XXL">XXL</option>
                     </select>
                 </div>
-            </div>
+            </div>)}
             {!image && <button className="done-button" id="doneButton" disabled>Continue</button>}
             {image && <button className="done-button" id="doneButton"
                 onClick={() => setPageAContinue(true)}

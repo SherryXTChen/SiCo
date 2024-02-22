@@ -9,6 +9,8 @@ const Home = () => {
     const [bottomSize, setBottomSize] = useState("XXS");
     const [dressSize, setDressSize] = useState("N/A");
     const [pageAContinue, setPageAContinue] = useState(false);
+    const isUploadImage = true;
+    const isSelectSize = false;
     return (
         <div>
             {!pageAContinue && (<Page_A
@@ -22,6 +24,8 @@ const Home = () => {
                 setDressSize={setDressSize}
                 pageAContinue={pageAContinue}
                 setPageAContinue={setPageAContinue}
+                isUploadImage={isUploadImage}
+                isSelectSize={isSelectSize}
             />)}
             {pageAContinue && (<Page_B
                 image={image}
@@ -29,6 +33,7 @@ const Home = () => {
                 topSize={topSize}
                 bottomSize={bottomSize}
                 dressSize={dressSize}
+                isSelectSize={isSelectSize}
             />)}
         </div>
     );
