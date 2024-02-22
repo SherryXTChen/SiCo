@@ -21,7 +21,25 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
     }, [windowWidth]);
 
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
+        // convert the image to a jpeg and then set the image state
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = Image;
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob((blob) => {
+                    setImage(new File([blob], file.name, { type: "image/jpeg" }));
+                }, "image/jpeg", 1);
+            }
+        }
+        reader.readAsDataURL(file);
+        setImage(file);
     }
 
     const handleTopSizeChange = (e) => {
