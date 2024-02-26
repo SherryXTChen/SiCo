@@ -1,22 +1,23 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "start": "next start"
-  },
-  "dependencies": {
-    "date-fns": "^2.29.3",
-    "gray-matter": "^4.0.3",
-    "next": "latest",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-loader-spinner": "^6.1.6",
-    "remark": "^14.0.2",
-    "remark-html": "^15.0.1",
-    "sharp": "^0.33.2"
-  },
-  "engines": {
-    "node": ">=18"
-  }
+    "private": true,
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev",
+        "start": "next start"
+    },
+    "dependencies": {
+        "date-fns": "^2.29.3",
+        "gray-matter": "^4.0.3",
+        "next": "latest",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-loader-spinner": "^6.1.6",
+        "remark": "^14.0.2",
+        "remark-html": "^15.0.1",
+        "sharp": "^0.33.2",
+        "uuid": "^9.0.1"
+    },
+    "engines": {
+        "node": ">=18"
+    }
 }

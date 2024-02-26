@@ -11,6 +11,17 @@ import fal
 import base64
 
 
+def make_dir(path):
+    """
+    Creates a directory if it does not exist.
+
+    :param path: Path to the directory.
+    :type path: str
+    """
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
 def image_to_base64_data_uri(image_path):
     if type(image_path) == str:
         with open(image_path, "rb") as img_file:
@@ -122,15 +133,15 @@ def fal_api(user_image_path, mask_image_path, garment_image_path, garment_type, 
     return url
 
 @torch.no_grad()
-def get_body_mask(image_path):
+def get_body_mask(image_path, uid):
     command = f"python ./DensePose/apply_net.py show \
     ./DensePose/configs/densepose_rcnn_R_50_FPN_s1x.yaml \
     https://dl.fbaipublicfiles.com/densepose/densepose_rcnn_R_50_FPN_s1x/165712039/model_final_162be9.pkl\
-    {image_path} dp_segm --output ./cache/densepose.png"
+    {image_path} dp_segm --output ./cache/{uid}/densepose.png"
     os.system(command)
 
-def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=None):
-    body_mask_list = glob.glob('./cache/densepose.*')
+def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=None, uid=None):
+    body_mask_list = glob.glob(f'./cache/{uid}/densepose.*')
 
     assert garment_type in ['top', 'pants', 'skirt', 'jump suit', 'dress']
     assert top_sleeve_length in [None, 'no', 'short', 'long']
@@ -197,7 +208,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 
             mask_list.append(top_body_mask)
 
-    torso_mask = Image.open('./cache/densepose.torso.png').convert('L')
+    torso_mask = Image.open(f'./cache/{uid}/densepose.torso.png').convert('L')
     torso_mask = np.uint8(np.array(torso_mask) > 0)
     if garment_type not in ['dress', 'jump suit']:
         indices = np.argwhere(torso_mask > 0)
@@ -219,6 +230,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 def main():
     user_image_path = sys.argv[1]
     garment_image_path = sys.argv[2]
+    uid = sys.argv[3]
 
     # get garment info
     garment_info = os.path.basename(os.path.splitext(garment_image_path)[0]).split('_')
@@ -229,18 +241,20 @@ def main():
         'garment_type': body_mask_args[0],
         'top_sleeve_length': body_mask_args[1],
         'bottom_leg_length': body_mask_args[2],
+        'uid': uid,
     }
 
     # create mask indicating the location of garment to be tried on
-    garment_mask_path = './cache/mask.png'
-    get_body_mask(user_image_path)
+    make_dir(f'./cache/{uid}')
+    garment_mask_path = f'./cache/{uid}/mask.png'
+    get_body_mask(user_image_path, uid)
     body_mask = combine_body_mask(**body_mask_args)
     Image.fromarray(body_mask).save(garment_mask_path)
 
     # create mask to remove existing garment on user
     body_mask_args['top_sleeve_length'] = "long"
     body_mask_args['bottom_leg_length'] = "long"
-    body_mask_path = './cache/body_mask.png'
+    body_mask_path = f'./cache/{uid}/body_mask.png'
     garment_mask = combine_body_mask(**body_mask_args)
     garment_mask = cv2.dilate(garment_mask, np.ones((5, 5)), iterations=2)
     Image.fromarray(garment_mask).save(body_mask_path)
@@ -253,7 +267,7 @@ def main():
         garment_type=None,
         relative_fit=None,
     )
-    out_path = 'cache/user_body.png'
+    out_path = f'cache/{uid}/user_body.png'
     os.system(f'wget -O {out_path} {url}')
 
     # add garment
@@ -267,8 +281,9 @@ def main():
         garment_type=body_mask_args['garment_type'],
         relative_fit=garment_size_index-user_size_index,
     )
-    basename = str(len(glob.glob('results/*.jpg')) + 1).zfill(10) + ".jpg"
-    out_path = os.path.join('results', basename)
+    make_dir(f'./results/{uid}')
+    basename = str(len(glob.glob(f'results/{uid}/*.jpg')) + 1).zfill(10) + ".jpg"
+    out_path = os.path.join('results', uid, basename)
     os.system(f'wget -O {out_path} {url}')
    
 
