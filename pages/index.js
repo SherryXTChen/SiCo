@@ -10,9 +10,9 @@ const Home = () => {
     const [dressSize, setDressSize] = useState("N/A");
     const [pageAContinue, setPageAContinue] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
+    const [isUploadImage, setIsUploadImage] = useState(false);
+    const [isSelectSize, setIsSelectSize] = useState(false);
     const mainRef = React.useRef(null);
-    const isUploadImage = true;
-    const isSelectSize = false;
 
     async function getCachedImage() {
         const imageEndpoint = `/api/img/${localStorage.getItem("uid")}`;
@@ -26,7 +26,13 @@ const Home = () => {
             if(!localStorage.getItem("uid")) {
                 localStorage.setItem("uid", uuidv4());
             }
+            if(!localStorage.getItem("seed")) {
+                localStorage.setItem("seed", Math.floor(Math.random() * 4));
+            }
+            const seed = parseInt(localStorage.getItem("seed"));
             getCachedImage();
+            setIsUploadImage(seed % 4 === 0 || seed % 4 === 1);
+            setIsSelectSize(seed % 4 === 0 || seed % 4 === 2);
             setFirstLoad(false);
         }
     });
