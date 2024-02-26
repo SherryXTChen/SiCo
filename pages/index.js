@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Page_A from "./page_A"
 import Page_B from "./page_B";
-import { set } from "date-fns";
 
 const Home = () => {
     const [image, setImage] = useState(null);
