@@ -1,11 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-// import { NextRequest, NextResponse } from 'next/server';
+import { validate } from 'uuid';
 
 export default function GET(req, res) {
     const { id } = req.query;
-    const filepath = path.parse(id).base;
-    const imagePath = path.join(process.cwd(), 'results', `${filepath}`);
+    if(!validate(id)) {
+        res.status(401).json({ message: 'Invalid user id' });
+    }
+    const imagePath = path.join(process.cwd(), 'cache', `${id}`, 'userImage.jpg');
     if(!fs.existsSync(imagePath)) {
         res.status(404).json({ message: 'Image not found' });
     }

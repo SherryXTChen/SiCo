@@ -1,7 +1,8 @@
 import { spawn } from 'child_process';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
+import { validate } from 'uuid';
 const sharp = require('sharp');
 
 export async function POST(req, res) {
@@ -19,13 +20,22 @@ export async function POST(req, res) {
         if(!garmentInfo) {
             return NextResponse.error(new Error('No garment info found'));
         }
+        const uid = data.get('uid');
+        if(!uid) {
+            return NextResponse.error(new Error('No user id found'));
+        }
+        if(!validate(uid)) {
+            return NextResponse.error(new Error('Invalid user id'));
+        }
 
+        const userPath = join('cache', `${uid}`);
+        await mkdir(userPath, { recursive: true });
         const userImageBytes = await userImage.arrayBuffer();
         const userImageBuffer = Buffer.from(userImageBytes);
         const productImageBytes = await productImage.arrayBuffer();
         const productImageBuffer = Buffer.from(productImageBytes);
-        const userImagePath = join('cache', 'userImage.jpg');
-        const productImagePath = join('cache', `${garmentInfo}`);
+        const userImagePath = join(userPath, 'userImage.jpg');
+        const productImagePath = join(userPath, `${garmentInfo}`);
         sharp(userImageBuffer).toFormat('jpeg').toFile(userImagePath)
             .then((outputBuffer) => {
                 // console.log('outputBuffer:', outputBuffer);
@@ -41,7 +51,7 @@ export async function POST(req, res) {
 
         await new Promise((resolve, reject) => {
             // Execute the python script with the paths as arguments
-            const pythonProcess = spawn('python', ['backbone.py', imagePath1, imagePath2], {
+            const pythonProcess = spawn('python', ['backbone.py', imagePath1, imagePath2, uid], {
                 env: {
                     ...process.env,
                     PYTHONPATH: 'venv/bin/python'
@@ -52,8 +62,12 @@ export async function POST(req, res) {
                 console.error(`stderr: ${data}`);
             });
 
+            pythonProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data}`);
+            });
+
             pythonProcess.on('close', (code) => {
-                // console.log(`child process exited with code ${code}`);
+                console.log(`child process exited with code ${code}`);
                 // Send response once the process is finished
                 resolve();
             });

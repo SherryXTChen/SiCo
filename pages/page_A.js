@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
-const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize}) => {
+const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
+    const imageRef = React.useRef(null);
+
+    imageRef.current = image;
 
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(sectionContainerRef.current.offsetWidth);
         };
         window.addEventListener("resize", handleResize);
+        window.addEventListener("load", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
+            window.removeEventListener("load", handleResize);
         };
     }, []);
     useEffect(() => {
-        if (sectionContainerRef.current) {
+        if(sectionContainerRef.current) {
             setWindowWidth(sectionContainerRef.current.offsetWidth);
         }
     }, [windowWidth]);
@@ -40,19 +45,41 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
         }
         reader.readAsDataURL(file);
         setImage(file);
-    }
+        imageRef.current = file;
+        handleCaching();
+    };
+
+    const handleCaching = async () => {
+        const formData = new FormData();
+        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
+
+        formData.append('userImage', userImageBlob);
+        formData.append('uid', localStorage.getItem("uid"));
+
+        await fetch('/api/cache', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
 
     const handleTopSizeChange = (e) => {
         setTopSize(e.target.value);
-    }
+    };
 
     const handleBottomSizeChange = (e) => {
         setBottomSize(e.target.value);
-    }
+    };
 
     const handleDressSizeChange = (e) => {
         setDressSize(e.target.value);
-    }
+    };
 
     return (
         <div className="section-container" ref={sectionContainerRef}>
@@ -66,7 +93,7 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                 - you should wear regular or tight fit clothing in the image<br />
                 - you should not wear any coat or jacket in the image<br />
                 Here are some acceptable and unacceptable image examples. <br />
-                <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"}/>
+                <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
 
             {isSelectSize && (<div>
@@ -75,14 +102,14 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                 For example, if your true size for tops is M, then wearing any top with size M will leads to a regular fit on you.<br />
             </div>)}
 
-            {isUploadImage && (<div className="user-image-upload" id="uploadArea" style={{position: "relative"}}>
+            {isUploadImage && (<div className="user-image-upload" id="uploadArea" style={{ position: "relative" }}>
                 {!image && (<><b>Upload a full-body image of yourself here</b><br />
-                <input
-                    type="file"
-                    id="imageUpload"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
+                    <input
+                        type="file"
+                        id="imageUpload"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
                 {image && (<>
                     <img src={URL.createObjectURL(image)} style={{ maxWidth: "100%", maxHeight: "100%" }} alt={<b>Upload a full-body image of yourself here</b>} />
                     <button className="remove-button" id="removeButton" onClick={() => setImage(null)}

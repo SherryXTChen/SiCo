@@ -2,19 +2,20 @@ import React, { useState, useEffect } from "react";
 import { RotatingLines } from "react-loader-spinner";
 
 async function galleryImage(imageName) {
-    const imageEndpoint = `/api/result/${imageName}`;
+    const imageEndpoint = `/api/result/${localStorage.getItem("uid")}/${imageName}`;
     const imageResponse = await fetch(imageEndpoint);
     const imageBlob = await imageResponse.blob();
     return imageBlob;
 }
 
 async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading) {
-    const apiEndpoint = "/api/images";
+    const apiEndpoint = `/api/images/${localStorage.getItem("uid")}`;
 
     try {
         const response = await fetch(apiEndpoint);
         const jsonResponse = await response.json();
         const imageFiles = jsonResponse.message;
+        console.log("Image files:", imageFiles);
         await imageFiles.forEach(async (imageName) => {
             if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
                 const image = await galleryImage(imageName);
@@ -52,7 +53,9 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
         const productImageblob = await fetch(product.image).then(r => r.blob());
         formData.append('productImage', productImageblob);
         formData.append('garmentInfo', `${product.id}_${product.name}_${trueSize}_${garmentSize}.jpg`)
+        formData.append('uid', localStorage.getItem("uid"));
 
+        // Remove the below await to speed up testing
         await fetch('/api/upload', {
             method: 'POST',
             body: formData,

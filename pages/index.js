@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import Page_A from "./page_A"
 import Page_B from "./page_B";
-import Image from "next/image";
+import { set } from "date-fns";
 
 const Home = () => {
     const [image, setImage] = useState(null);
@@ -9,10 +10,30 @@ const Home = () => {
     const [bottomSize, setBottomSize] = useState("XXS");
     const [dressSize, setDressSize] = useState("N/A");
     const [pageAContinue, setPageAContinue] = useState(false);
+    const [firstLoad, setFirstLoad] = useState(true);
+    const mainRef = React.useRef(null);
     const isUploadImage = true;
     const isSelectSize = false;
+
+    async function getCachedImage() {
+        const imageEndpoint = `/api/img/${localStorage.getItem("uid")}`;
+        const imageResponse = await fetch(imageEndpoint);
+        const imageBlob = await imageResponse.blob();
+        setImage(new File([imageBlob], "userImage.jpg", { type: "image/jpeg" }));
+    }
+
+    useEffect(() => {
+        if(mainRef.current && firstLoad) {
+            if(!localStorage.getItem("uid")) {
+                localStorage.setItem("uid", uuidv4());
+            }
+            getCachedImage();
+            setFirstLoad(false);
+        }
+    });
+
     return (
-        <div>
+        <div ref={mainRef}>
             {!pageAContinue && (<Page_A
                 image={image}
                 setImage={setImage}
