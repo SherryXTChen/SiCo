@@ -52,6 +52,7 @@ const Home = () => {
                 setPageAContinue={setPageAContinue}
                 isUploadImage={isUploadImage}
                 isSelectSize={isSelectSize}
+                getCachedImage={getCachedImage}
             />)}
             {pageAContinue && (<Page_B
                 image={image}
@@ -60,6 +61,7 @@ const Home = () => {
                 bottomSize={bottomSize}
                 dressSize={dressSize}
                 isSelectSize={isSelectSize}
+                isUploadImage={isUploadImage}
             />)}
         </div>
     );

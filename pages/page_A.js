@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import ImagePicker from "../components/ImagePicker";
 
-const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize }) => {
+const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
     const imageRef = React.useRef(null);
@@ -95,13 +96,14 @@ const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSiz
                 Here are some acceptable and unacceptable image examples. <br />
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
-
+            {!isUploadImage && <div>
+                <ImagePicker getCachedImage={getCachedImage} />
+            </div>}
             {isSelectSize && (<div>
                 Please enter your true size for tops, bottoms, and dresses if applicable.<br />
                 Your true size for any type of garment is defined by the size of the garment of the same type that leads to a regular fit on you.<br />
                 For example, if your true size for tops is M, then wearing any top with size M will leads to a regular fit on you.<br />
             </div>)}
-
             {isUploadImage && (<div className="user-image-upload" id="uploadArea" style={{ position: "relative" }}>
                 {!image && (<><b>Upload a full-body image of yourself here</b><br />
                     <input

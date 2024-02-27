@@ -1,8 +1,19 @@
 import { mkdir, readdir } from 'fs/promises';
-import { join } from 'path';
+import fs from 'fs';
+import path, { join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import { validate } from 'uuid';
-const sharp = require('sharp');
+
+async function copyFile(sourcePath, destinationPath) {
+    return new Promise((resolve, reject) => {
+        const readStream = fs.createReadStream(sourcePath);
+        const writeStream = fs.createWriteStream(destinationPath);
+        readStream.on('error', reject);
+        writeStream.on('error', reject);
+        writeStream.on('finish', resolve);
+        readStream.pipe(writeStream);
+    });
+}
 
 export async function POST(req, res) {
     try {
@@ -18,33 +29,17 @@ export async function POST(req, res) {
         if(!validate(uid)) {
             return NextResponse.error(new Error('Invalid user id'));
         }
-
         const userPath = join('cache', `${uid}`);
         await mkdir(userPath, { recursive: true });
         const cacheUserPath = join('cache', 'userImages', `${uid}`);
         await mkdir(cacheUserPath, { recursive: true });
         const files = await readdir(userPath);
         const counter = files.length + 1;
-        const userImageBytes = await userImage.arrayBuffer();
-        const userImageBuffer = Buffer.from(userImageBytes);
+        const userImageFilePath = join('models', path.parse(userImage).base);
         const userImagePath = join(userPath, 'userImage.jpg');
         const userStoredPath = join(cacheUserPath, `userImage${counter}.jpg`);
-        sharp(userImageBuffer).toFormat('jpeg').toFile(userImagePath)
-            .then((outputBuffer) => {
-                // console.log('outputBuffer:', outputBuffer);
-            })
-            .catch((err) => {
-                console.error('Error converting user image to jpeg:', err);
-                return NextResponse.error(new Error('Error converting user image to jpeg'));
-            });
-        sharp(userImageBuffer).toFormat('jpeg').toFile(userStoredPath)
-            .then((outputBuffer) => {
-                // console.log('outputBuffer:', outputBuffer);
-            })
-            .catch((err) => {
-                console.error('Error converting user image to jpeg:', err);
-                return NextResponse.error(new Error('Error converting user image to jpeg'));
-            });
+        await copyFile(userImageFilePath, userImagePath);
+        await copyFile(userImageFilePath, userStoredPath);
         return NextResponse.json({ message: 'Files uploaded and processed successfully.' }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);
