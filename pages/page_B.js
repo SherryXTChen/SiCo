@@ -15,7 +15,6 @@ async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnRe
         const response = await fetch(apiEndpoint);
         const jsonResponse = await response.json();
         const imageFiles = jsonResponse.message;
-        console.log("Image files:", imageFiles);
         await imageFiles.forEach(async (imageName) => {
             if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
                 const image = await galleryImage(imageName);
@@ -108,7 +107,7 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
 };
 
 
-const Page_B = ({ image, setImage, topSize, bottomSize, dressSize, isSelectSize}) => {
+const Page_B = ({ image, setImage, topSize, bottomSize, dressSize, isSelectSize, isUploadImage }) => {
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
@@ -254,9 +253,9 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize, isSelectSize}
                 {image && (<>
                     <img src={URL.createObjectURL(image)} id="initialImage"
                         style={{ maxWidth: "100%", maxHeight: "100%" }} />
-                    <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
+                    {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
-                    >x</button>
+                    >x</button>)}
                 </>)}
             </div>
             <div className="added-items">
