@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Page_A from "./page_A"
 import Page_B from "./page_B";
+import SampleForm from "./SampleForm";
 
 const Home = () => {
     const [image, setImage] = useState(null);
@@ -39,6 +40,8 @@ const Home = () => {
 
     return (
         <div ref={mainRef}>
+            {/* TODO: Do something with this sample survey */}
+            {/* {!firstLoad && (<SampleForm />)} */}
             {!pageAContinue && (<Page_A
                 image={image}
                 setImage={setImage}

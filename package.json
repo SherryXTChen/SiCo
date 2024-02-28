@@ -10,11 +10,15 @@
         "gray-matter": "^4.0.3",
         "next": "latest",
         "react": "18.2.0",
-        "react-dom": "18.2.0",
+        "react-dom": "^18.2.0",
         "react-loader-spinner": "^6.1.6",
+        "react-scripts": "^5.0.1",
         "remark": "^14.0.2",
         "remark-html": "^15.0.1",
         "sharp": "^0.33.2",
+        "survey-core": "^1.9.131",
+        "survey-react": "^1.9.131",
+        "survey-react-ui": "^1.9.131",
         "uuid": "^9.0.1"
     },
     "engines": {
