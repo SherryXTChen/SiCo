@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ImagePicker from "../components/ImagePicker";
 
-const Page_A = ({ image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage }) => {
+const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
-    const imageRef = React.useRef(null);
-
-    imageRef.current = image;
 
     useEffect(() => {
         const handleResize = () => {
