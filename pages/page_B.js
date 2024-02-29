@@ -8,7 +8,27 @@ async function galleryImage(imageName) {
     return imageBlob;
 }
 
-async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading) {
+const handleCaching = async (image) => {
+    const formData = new FormData();
+    const userImageBlob = await fetch(URL.createObjectURL(image)).then(r => r.blob());
+
+    formData.append('userImage', userImageBlob);
+    formData.append('uid', localStorage.getItem("uid"));
+
+    await fetch('/api/cache', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            // console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+};
+
+async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading) {
     const apiEndpoint = `/api/images/${localStorage.getItem("uid")}`;
 
     try {
@@ -21,7 +41,7 @@ async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnRe
                 const itemDiv = (
                     <div className="picked-item" key={imageName}>
                         <img src={URL.createObjectURL(image)} width={"500px"} height={"auto"} />
-                        <button className="continue" onClick={() => { setImage(image) }} >Continue From Here</button>
+                        <button className="continue" onClick={() => { setImage(image); imageRef.current = image; handleCaching(image); }} >Continue From Here</button>
                     </div>
                 );
                 tryOnResultsRef.current.push(itemDiv);
@@ -37,7 +57,7 @@ async function updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnRe
 };
 
 
-const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize) => {
+const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize) => {
     const handleRemove = () => {
         tryOnItemsRef.current = tryOnItemsRef.current.filter((item) => item.key != product.id);
         setTryOnItems(tryOnItemsRef.current);
@@ -46,7 +66,7 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
     const handleTryItOn = async () => {
         setLoading(true);
         const formData = new FormData();
-        const userImageBlob = await fetch(URL.createObjectURL(image)).then(r => r.blob());
+        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
 
         formData.append('userImage', userImageBlob);
         const productImageblob = await fetch(product.image).then(r => r.blob());
@@ -66,7 +86,7 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
             .catch((error) => {
                 console.error('Error:', error);
             });
-        updateGallery(tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading);
+        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading);
     };
 
     const item = (
@@ -107,7 +127,7 @@ const addToTryOnRoom = (product, trueSize, garmentSize, setTryOnItems, tryOnItem
 };
 
 
-const Page_B = ({ image, setImage, topSize, bottomSize, dressSize, isSelectSize, isUploadImage }) => {
+const Page_B = ({ imageRef, image, setImage, topSize, bottomSize, dressSize, isSelectSize, isUploadImage }) => {
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
@@ -192,7 +212,7 @@ const Page_B = ({ image, setImage, topSize, bottomSize, dressSize, isSelectSize,
                                 } else {
                                     garmentSize = selectedSize;
                                 }
-                                addToTryOnRoom(product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize);
+                                addToTryOnRoom(imageRef, product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize);
                             }}>
                                 Pick This
                             </button>

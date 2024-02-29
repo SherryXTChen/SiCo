@@ -14,6 +14,8 @@ const Home = () => {
     const [isUploadImage, setIsUploadImage] = useState(false);
     const [isSelectSize, setIsSelectSize] = useState(false);
     const mainRef = React.useRef(null);
+    const imageRef = React.useRef(null);
+    imageRef.current = image;
 
     async function getCachedImage() {
         const imageEndpoint = `/api/img/${localStorage.getItem("uid")}`;
@@ -43,6 +45,7 @@ const Home = () => {
             {/* TODO: Do something with this sample survey */}
             {/* {!firstLoad && (<SampleForm />)} */}
             {!pageAContinue && (<Page_A
+                imageRef={imageRef}
                 image={image}
                 setImage={setImage}
                 topSize={topSize}
@@ -58,6 +61,7 @@ const Home = () => {
                 getCachedImage={getCachedImage}
             />)}
             {pageAContinue && (<Page_B
+                imageRef={imageRef}
                 image={image}
                 setImage={setImage}
                 topSize={topSize}
