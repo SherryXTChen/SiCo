@@ -304,7 +304,6 @@ def main():
         os.system(f'wget -O {body_mask_path} "{body_mask_url}"')
     body_mask = np.array(Image.open(body_mask_path).convert('L'))
     Image.fromarray((body_mask > 0).astype(np.uint8) * 255).save(body_mask_path)
-    exit()
 
     # remove existing garment and replace with naked body part
     url = fal_api(
