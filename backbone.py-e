@@ -149,7 +149,6 @@ def fal_api_segment(user_image_path, text):
 
     result = handler.get()
     url = result['image']['url']
-    print(url)
     return url
 
 
