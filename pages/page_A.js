@@ -67,6 +67,26 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
             });
     };
 
+    const handleNextPage = async () => {
+        const formData = new FormData();
+        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
+
+        formData.append('userImage', userImageBlob);
+        formData.append('uid', localStorage.getItem("uid"));
+
+        await fetch('/api/scan', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
+
     const handleTopSizeChange = (e) => {
         setTopSize(e.target.value);
     };
@@ -94,7 +114,7 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
             {!isUploadImage && <div>
-                <ImagePicker getCachedImage={getCachedImage} />
+                <ImagePicker getCachedImage={getCachedImage} setImage={setImage} />
             </div>}
             {isSelectSize && (<div>
                 Please enter your true size for tops, bottoms, and dresses if applicable.<br />
@@ -157,7 +177,10 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
             </div>)}
             {!image && <button className="done-button" id="doneButton" disabled>Continue</button>}
             {image && <button className="done-button" id="doneButton"
-                onClick={() => setPageAContinue(true)}
+                onClick={() => {
+                    handleNextPage();
+                    setPageAContinue(true);
+                }}
             >Continue</button>}
         </div>
     );

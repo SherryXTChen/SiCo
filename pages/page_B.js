@@ -273,9 +273,9 @@ const Page_B = ({ imageRef, image, setImage, topSize, bottomSize, dressSize, isS
                 {image && (<>
                     <img src={URL.createObjectURL(image)} id="initialImage"
                         style={{ maxWidth: "100%", maxHeight: "100%" }} />
-                    {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
+                    {/* {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
-                    >x</button>)}
+                    >x</button>)} */}
                 </>)}
             </div>
             <div className="added-items">
