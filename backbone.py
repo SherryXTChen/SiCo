@@ -299,7 +299,6 @@ def main():
 
     body_mask_path = f'./cache/{uid}/{body_mask_labels}/body_mask.png'
     if not os.path.exists(body_mask_path):
-        print("weird error here:", body_mask_path)
         if type(text) == list:
             body_mask_url = fal_api_segment(user_image_path, text[0])
             body_mask_path_1 = f'./cache/{uid}/{body_mask_labels}/body_mask_1.png'
