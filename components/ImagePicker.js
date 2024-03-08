@@ -7,7 +7,6 @@ const ImagePicker = ({getCachedImage}) => {
 
     const handleImageSelect = (imageName) => {
         setSelectedImage(imageName);
-        // import myImage from imageName;
         async function getImageBlobUrl(imagePath) {
             const formData = new FormData();
             formData.append('userImage', `${imagePath}`);

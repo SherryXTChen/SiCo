@@ -1,13 +1,12 @@
-import os
-
-import sys
-from PIL import Image
-import numpy as np
-import glob
-import cv2
-import torch
-import fal
 import base64
+import fal
+import torch
+import cv2
+import glob
+import numpy as np
+from PIL import Image
+import sys
+import os
 
 
 def make_dir(path):
@@ -34,11 +33,11 @@ def image_to_base64_data_uri(image_path):
 
 
 def fal_api(
-    user_image_path, 
-    mask_image_path, 
-    garment_image_path, 
-    garment_type, 
-    relative_fit, 
+    user_image_path,
+    mask_image_path,
+    garment_image_path,
+    garment_type,
+    relative_fit,
     prompt,
 ):
     arguments = {
@@ -51,7 +50,8 @@ def fal_api(
     if garment_image_path is None:
         assert prompt is not None
         input_mask = np.array(Image.open(mask_image_path))
-        input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=1)
+        input_mask = cv2.dilate(
+            input_mask, kernel=np.ones((5, 5)), iterations=1)
         Image.fromarray(input_mask).save(mask_image_path)
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
         additional_arguments = {
@@ -69,26 +69,28 @@ def fal_api(
         }
     else:
         input_mask = np.array(Image.open(mask_image_path))
-        if relative_fit == 0: # regular fit
-            input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=1)
+        if relative_fit == 0:  # regular fit
+            input_mask = cv2.dilate(
+                input_mask, kernel=np.ones((5, 5)), iterations=1)
             prompt = "a fitted"
-        elif relative_fit > 0: # over sized
+        elif relative_fit > 0:  # over sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
             min_x, _ = indices.min(axis=0)
             max_x, _ = indices.max(axis=0)
-            input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=10 * relative_fit)
-            input_mask[:max(0, min_x-5)] = 0 # remove top
+            input_mask = cv2.dilate(input_mask, kernel=np.ones(
+                (5, 5)), iterations=10 * relative_fit)
+            input_mask[:max(0, min_x-5)] = 0  # remove top
             prompt = "a big baggy loose overfitted"
-        else: # under sized
+        else:  # under sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
             min_x, _ = indices.min(axis=0)
             max_x, _ = indices.max(axis=0)
             remove_leng = (max_x - min_x) * (-relative_fit) // 6
-            input_mask[max_x - remove_leng:] = 0 # remove bottom
+            input_mask[max_x - remove_leng:] = 0  # remove bottom
             prompt = "a very tight cropped"
-        
+
         Image.fromarray(input_mask).save(mask_image_path)
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
         garment_image_uri = image_to_base64_data_uri(garment_image_path)
@@ -176,18 +178,19 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 
         if bottom_leg_length == 'long':
             bottom_body_mask_list += [f for f in body_mask_list if 'lower_leg' in f]
-        bottom_body_mask = [np.array(Image.open(f).convert('L')) for f in bottom_body_mask_list]
+        bottom_body_mask = [np.array(Image.open(f).convert('L'))
+                            for f in bottom_body_mask_list]
         bottom_body_mask = np.sum(bottom_body_mask, axis=0)
         bottom_body_mask = np.uint8(bottom_body_mask > 0)
-        
+
         if bottom_leg_length == 'short':
             indices = np.argwhere(bottom_body_mask > 0)
             assert len(indices) != 0
             min_x, _ = indices.min(axis=0)
             max_x, _ = indices.max(axis=0)
             leng = (max_x - min_x) // 2
-            bottom_body_mask[max(0, max_x-leng):, :] = 0 
-            
+            bottom_body_mask[max(0, max_x-leng):, :] = 0
+
         if garment_type in ['skirt', 'dress']:
             indices = np.argwhere(bottom_body_mask > 0)
             assert len(indices) != 0
@@ -195,7 +198,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
             max_x, _ = indices.max(axis=0)
 
             for i in range(min_x, max_x+1):
-                bottom_body_mask_i = bottom_body_mask[i][None,...]
+                bottom_body_mask_i = bottom_body_mask[i][None, ...]
                 indices = np.argwhere(bottom_body_mask_i > 0)
                 if len(indices) == 0:
                     continue
@@ -203,18 +206,20 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
                 _, max_y = indices.max(axis=0)
                 bottom_body_mask[i, min_y:max_y+1] = 1
         mask_list.append(bottom_body_mask)
-    
+
     if garment_type not in ['pants', 'skirt']:
         if top_sleeve_length != 'no':
-            top_body_mask_list = [f for f in body_mask_list if 'upper_arm' in f]
+            top_body_mask_list = [
+                f for f in body_mask_list if 'upper_arm' in f]
         else:
             top_body_mask_list = []
-        
+
         if top_sleeve_length == 'long':
             top_body_mask_list += [f for f in body_mask_list if 'lower_arm' in f]
 
         if top_body_mask_list:
-            top_body_mask = [np.array(Image.open(f).convert('L')) for f in top_body_mask_list]
+            top_body_mask = [np.array(Image.open(f).convert('L'))
+                             for f in top_body_mask_list]
             top_body_mask = np.sum(top_body_mask, axis=0)
             top_body_mask = np.uint8(top_body_mask > 0)
 
@@ -224,8 +229,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
                 min_x, _ = indices.min(axis=0)
                 max_x, _ = indices.max(axis=0)
                 leng = (max_x - min_x) // 2
-                top_body_mask[max(0, max_x-leng):, :] = 0 
-
+                top_body_mask[max(0, max_x-leng):, :] = 0
 
             mask_list.append(top_body_mask)
 
@@ -242,7 +246,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
             torso_mask[max_x - (max_x - min_x)//6:] = 0
         else:
             torso_mask[:min_x + (max_x - min_x)*2//3] = 0
-    
+
     mask_list.append(torso_mask)
     mask_list = np.sum(mask_list, axis=0)
     mask_list = np.uint8(mask_list > 0) * 255
@@ -255,11 +259,13 @@ def main():
     uid = sys.argv[3]
 
     # get garment info
-    garment_info = os.path.basename(os.path.splitext(garment_image_path)[0]).split('_')
-    # _, body_mask_args, user_size, garment_size = tuple(garment_info)
-    body_mask_args = 'dress no long'
-    user_size = 'M'
-    garment_size = 'M'
+    garment_info = os.path.basename(
+        os.path.splitext(garment_image_path)[0]).split('_')
+    _, body_mask_args, user_size, garment_size = tuple(garment_info)
+    # body_mask_args = 'dress no long'
+    # user_size = 'M'
+    # garment_size = 'M'
+    body_mask_labels = body_mask_args
     body_mask_args = body_mask_args.split()
     body_mask_args = [x if x != 'none' else None for x in body_mask_args]
     body_mask_args = {
@@ -271,12 +277,15 @@ def main():
 
     # create mask indicating the location of garment to be tried on
     make_dir(f'./cache/{uid}')
-    garment_mask_path = f'./cache/{uid}/mask.png'
-    get_body_mask(user_image_path, uid)
-    body_mask = combine_body_mask(**body_mask_args)
-    Image.fromarray(body_mask).save(garment_mask_path)
+    make_dir(f'./cache/{uid}/{body_mask_labels}')
+    garment_mask_path = f'./cache/{uid}/{body_mask_labels}/mask.png'
+    if not os.path.exists(f"./cache/{uid}/densepose.torso.png"):
+        get_body_mask(user_image_path, uid)
+    if not os.path.exists(garment_mask_path):
+        body_mask = combine_body_mask(**body_mask_args)
+        Image.fromarray(body_mask).save(garment_mask_path)
 
-    # get mask of existig garment
+    # get mask of existing garment
     if body_mask_args['garment_type'] in ['jump suit', 'dress']:
         text = ['shirt, top clothing', 'pants, bottom clothing']
         prompt = "a naked person, (skin color)+++"
@@ -287,51 +296,59 @@ def main():
         text = 'shirt, top clothing'
         prompt = "a person, naked upper body, with pants, (skin color)+++"
 
-    body_mask_path = f'./cache/{uid}/body_mask.png'
-    if type(text) == list:
-        body_mask_url = fal_api_segment(user_image_path, text[0])
-        body_mask_path_1 = f'./cache/{uid}/body_mask_1.png'
-        os.system(f'wget -O {body_mask_path_1} "{body_mask_url}"')
-        body_mask_url = fal_api_segment(user_image_path, text[1])
-        body_mask_path_2 = f'./cache/{uid}/body_mask_2.png'
-        os.system(f'wget -O {body_mask_path_2} "{body_mask_url}"')
-        body_mask = np.array(Image.open(body_mask_path_1)) + np.array(Image.open(body_mask_path_2))
-        Image.fromarray((body_mask > 0).astype(np.uint8) * 255).save(body_mask_path)
-    else:
-        body_mask_url = fal_api_segment(user_image_path, text)
-        os.system(f'wget -O {body_mask_path} "{body_mask_url}"')
-    body_mask = np.array(Image.open(body_mask_path).convert('L'))
-    Image.fromarray((body_mask > 0).astype(np.uint8) * 255).save(body_mask_path)
+    body_mask_path = f'./cache/{uid}/{body_mask_labels}/body_mask.png'
+    if not os.path.exists(body_mask_path):
+        print("weird error here:", body_mask_path)
+        if type(text) == list:
+            body_mask_url = fal_api_segment(user_image_path, text[0])
+            body_mask_path_1 = f'./cache/{uid}/{body_mask_labels}/body_mask_1.png'
+            os.system(f'wget -O "{body_mask_path_1}" "{body_mask_url}"')
+            body_mask_url = fal_api_segment(user_image_path, text[1])
+            body_mask_path_2 = f'./cache/{uid}/{body_mask_labels}/body_mask_2.png'
+            os.system(f'wget -O "{body_mask_path_2}" "{body_mask_url}"')
+            body_mask = np.array(Image.open(body_mask_path_1)) + \
+                np.array(Image.open(body_mask_path_2))
+            Image.fromarray((body_mask > 0).astype(
+                np.uint8) * 255).save(body_mask_path)
+        else:
+            body_mask_url = fal_api_segment(user_image_path, text)
+            os.system(f'wget -O "{body_mask_path}" "{body_mask_url}"')
+        body_mask = np.array(Image.open(body_mask_path).convert('L'))
+        Image.fromarray((body_mask > 0).astype(
+            np.uint8) * 255).save(body_mask_path)
 
     # remove existing garment and replace with naked body part
-    url = fal_api(
-        user_image_path=user_image_path, 
-        mask_image_path=body_mask_path,
-        garment_image_path=None,
-        garment_type=None,
-        relative_fit=None,
-        prompt=prompt,
-    )
-    out_path = f'cache/{uid}/user_body.png'
-    os.system(f'wget -O {out_path} "{url}"')
-    
+    out_path = f'cache/{uid}/{body_mask_labels}/user_body.png'
+    if not os.path.exists(out_path):
+        url = fal_api(
+            user_image_path=user_image_path,
+            mask_image_path=body_mask_path,
+            garment_image_path=None,
+            garment_type=None,
+            relative_fit=None,
+            prompt=prompt,
+        )
+        os.system(f'wget -O "{out_path}" "{url}"')
+
     # add garment
     size_list = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']
     user_size_index = size_list.index(user_size)
     garment_size_index = size_list.index(garment_size)
     url = fal_api(
-        user_image_path=out_path, 
+        user_image_path=out_path,
         mask_image_path=garment_mask_path,
         garment_image_path=garment_image_path,
         garment_type=body_mask_args['garment_type'],
         relative_fit=garment_size_index-user_size_index,
         prompt=None,
     )
+
     make_dir(f'./results/{uid}')
-    basename = str(len(glob.glob(f'results/{uid}/*.jpg')) + 1).zfill(10) + ".jpg"
+    basename = str(
+        len(glob.glob(f'results/{uid}/*.jpg')) + 1).zfill(10) + ".jpg"
     out_path = os.path.join('results', uid, basename)
-    os.system(f'wget -O {out_path} "{url}"')
-   
+    os.system(f'wget -O "{out_path}" "{url}"')
+
 
 if __name__ == '__main__':
     main()

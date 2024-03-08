@@ -12,14 +12,6 @@ export async function POST(req, res) {
         if(!userImage) {
             return NextResponse.error(new Error('No user image found'));
         }
-        const productImage = data.get('productImage');
-        if(!productImage) {
-            return NextResponse.error(new Error('No product image found'));
-        }
-        const garmentInfo = data.get('garmentInfo');
-        if(!garmentInfo) {
-            return NextResponse.error(new Error('No garment info found'));
-        }
         const uid = data.get('uid');
         if(!uid) {
             return NextResponse.error(new Error('No user id found'));
@@ -32,10 +24,7 @@ export async function POST(req, res) {
         await mkdir(userPath, { recursive: true });
         const userImageBytes = await userImage.arrayBuffer();
         const userImageBuffer = Buffer.from(userImageBytes);
-        const productImageBytes = await productImage.arrayBuffer();
-        const productImageBuffer = Buffer.from(productImageBytes);
         const userImagePath = join(userPath, 'userImage.jpg');
-        const productImagePath = join(userPath, `${garmentInfo}`);
         sharp(userImageBuffer).toFormat('jpeg').toFile(userImagePath)
             .then((outputBuffer) => {
                 // console.log('outputBuffer:', outputBuffer);
@@ -44,39 +33,67 @@ export async function POST(req, res) {
                 console.error('Error converting user image to jpeg:', err);
                 return NextResponse.error(new Error('Error converting user image to jpeg'));
             });
-        await writeFile(productImagePath, productImageBuffer);
 
         const imagePath1 = userImagePath;
-        const imagePath2 = productImagePath.split(' ')[0] + ' ' + garmentInfo.split(' ').slice(1).join(' ');
+        const product_names = [
+            'dress no long',
+            'dress short long',
+            'top long none',
+            'top short none',
+            'pants none short'
+        ];
 
         await new Promise((resolve, reject) => {
-            // Execute the python script with the paths as arguments
-            const pythonProcess = spawn('python', ['backbone.py', imagePath1, imagePath2, uid], {
+            const bodymaskPythonProcess = spawn('python', ['bodymask.py', imagePath1, uid], {
                 // env: {
                 //     ...process.env,
                 //     PYTHONPATH: 'venv/bin/python'
                 // },
             });
 
-            pythonProcess.stderr.on('data', (data) => {
+            bodymaskPythonProcess.stderr.on('data', (data) => {
                 console.error(`stderr: ${data}`);
             });
 
-            pythonProcess.stdout.on('data', (data) => {
+            bodymaskPythonProcess.stdout.on('data', (data) => {
                 console.log(`stdout: ${data}`);
             });
 
-            pythonProcess.on('close', (code) => {
+            bodymaskPythonProcess.on('close', (code) => {
                 console.log(`child process exited with code ${code}`);
                 // Send response once the process is finished
                 resolve();
             });
-            pythonProcess.on('error', (err) => {
+            bodymaskPythonProcess.on('error', (err) => {
                 console.error('Error processing files:', err);
                 reject(err);
             });
         });
-        return NextResponse.json({ message: 'Files uploaded and processed successfully.' }, { status: 200 });
+
+        const pythonProcessesPromises = [];
+        for(const productName of product_names) {
+            const pythonProcessPromise = new Promise((resolve, reject) => {
+                const pythonProcess = spawn('python', ['undress.py', imagePath1, productName, uid]);
+                pythonProcess.stderr.on('data', (data) => {
+                    console.error(`stderr: ${data}`);
+                });
+                pythonProcess.stdout.on('data', (data) => {
+                    console.log(`stdout: ${data}`);
+                });
+                pythonProcess.on('close', (code) => {
+                    console.log(`child process exited with code ${code}`);
+                    resolve();
+                });
+                pythonProcess.on('error', (err) => {
+                    console.error('Error processing files:', err);
+                    reject(err);
+                });
+            });
+
+            pythonProcessesPromises.push(pythonProcessPromise);
+        }
+        await Promise.all(pythonProcessesPromises);
+        return NextResponse.json({ message: 'Files scanned successfully.' }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);
         return NextResponse.error(new Error('Error processing files'));
