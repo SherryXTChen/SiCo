@@ -3,6 +3,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import { validate } from 'uuid';
+import sendTextToNetcat from '../sendTextToNetcat';
 const sharp = require('sharp');
 
 export async function POST(req, res) {
@@ -20,65 +21,70 @@ export async function POST(req, res) {
             return NextResponse.error(new Error('Invalid user id'));
         }
 
-        const product_names = [
-            'dress no long',
-            'dress short long',
-            'top long none',
-            'top short none',
-            'pants none short'
-        ];
+        // TODO: uncomment this line
+        // sendTextToNetcat(`scan\n${uid}\n${userImage}`);
 
-        await new Promise((resolve, reject) => {
-            const bodymaskPythonProcess = spawn('python', ['bodymask.py', `${userImage}`, uid], {
-                // env: {
-                //     ...process.env,
-                //     PYTHONPATH: 'venv/bin/python'
-                // },
-            });
 
-            bodymaskPythonProcess.stderr.on('data', (data) => {
-                console.error(`stderr: ${data}`);
-            });
+        // TODO: clean this up
+        // const product_names = [
+        //     'dress no long',
+        //     'dress short long',
+        //     'top long none',
+        //     'top short none',
+        //     'pants none short'
+        // ];
 
-            bodymaskPythonProcess.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
-            });
+        // await new Promise((resolve, reject) => {
+        //     const bodymaskPythonProcess = spawn('python', ['bodymask.py', `${userImage}`, uid], {
+        //         // env: {
+        //         //     ...process.env,
+        //         //     PYTHONPATH: 'venv/bin/python'
+        //         // },
+        //     });
 
-            bodymaskPythonProcess.on('close', (code) => {
-                console.log(`child process exited with code ${code}`);
-                // Send response once the process is finished
-                resolve();
-            });
-            bodymaskPythonProcess.on('error', (err) => {
-                console.error('Error processing files:', err);
-                reject(err);
-            });
-        });
+        //     bodymaskPythonProcess.stderr.on('data', (data) => {
+        //         console.error(`stderr: ${data}`);
+        //     });
 
-        const pythonProcessesPromises = [];
-        for(const productName of product_names) {
-            const pythonProcessPromise = new Promise((resolve, reject) => {
-                const pythonProcess = spawn('python', ['undress.py', imagePath1, productName, uid]);
-                pythonProcess.stderr.on('data', (data) => {
-                    console.error(`stderr: ${data}`);
-                });
-                pythonProcess.stdout.on('data', (data) => {
-                    console.log(`stdout: ${data}`);
-                });
-                pythonProcess.on('close', (code) => {
-                    console.log(`child process exited with code ${code}`);
-                    resolve();
-                });
-                pythonProcess.on('error', (err) => {
-                    console.error('Error processing files:', err);
-                    reject(err);
-                });
-            });
+        //     bodymaskPythonProcess.stdout.on('data', (data) => {
+        //         console.log(`stdout: ${data}`);
+        //     });
 
-            pythonProcessesPromises.push(pythonProcessPromise);
-        }
-        await Promise.all(pythonProcessesPromises);
-        return NextResponse.json({ message: 'Files scanned successfully.' }, { status: 200 });
+        //     bodymaskPythonProcess.on('close', (code) => {
+        //         console.log(`child process exited with code ${code}`);
+        //         // Send response once the process is finished
+        //         resolve();
+        //     });
+        //     bodymaskPythonProcess.on('error', (err) => {
+        //         console.error('Error processing files:', err);
+        //         reject(err);
+        //     });
+        // });
+
+        // const pythonProcessesPromises = [];
+        // for(const productName of product_names) {
+        //     const pythonProcessPromise = new Promise((resolve, reject) => {
+        //         const pythonProcess = spawn('python', ['undress.py', imagePath1, productName, uid]);
+        //         pythonProcess.stderr.on('data', (data) => {
+        //             console.error(`stderr: ${data}`);
+        //         });
+        //         pythonProcess.stdout.on('data', (data) => {
+        //             console.log(`stdout: ${data}`);
+        //         });
+        //         pythonProcess.on('close', (code) => {
+        //             console.log(`child process exited with code ${code}`);
+        //             resolve();
+        //         });
+        //         pythonProcess.on('error', (err) => {
+        //             console.error('Error processing files:', err);
+        //             reject(err);
+        //         });
+        //     });
+
+        //     pythonProcessesPromises.push(pythonProcessPromise);
+        // }
+        // await Promise.all(pythonProcessesPromises);
+        return NextResponse.json({ message: 'Files began scanning successfully.' }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);
         return NextResponse.error(new Error('Error processing files'));

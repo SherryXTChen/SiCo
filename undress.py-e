@@ -246,7 +246,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 
 
 def main():
-    uid = sys.argv[1]
+    url = sys.argv[1]
     body_mask_args = sys.argv[2]
     uid = sys.argv[3]
     user_image_path = f'./cache/{uid}/user_image.jpg'

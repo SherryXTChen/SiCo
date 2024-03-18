@@ -37,20 +37,50 @@ const Home = () => {
         const newImage = new File([imageBlob], "userImage.jpg", { type: "image/jpeg" });
         setImage(newImage);
         imageRef.current = newImage;
-    }
+    };
+
+    const handleCaching = async () => {
+        const updateBlob = async () => {
+            const imageDataURL = localStorage.getItem("cachedImageURL");
+            const imageFetchedData = await fetch(`${imageDataURL}`);
+            const imageBlob = await imageFetchedData.blob();
+            setImageBlob(imageBlob);
+            imageBlobRef.current = imageBlob;
+        };
+
+        const formData = new FormData();
+        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
+
+        formData.append('userImage', userImageBlob);
+        formData.append('uid', localStorage.getItem("uid"));
+
+        await fetch('/api/cache', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Success:', data.message);
+                localStorage.setItem("cachedImageURL", data.message);
+                updateBlob();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
 
     async function getId() {
         const idEndpoint = `/api/user/id/${localStorage.getItem("uid")}`;
         const idResponse = await fetch(idEndpoint);
         const id = await idResponse.text();
         return id;
-    }
+    };
 
     async function setSeed() {
         const id = await getId();
         setIsUploadImage(id % 4 === 0 || id % 4 === 1);
         setIsSelectSize(id % 4 === 0 || id % 4 === 2);
-    }
+    };
 
     async function setSeedDebug() {
         if(!localStorage.getItem("seed")) {
@@ -59,7 +89,7 @@ const Home = () => {
         const seed = parseInt(localStorage.getItem("seed"));
         setIsUploadImage(seed % 4 === 0 || seed % 4 === 1);
         setIsSelectSize(seed % 4 === 0 || seed % 4 === 2);
-    }
+    };
 
     useEffect(() => {
         if(mainRef.current && firstLoad) {
@@ -96,6 +126,7 @@ const Home = () => {
                 isUploadImage={isUploadImage}
                 isSelectSize={isSelectSize}
                 getCachedImage={getCachedImage}
+                handleCaching={handleCaching}
             />)}
             {pageAContinue && (<Page_B
                 imageRef={imageRef}
@@ -109,6 +140,7 @@ const Home = () => {
                 dressSize={dressSize}
                 isSelectSize={isSelectSize}
                 isUploadImage={isUploadImage}
+                handleCaching={handleCaching}
             />)}
         </div>
     );
