@@ -22,7 +22,7 @@ export async function POST(req, res) {
         }
 
         // TODO: uncomment this line
-        // sendTextToNetcat(`scan\n${uid}\n${userImage}`);
+        sendTextToNetcat(`scan\n${uid}\n${userImage}`);
 
 
         // TODO: clean this up
