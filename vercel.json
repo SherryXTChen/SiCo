@@ -1,4 +1,9 @@
 {
+    "builds": [{
+        "config": {
+            "runtime": "python3.9"
+        }
+    }],
     "redirects": [
         {
             "source": "/",
