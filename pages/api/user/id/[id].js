@@ -1,13 +1,39 @@
 import fs from 'fs';
 import path from 'path';
 import { validate } from 'uuid';
+import prisma from '../../../../lib/prisma';
 
-export default function GET(req, res) {
+export default async function GET(req, res) {
     try {
         const { id } = req.query;
         if(!validate(id)) {
             res.status(401).json({ message: 'Invalid user id' });
         }
+        const existsUser = await prisma.user.findUnique({
+            where: {
+                uid: id,
+            },
+        });
+        if(!existsUser) {
+            await prisma.user.create({
+                data: {
+                    uid: id,
+                },
+            });
+        }
+
+        const userId = await prisma.user.findUnique({
+            where: {
+                uid: id,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        res.setHeader('Content-Type', 'text/plain');
+        res.end(`${userId.id}`);
+
         const imagePath = path.join(process.cwd(), 'cache', `${id}`, 'userImage.jpg');
         if(!fs.existsSync(imagePath)) {
             res.status(404).json({ message: 'Image not found' });

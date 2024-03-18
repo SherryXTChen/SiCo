@@ -6,6 +6,8 @@
         "start": "next start"
     },
     "dependencies": {
+        "@prisma/client": "^5.11.0",
+        "@vercel/blob": "^0.22.1",
         "date-fns": "^2.29.3",
         "gray-matter": "^4.0.3",
         "next": "latest",
@@ -15,6 +17,7 @@
         "react-scripts": "^5.0.1",
         "remark": "^14.0.2",
         "remark-html": "^15.0.1",
+        "safe-json-stringify": "^1.2.0",
         "sharp": "^0.33.2",
         "survey-core": "^1.9.131",
         "survey-react": "^1.9.131",
@@ -23,5 +26,8 @@
     },
     "engines": {
         "node": ">=18"
+    },
+    "devDependencies": {
+        "prisma": "^5.11.0"
     }
 }
