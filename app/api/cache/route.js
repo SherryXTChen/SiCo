@@ -22,7 +22,6 @@ export async function POST(req, res) {
         const blob = await put(userImagePath, userImageData, {
             access: 'public',
         });
-        console.log(blob.url)
 
         const existsUser = await prisma.user.findUnique({
             where: {

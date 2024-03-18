@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ImagePicker from "../components/ImagePicker";
 
-const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage }) => {
+const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
 
@@ -30,36 +30,6 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         setImage(file);
         imageRef.current = file;
         handleCaching();
-    };
-
-    const handleCaching = async () => {
-        const updateBlob = async () => {
-            const imageDataURL = localStorage.getItem("cachedImageURL");
-            const imageFetchedData = await fetch(`${imageDataURL}`);
-            const imageBlob = await imageFetchedData.blob();
-            setImageBlob(imageBlob);
-            imageBlobRef.current = imageBlob;
-        };
-
-        const formData = new FormData();
-        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
-
-        formData.append('userImage', userImageBlob);
-        formData.append('uid', localStorage.getItem("uid"));
-
-        await fetch('/api/cache', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                // console.log('Success:', data.message);
-                localStorage.setItem("cachedImageURL", data.message);
-                updateBlob();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
     };
 
     const handleNextPage = async () => {
