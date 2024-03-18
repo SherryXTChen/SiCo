@@ -1,8 +1,4 @@
 {
-    "engines": {
-        "node": "21.1.x",
-        "python": "3.9.x"
-    },
     "redirects": [
         {
             "source": "/",

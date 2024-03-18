@@ -29,7 +29,8 @@
         "vercel": "^33.6.1"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=18",
+        "python": "3.9.x"
     },
     "devDependencies": {
         "prisma": "^5.11.0"
