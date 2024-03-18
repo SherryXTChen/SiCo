@@ -29,15 +29,16 @@
         "vercel": "^33.6.1"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=18 <19"
     },
     "vercel": {
         "functions": {
             "*.py": {
-                "runtime": "python3.9"
+                "runtime": "python3.7"
             },
             "*.js": {
-                "runtime": "nodejs18.x"
+                "runtime": "nodejs18.x",
+                "memory": 1024
             }
         }
     },
