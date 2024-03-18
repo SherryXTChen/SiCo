@@ -44,7 +44,7 @@ export async function POST(req, res) {
         ];
 
         await new Promise((resolve, reject) => {
-            const bodymaskPythonProcess = spawn('python', ['bodymask.py', `${userImage}`, uid], {
+            const bodymaskPythonProcess = spawn('python', ['./bodymask.py', `${userImage}`, uid], {
                 // env: {
                 //     ...process.env,
                 //     PYTHONPATH: 'venv/bin/python'
