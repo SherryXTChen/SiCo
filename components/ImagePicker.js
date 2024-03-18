@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
-const ImagePicker = ({getCachedImage}) => {
+const ImagePicker = ({ getCachedImage }) => {
     const [selectedImage, setSelectedImage] = useState('');
+    const [firstLoad, setFirstLoad] = useState(true);
+    const imagePickerRef = React.useRef(null);
     const images = [1, 2, 3, 4, 5, 6].map(num => `/models/woman_${num}.jpg`).concat(
         [1, 2, 3, 4, 5, 6].map(num => `/models/man_${num}.jpg`));
+
+    useEffect(() => {
+        if(imagePickerRef.current && firstLoad) {
+            if(!localStorage.getItem("uid")) {
+                localStorage.setItem("uid", uuidv4());
+                getCachedImage();
+            } else {
+                try {
+                    const imageURL = localStorage.getItem("cachedImageURL").split('/').pop().split('-')[0];
+                    setSelectedImage(`/models/${imageURL}.jpg`);
+                } catch(error) { }
+            }
+            setFirstLoad(false);
+        }
+    });
 
     const handleImageSelect = (imageName) => {
         setSelectedImage(imageName);
@@ -14,18 +31,26 @@ const ImagePicker = ({getCachedImage}) => {
             await fetch('/api/save', {
                 method: 'POST',
                 body: formData,
-            });
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // console.log('Success:', data.message);
+                    localStorage.setItem("cachedImageURL", data.message);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
             getCachedImage();
         }
         getImageBlobUrl(imageName);
     };
 
     return (
-        <div>
+        <div ref={imagePickerRef}>
             <h2>Select an Image:</h2>
             <ul>
                 {images.map(image => (
-                    <li>
+                    <li key={image}>
                         <input
                             type="radio"
                             id={image}

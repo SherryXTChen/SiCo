@@ -255,9 +255,10 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 
 
 def main():
-    user_image_path = sys.argv[1]
+    url = sys.argv[1]
     garment_image_path = sys.argv[2]
     uid = sys.argv[3]
+    user_image_path = f'./cache/{uid}/user_image.jpg'
 
     # get garment info
     garment_info = os.path.basename(

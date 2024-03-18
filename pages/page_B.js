@@ -127,7 +127,7 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
 };
 
 
-const Page_B = ({ imageRef, image, setImage, topSize, bottomSize, dressSize, isSelectSize, isUploadImage }) => {
+const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage }) => {
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
@@ -271,7 +271,7 @@ const Page_B = ({ imageRef, image, setImage, topSize, bottomSize, dressSize, isS
                         onChange={handleImageChange}
                         style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
                 {image && (<>
-                    <img src={URL.createObjectURL(image)} id="initialImage"
+                    <img src={localStorage.getItem("cachedImageURL")} id="initialImage"
                         style={{ maxWidth: "100%", maxHeight: "100%" }} />
                     {/* {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
