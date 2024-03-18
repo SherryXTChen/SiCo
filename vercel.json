@@ -1,9 +1,8 @@
 {
-    "builds": [{
-        "config": {
-            "runtime": "python3.9"
-        }
-    }],
+    "engines": {
+        "node": "21.1.x",
+        "python": "3.9.x"
+    },
     "redirects": [
         {
             "source": "/",
