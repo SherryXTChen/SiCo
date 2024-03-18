@@ -30,7 +30,7 @@
     },
     "engines": {
         "node": ">=18",
-        "python": "3.9.x"
+        "python": "3.9"
     },
     "devDependencies": {
         "prisma": "^5.11.0"
