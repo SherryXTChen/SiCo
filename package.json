@@ -30,7 +30,7 @@
         "vercel": "^33.6.1"
     },
     "engines": {
-        "node": ">=20 <21"
+        "node": ">=18 <19"
     },
     "vercel": {
         "functions": {
@@ -38,7 +38,7 @@
                 "runtime": "python3.7"
             },
             "*.js": {
-                "runtime": "nodejs20.x"
+                "runtime": "nodejs18.x"
             }
         }
     },
