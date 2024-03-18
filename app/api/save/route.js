@@ -16,7 +16,7 @@ const modelURLs = {
     'woman_4.jpg': 'https://owvsun6fpt6ye72u.public.blob.vercel-storage.com/woman_4-RcaQvYM89zoN4NQS9OMrWbzJIFOz19.jpg',
     'woman_5.jpg': 'https://owvsun6fpt6ye72u.public.blob.vercel-storage.com/woman_5-tHQu0L8oeG0KVzRjI0QNMbefJhLhXu.jpg',
     'woman_6.jpg': 'https://owvsun6fpt6ye72u.public.blob.vercel-storage.com/woman_6-FKNDDdNPNiUgG7dixqOpEV1TNZOQVH.jpg',
-}
+};
 
 export async function POST(req, res) {
     try {

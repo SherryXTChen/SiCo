@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import Page_A from "./page_A"
 import Page_B from "./page_B";
 import SampleForm from "./SampleForm";
-import prisma from "./lib/prisma";
+import prisma from "../lib/prisma";
 
 const Home = () => {
     const [image, setImage] = useState(null);
