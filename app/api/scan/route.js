@@ -20,21 +20,6 @@ export async function POST(req, res) {
             return NextResponse.error(new Error('Invalid user id'));
         }
 
-        // const userPath = join('cache', `${uid}`);
-        // await mkdir(userPath, { recursive: true });
-        // const userImageBytes = await userImage.arrayBuffer();
-        // const userImageBuffer = Buffer.from(userImageBytes);
-        // const userImagePath = join(userPath, 'userImage.jpg');
-        // sharp(userImageBuffer).toFormat('jpeg').toFile(userImagePath)  // TODO: Check if this is still needed
-        //     .then((outputBuffer) => {
-        //         // console.log('outputBuffer:', outputBuffer);
-        //     })
-        //     .catch((err) => {
-        //         console.error('Error converting user image to jpeg:', err);
-        //         return NextResponse.error(new Error('Error converting user image to jpeg'));
-        //     });
-
-        // const imagePath1 = userImagePath;
         const product_names = [
             'dress no long',
             'dress short long',
