@@ -34,9 +34,6 @@
     },
     "vercel": {
         "functions": {
-            "*.py": {
-                "runtime": "python3.7"
-            },
             "*.js": {
                 "runtime": "nodejs18.x"
             }
