@@ -29,8 +29,17 @@
         "vercel": "^33.6.1"
     },
     "engines": {
-        "node": ">=18",
-        "python": "3.9"
+        "node": ">=18"
+    },
+    "vercel": {
+        "functions": {
+            "*.py": {
+                "runtime": "python3.9"
+            },
+            "*.js": {
+                "runtime": "nodejs18.x"
+            }
+        }
     },
     "devDependencies": {
         "prisma": "^5.11.0"
