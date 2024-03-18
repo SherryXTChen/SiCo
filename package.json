@@ -37,8 +37,7 @@
                 "runtime": "python3.7"
             },
             "*.js": {
-                "runtime": "nodejs18.x",
-                "memory": 1024
+                "runtime": "nodejs18.x"
             }
         }
     },

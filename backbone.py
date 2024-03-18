@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 import sys
 import os
+import requests
 os.environ["FAL_KEY"] = "150008a7-249c-4575-9fa4-e391f6ad5b33:006bf483d5b59cad3807ebac247f4a82"
 
 
@@ -259,6 +260,11 @@ def main():
     garment_image_path = sys.argv[2]
     uid = sys.argv[3]
     user_image_path = f'./cache/{uid}/user_image.jpg'
+    make_dir(f'./cache/{uid}')
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(user_image_path, 'wb') as f:
+            f.write(response.content)
 
     # get garment info
     garment_info = os.path.basename(
