@@ -2,25 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { validate } from 'uuid';
 import prisma from '../../../lib/prisma';
+const sharp = require('sharp');
 
 export async function POST(req, res) {
     try {
         const data = await req.formData();
         const userImageData = data.get('userImage');
-        if (!userImageData) {
+        if(!userImageData) {
             return NextResponse.error(new Error('No user image found'));
         }
         const uid = data.get('uid');
-        if (!uid) {
+        if(!uid) {
             return NextResponse.error(new Error('No user id found'));
         }
-        if (!validate(uid)) {
+        if(!validate(uid)) {
             return NextResponse.error(new Error('Invalid user id'));
         }
         const firstSite = data.get('firstSite');
-
+        const userImageBytes = await userImage.arrayBuffer();
+        const userImageBuffer = Buffer.from(userImageBytes);
         const userImagePath = `${uid}/userImage.jpg`;
-        const blob = await put(userImagePath, userImageData, {
+        const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
+        const blob = await put(userImagePath, userImageJpeg, {
             access: 'public',
         });
 
@@ -53,7 +56,7 @@ export async function POST(req, res) {
         });
 
         return NextResponse.json({ message: `${blob.url}` }, { status: 200 });
-    } catch (err) {
+    } catch(err) {
         console.error('Error processing files:', err);
         return NextResponse.error(new Error('Error processing files'));
     }
