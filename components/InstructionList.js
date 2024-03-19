@@ -1,6 +1,6 @@
 import React from 'react';
 
-const InstructionList = ({ numTryOnLeft, handleNextPage }) => {
+const InstructionList = ({ numTryOnLeft, handleNextPage, isSelectSize, continued, topped, bottomed }) => {
     const style = {
         position: 'fixed',
         top: 0,
@@ -16,14 +16,25 @@ const InstructionList = ({ numTryOnLeft, handleNextPage }) => {
         <div style={style}>
             <h2>Instructions:</h2>
             <ol style={{ justifyContent: 'left', paddingLeft: '20px', paddingRight: '20px' }}>
-                <li>Pick a garment and size</li>
-                {numTryOnLeft > 0 && (<li>Try on <b>{numTryOnLeft}</b> more garments</li>)}
-                {numTryOnLeft <= 0 && (<div>
-                    <li>Try on more garments</li>
-                    <li>Continue when ready</li>
+                {!isSelectSize && (<div>
+                    <li>Pick a top</li>
+                    <li>Try the top on</li>
+                    <li>Pick a bottom or a dress</li>
+                    <li>Try the bottom / dress on</li>
+                    <li>Continue from the last result</li>
+                    <li>Try the top from step 1 on again</li>
                 </div>)}
+                {isSelectSize && (<div> {/* TODO: finish this implementation */}
+                    <li>Pick a top</li>
+                    <li>Try the top on</li>
+                    <li>Pick a bottom or a dress</li>
+                    <li>Try the bottom / dress on</li>
+                    <li>Continue from the last result</li>
+                    <li>Try the top from step 1 on again</li>
+                </div>)}
+                <li>Pick a garment and size</li>
             </ol>
-            {numTryOnLeft <= 0 && (<button className="done-button" id="nextPageButton"
+            {continued && topped >= 2 && bottomed && (<button className="done-button" id="nextPageButton"
                 style={{ justifyContent: 'center', width: '100%' }}
                 onClick={() => {
                     handleNextPage();

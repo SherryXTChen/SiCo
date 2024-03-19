@@ -3,7 +3,7 @@ import { RotatingLines } from "react-loader-spinner";
 import InstructionList from "../components/InstructionList";
 import PostversionForm from "./PostversionForm";
 
-async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite) {
+async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite, setContinued) {
     const apiEndpoint = `/api/images/${localStorage.getItem("uid")}--${localStorage.getItem("firstSite")}`;
     try {
         const response = await fetch(apiEndpoint);
@@ -20,6 +20,7 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                                 setImage(image);
                                 imageRef.current = image;
                                 localStorage.setItem("cachedImageURL", image);
+                                setContinued(true);
                                 handleCaching();
                             }} >Continue From Here</button>
                         </div>
@@ -41,7 +42,7 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
     }
 };
 
-const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching, setNumTryOnLeft, firstSite) => {
+const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching, setNumTryOnLeft, firstSite, setContinued, setTopped, setBottomed) => {
     const handleRemove = () => {
         tryOnItemsRef.current = tryOnItemsRef.current.filter((item) => item.key != product.id);
         setTryOnItems(tryOnItemsRef.current);
@@ -50,6 +51,15 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
     const handleTryItOn = async () => {
         setLoading(true);
         const formData = new FormData();
+
+        const garmentType = product.name.split(' ')[0];
+        if(garmentType === 'top') {
+            setTopped((prevState) => prevState + 1);
+        } else if(garmentType === 'pants') {
+            setBottomed(true);
+        } else if(garmentType === 'dress') {
+            setBottomed(true);
+        };
 
         formData.append('userImage', localStorage.getItem("cachedImageURL"));
         formData.append('productImage', `${product.name}`);
@@ -69,7 +79,7 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
             .catch((error) => {
                 console.error('Error:', error);
             });
-        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite);
+        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite, setContinued);
     };
 
     const item = (
@@ -116,6 +126,9 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [loading, setLoading] = useState(false);
     const [numTryOnLeft, setNumTryOnLeft] = useState(3);
     const [startSurvey, setStartSurvey] = useState(false);
+    const [continued, setContinued] = useState(false);
+    const [topped, setTopped] = useState(0);
+    const [bottomed, setBottomed] = useState(false);
     const tryOnItemsRef = React.useRef();
     const tryOnResultsRef = React.useRef();
     tryOnItemsRef.current = tryOnItems;
@@ -157,7 +170,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         <div>
             {startSurvey && (<PostversionForm checkSurvey={checkSurvey} firstSite={firstSite} isUploadImage={isUploadImage} isSelectSize={isSelectSize} />)}
             {!startSurvey && (<div>
-                <InstructionList numTryOnLeft={numTryOnLeft} handleNextPage={handleNextPage} />
+                <InstructionList numTryOnLeft={numTryOnLeft} handleNextPage={handleNextPage} isSelectSize={isSelectSize} continued={continued} topped={topped} bottomed={bottomed} />
                 {loading && (<div className="overlay">
                     <div style={{ position: "relative" }}>
                         <RotatingLines
@@ -210,7 +223,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                         } else {
                                             garmentSize = selectedSize;
                                         }
-                                        addToTryOnRoom(imageRef, product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching, setNumTryOnLeft, firstSite);
+                                        addToTryOnRoom(imageRef, product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching, setNumTryOnLeft, firstSite, setContinued, setTopped, setBottomed);
                                     }}>
                                         Pick This
                                     </button>
