@@ -9,7 +9,7 @@ function Consent({ setGivenConsent, checkConsent }) {
         const initials = document.getElementById('initials').value;
         const date = document.getElementById('date').value;
 
-        if(initials.length !== 2) {
+        if(initials.length <= 0) {
             setWrongInitials(true);
             return;
         } else {
