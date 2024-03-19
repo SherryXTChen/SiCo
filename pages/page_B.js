@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { RotatingLines } from "react-loader-spinner";
+import prisma from "../lib/prisma";
 
 async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching) {
     const apiEndpoint = `/api/images/${localStorage.getItem("uid")}`;
@@ -9,16 +10,18 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
         const imageFiles = jsonResponse.message;
         await imageFiles.forEach(async (image) => {
             const imageName = image.split('/').pop().split('-')[0];
-            if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
-                const itemDiv = (
-                    <div className="picked-item" key={imageName}>
-                        <img src={image} width={"500px"} height={"auto"} />
-                        <button className="continue" onClick={() => { setImage(image); imageRef.current = image; handleCaching(); }} >Continue From Here</button>
-                    </div>
-                );
-                tryOnResultsRef.current.push(itemDiv);
-                setTryOnResults(tryOnResultsRef.current);
-                setChange(prevState => !prevState);
+            if(tryOnResultsRef.current) {
+                if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
+                    const itemDiv = (
+                        <div className="picked-item" key={imageName}>
+                            <img src={image} width={"500px"} height={"auto"} />
+                            <button className="continue" onClick={() => { setImage(image); imageRef.current = image; handleCaching(); }} >Continue From Here</button>
+                        </div>
+                    );
+                    tryOnResultsRef.current.push(itemDiv);
+                    setTryOnResults(tryOnResultsRef.current);
+                    setChange(prevState => !prevState);
+                }
             }
         });
         setLoading(false);
@@ -104,7 +107,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [loading, setLoading] = useState(false);
     const tryOnItemsRef = React.useRef();
     const tryOnResultsRef = React.useRef();
-
     tryOnItemsRef.current = tryOnItems;
     tryOnResultsRef.current = tryOnResults;
 
@@ -127,7 +129,15 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
-    }
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching);
+        }, 5000); // Checks every 5 seconds
+        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching);
+        return () => clearInterval(interval);
+    }, []);
 
     return (<div>
         {loading && (<div className="overlay">
