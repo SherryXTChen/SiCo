@@ -190,26 +190,23 @@ button:hover {
 }
 
 /* Style for selecting model images */
-.image-picker .image-grid {
+.image-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(6, 1fr); /* 6 columns */
+    grid-auto-rows: auto; /* Auto row height based on content */
+    gap: 10px; /* Adjust space between grid items */
 }
 
-.image-picker .image-item {
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.3s ease;
+.image-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.image-picker .image-item.selected {
-    border-color: blue; /* Highlight color for selected image */
-}
-
-.image-picker .image-item img {
-    width: 100%;
-    height: auto;
-    display: block;
+.image-item img {
+    width: 100%; /* Adjust based on your needs */
+    height: auto; /* Maintain aspect ratio */
+    cursor: pointer; /* Indicates clickable items */
 }
 
 @media (min-width: 1024px) {

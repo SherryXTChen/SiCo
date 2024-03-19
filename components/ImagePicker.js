@@ -52,7 +52,7 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
     return (
         <div ref={imagePickerRef}>
             <h2>Select an Image:</h2>
-            <ul>
+            {/* <ul>
                 {images.map(image => (
                     <li key={image}>
                         <input
@@ -68,14 +68,25 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
                         </label>
                     </li>
                 ))}
-            </ul>
-            {/* <div className="image-grid">
+            </ul> */}
+            <div className="image-grid">
                 {images.map(image => (
-                    <div key={image} className={`image-item ${selectedImage === image ? 'selected' : ''}`} onClick={() => handleImageSelect(image)}>
-                        <img src={image} alt={image} />
+                    <div className="image-item" key={image}>
+                        <input
+                            type="radio"
+                            id={image}
+                            name="image"
+                            value={image}
+                            checked={selectedImage === image}
+                            onChange={() => handleImageSelect(image)}
+                            style={{ display: 'none' }} // Hide the radio button, use the image for clicking
+                        />
+                        <label htmlFor={image} style={{ display: 'block', marginBottom: 0 }}>
+                            <img src={image} alt={image} />
+                        </label>
                     </div>
                 ))}
-            </div> */}
+            </div>
             {selectedImage && (
                 <div>
                     <h3>Selected Image:</h3>
