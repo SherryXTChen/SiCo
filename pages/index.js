@@ -149,7 +149,7 @@ const Home = () => {
     };
 
     async function checkFirstSite() {
-        if(localStorage.getItem("firstSite") === "true") {
+        if(localStorage.getItem("firstSite") === "false") {
             setFirstSite(false);
             return;
         }
