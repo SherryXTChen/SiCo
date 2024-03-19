@@ -72,32 +72,32 @@ const surveyJson = {
 };
 
 const FinalSurvey = ({ isUploadImage, isSelectSize }) => {
-    const survey = new Model(surveyJson);
-    survey.onComplete.add((result) => {
-        var data = result.data;
-        data["survey-type"] = "final";
-        data["first-site"] = firstSite;
-        data["is-upload-image"] = isUploadImage;
-        data["is-select-size"] = isSelectSize;
-        const formData = new FormData();
-        formData.append('uid', localStorage.getItem("uid"));
-        formData.append('data', JSON.stringify(data));
-        fetch('/api/survey', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(data => {
-                // console.log('Success:', data.message);
+    const [surveyState, setSurveyState] = useState(null);
+    if(!surveyState) {
+        const survey = new Model(surveyJson);
+        survey.onComplete.add((result) => {
+            var data = result.data;
+            data["survey-type"] = "final";
+            data["first-site"] = firstSite;
+            data["is-upload-image"] = isUploadImage;
+            data["is-select-size"] = isSelectSize;
+            const formData = new FormData();
+            formData.append('uid', localStorage.getItem("uid"));
+            formData.append('data', JSON.stringify(data));
+            fetch('/api/survey', {
+                method: 'POST',
+                body: formData,
             })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    });
-
-    // Use this to render the survey as part of the page
-    return <Survey model={survey} />;
-    // Use this to render the survey as a popup
-    return <PopupSurvey model={survey} isExpanded={true} />;
+                .then(data => {
+                    // console.log('Success:', data.message);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+        setSurveyState(survey);
+    }
+    return surveyState ? <Survey model={surveyState} /> : null;
 }
 
 export default FinalSurvey;
