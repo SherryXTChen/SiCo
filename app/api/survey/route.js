@@ -21,8 +21,8 @@ export async function POST(req, res) {
             return NextResponse.error(new Error('Invalid survey data'));
         }
         if(jsonData["survey-type"] !== "presurvey"
-            || jsonData["survey-type"] !== "postversion"
-            || jsonData["survey-type"] !== "final") {
+            && jsonData["survey-type"] !== "postversion"
+            && jsonData["survey-type"] !== "final") {
             return NextResponse.error(new Error('Invalid survey type'));
         }
 
