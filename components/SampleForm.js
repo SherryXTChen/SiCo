@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "survey-core/defaultV2.min.css";
 import { Model } from "survey-core";
 import { Survey, PopupSurvey } from "survey-react-ui";
-// import dynamic from "next/dynamic";
 
 const surveyJson = {
     "title": "Alex's Template Survey",
@@ -538,18 +537,6 @@ const surveyJson = {
 };
 
 const SampleForm = () => {
-    // const [Survey, setSurvey] = useState(null);
-
-    // useEffect(() => {
-    //     import('survey-core').then((module) => {
-    //         setSurvey(module.Survey);
-    //     });
-    // }, []);
-
-    // if (!Survey) {
-    //     return <div>Loading...</div>;
-    // }
-
     const survey = new Model(surveyJson);
     // Use this to render the survey as part of the page
     return <Survey model={survey} />;

@@ -18,7 +18,6 @@ function Consent({ setGivenConsent, checkConsent }) {
         }
         const currentDate = new Date().toLocaleDateString().split('/');
         const selectedDate = date.split('-');
-        console.log(currentDate, selectedDate)
         if(parseInt(selectedDate[0]) !== parseInt(currentDate[2]) || parseInt(selectedDate[1]) !== parseInt(currentDate[0]) || parseInt(selectedDate[2]) !== parseInt(currentDate[1])) {
             setWrongDate(true);
             return;

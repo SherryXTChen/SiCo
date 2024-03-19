@@ -13,24 +13,21 @@ export default async function GET(req, res) {
             },
         });
         if(!existsUser) {
-            return res.status(404).json({ message: 'User not found' });
+            res.setHeader('Content-Type', 'text/plain');
+            return res.end('0')
         }
 
-        const userImage = await prisma.userImage.findMany({
+        const userSurveys = await prisma.user.findUnique({
             where: {
                 uid: id,
             },
-            orderBy: {
-                createdAt: 'desc',
-            },
             select: {
-                url: true,
+                survey: true,
             },
         });
 
-        const latestUserImage = await userImage[0];
         res.setHeader('Content-Type', 'text/plain');
-        res.end(`${latestUserImage.url}`);
+        res.end(`${userSurveys.survey.length}`);
     } catch(error) {
         console.error('Error:', error);
         res.status(500).json({ message: 'Internal server error' });

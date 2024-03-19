@@ -8,6 +8,7 @@ import SampleFormPage from "./SampleFormPage";
 import prisma from "../lib/prisma";
 import "survey-core/defaultV2.min.css";
 import Consent from "./consent";
+import PresurveyForm from "./PresurveyForm";
 
 const Home = () => {
     const [image, setImage] = useState(null);
@@ -20,6 +21,7 @@ const Home = () => {
     const [isUploadImage, setIsUploadImage] = useState(false);
     const [isSelectSize, setIsSelectSize] = useState(false);
     const [givenConsent, setGivenConsent] = useState(false);
+    const [donePresurvey, setDonePresurvey] = useState(false);
     const mainRef = React.useRef(null);
     const imageRef = React.useRef(null);
     const imageBlobRef = React.useRef(null);
@@ -98,6 +100,13 @@ const Home = () => {
         setGivenConsent(consent.length === 2);
     };
 
+    async function checkPresurvey() {
+        const presurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        const presurveyResponse = await fetch(presurveyEndpoint);
+        const presurvey = await presurveyResponse.text();
+        setDonePresurvey(parseInt(presurvey) >= 1);
+    };
+
     useEffect(() => {
         if(mainRef.current && firstLoad) {
             if(!localStorage.getItem("uid")) {
@@ -108,6 +117,7 @@ const Home = () => {
             // setSeed();
             setSeedDebug();
             checkConsent();
+            checkPresurvey();
             setFirstLoad(false);
         }
     });
@@ -115,9 +125,10 @@ const Home = () => {
     return (
         <div ref={mainRef}>
             {/* TODO: Do something with this sample survey */}
-            {/* {!firstLoad && (<SampleForm />)} */}
+            {/* {!firstLoad && (<SampleFormPage />)} */}
             {!givenConsent && (<Consent setGivenConsent={setGivenConsent} checkConsent={checkConsent} />)}
-            {givenConsent && (<div>
+            {!donePresurvey && (<PresurveyForm checkPresurvey={checkPresurvey} />)}
+            {givenConsent && donePresurvey && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}
