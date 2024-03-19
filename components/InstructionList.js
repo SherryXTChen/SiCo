@@ -32,7 +32,6 @@ const InstructionList = ({ numTryOnLeft, handleNextPage, isSelectSize, continued
                     <li>Continue from the last result</li>
                     <li>Try the top from step 1 on again</li>
                 </div>)}
-                <li>Pick a garment and size</li>
             </ol>
             {continued && topped >= 2 && bottomed && (<button className="done-button" id="nextPageButton"
                 style={{ justifyContent: 'center', width: '100%' }}
