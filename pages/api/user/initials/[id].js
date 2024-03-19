@@ -16,35 +16,16 @@ export default async function GET(req, res) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const userImage = await prisma.userImage.findMany({
+        const userInitials = await prisma.user.findUnique({
             where: {
                 uid: id,
             },
-            orderBy: {
-                createdAt: 'desc',
+            select: {
+                initials: true,
             },
-            // select: {
-            //     url: true,
-            // },
         });
-
-        console.log("userImage:", userImage);
-
-        // const latestUserImage = await prisma.user.findFirst({
-        //     where: {
-        //         userId: userImage.id,
-        //     },
-        //     orderBy: {
-        //         createdAt: 'desc',
-        //     },
-        // });
-
-        // const userImageFetchedData = await fetch(userImages['url']);
-        // const userImageBlob = await userImageFetchedData.blob();
-
-        const latestUserImage = await userImage[0];
         res.setHeader('Content-Type', 'text/plain');
-        res.end(`${latestUserImage.url}`);
+        res.end(`${userInitials.initials}`);
     } catch(error) {
         console.error('Error:', error);
         res.status(500).json({ message: 'Internal server error' });

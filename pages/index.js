@@ -16,6 +16,7 @@ const Home = () => {
     const [firstLoad, setFirstLoad] = useState(true);
     const [isUploadImage, setIsUploadImage] = useState(false);
     const [isSelectSize, setIsSelectSize] = useState(false);
+    const [givenConsent, setGivenConsent] = useState(false);
     const mainRef = React.useRef(null);
     const imageRef = React.useRef(null);
     const imageBlobRef = React.useRef(null);
@@ -26,6 +27,9 @@ const Home = () => {
         if(!localStorage.getItem("cachedImageURL")) {
             const imageEndpoint = `/api/user/userImage/${localStorage.getItem("uid")}`;
             const imageResponse = await fetch(imageEndpoint);
+            if (imageResponse.status !== 200) {
+                return;
+            }
             const imageData = await imageResponse.text();
             localStorage.setItem("cachedImageURL", imageData);
         }
@@ -69,15 +73,8 @@ const Home = () => {
             });
     };
 
-    async function getId() {
-        const idEndpoint = `/api/user/id/${localStorage.getItem("uid")}`;
-        const idResponse = await fetch(idEndpoint);
-        const id = await idResponse.text();
-        return id;
-    };
-
     async function setSeed() {
-        const id = await getId();
+        const id = localStorage.getItem("uid");
         setIsUploadImage(id % 4 === 0 || id % 4 === 1);
         setIsSelectSize(id % 4 === 0 || id % 4 === 2);
     };
@@ -91,6 +88,13 @@ const Home = () => {
         setIsSelectSize(seed % 4 === 0 || seed % 4 === 2);
     };
 
+    async function checkConsent() {
+        const consentEndpoint = `/api/user/initials/${localStorage.getItem("uid")}`;
+        const consentResponse = await fetch(consentEndpoint);
+        const consent = await consentResponse.text();
+        setGivenConsent(consent.length === 2);
+    };
+
     useEffect(() => {
         if(mainRef.current && firstLoad) {
             if(!localStorage.getItem("uid")) {
@@ -100,6 +104,7 @@ const Home = () => {
             // TODO: Change this back to setSeed
             // setSeed();
             setSeedDebug();
+            checkConsent();
             setFirstLoad(false);
         }
     });
