@@ -15,7 +15,7 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                 if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
                     const itemDiv = (
                         <div className="picked-item" key={imageName}>
-                            <img src={image} width={"500px"} height={"auto"} />
+                            <img src={image} style={{ width: "20%", height: "auto" }} />
                             <button className="continue" onClick={() => {
                                 setImage(image);
                                 imageRef.current = image;
