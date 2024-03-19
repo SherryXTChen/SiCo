@@ -141,7 +141,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     useEffect(() => {
         const interval = setInterval(() => {
-            updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, firstSite);
+            updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite);
         }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
