@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
-import prisma from "../lib/prisma";
+import InstructionList from "../components/InstructionList";
+import PostversionForm from "./PostversionForm";
 
-async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching) {
-    const apiEndpoint = `/api/images/${localStorage.getItem("uid")}`;
+async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite) {
+    const apiEndpoint = `/api/images/${localStorage.getItem("uid")}--${firstSite}`;
     try {
         const response = await fetch(apiEndpoint);
         const jsonResponse = await response.json();
@@ -19,20 +20,21 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                         </div>
                     );
                     tryOnResultsRef.current.push(itemDiv);
+                    // setNumTryOnLeft(3 - imageFiles.length);
                     setTryOnResults(tryOnResultsRef.current);
                     setChange(prevState => !prevState);
                 }
             }
         });
         setLoading(false);
+        setNumTryOnLeft(3 - imageFiles.length);
         setChange(prevState => !prevState);
     } catch(error) {
-        console.error("Error fetching images:", error);
+        // console.error("Error fetching images:", error);
     }
 };
 
-
-const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching) => {
+const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching, setNumTryOnLeft, firstSite) => {
     const handleRemove = () => {
         tryOnItemsRef.current = tryOnItemsRef.current.filter((item) => item.key != product.id);
         setTryOnItems(tryOnItemsRef.current);
@@ -46,6 +48,7 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
         formData.append('productImage', `${product.name}`);
         formData.append('garmentInfo', `${product.id}_${product.name}_${trueSize}_${garmentSize}.jpg`)
         formData.append('uid', localStorage.getItem("uid"));
+        formData.append('firstSite', firstSite);
 
         // Remove the below await to speed up testing
         await fetch('/api/upload', {
@@ -59,7 +62,7 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
             .catch((error) => {
                 console.error('Error:', error);
             });
-        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching);
+        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite);
     };
 
     const item = (
@@ -99,12 +102,13 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
     setTryOnItems(tryOnItemsRef.current);
 };
 
-
-const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching }) => {
+const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching, firstSite, checkSurvey }) => {
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [numTryOnLeft, setNumTryOnLeft] = useState(3);
+    const [startSurvey, setStartSurvey] = useState(false);
     const tryOnItemsRef = React.useRef();
     const tryOnResultsRef = React.useRef();
     tryOnItemsRef.current = tryOnItems;
@@ -131,75 +135,82 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         setImage(e.target.files[0]);
     };
 
+    const handleNextPage = () => {
+        setStartSurvey(true);
+    };
+
     useEffect(() => {
         const interval = setInterval(() => {
             updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching);
-        }, 5000); // Checks every 5 seconds
-        updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching);
+        }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
 
-    return (<div>
-        {loading && (<div className="overlay">
-            <div style={{ position: "relative" }}>
-                <RotatingLines
-                    visible={true}
-                    height="150"
-                    width="150"
-                    strokeColor="#00BFFF"
-                    strokeWidth="5"
-                    animationDuration="0.75"
-                    ariaLabel="rotating-lines-loading"
-                    wrapperStyle={{}}
-                    wrapperClass=""
-                />
-            </div>
-            <div style={{ position: "relative" }}>
-                <h1>Trying on your clothes...</h1>
-            </div>
-        </div>)}
-        <div className="section-container">
-            <h2 className="section-title">All Products</h2>
-            <div>
-                <div className="products-container">
-                    {products.map((product) => (
-                        <div key={product.id} className="product">
-                            <img src={product.image} alt={product.name} />
-                            {isSelectSize && (<div className="size-container">
-                                <label htmlFor={`garmentSize-${product.id}`} className="size-label">
-                                    Garment Size:
-                                </label>
-                                <select id={`garmentSize-${product.id}`} className="size-select">
-                                    {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                                        <option key={size} value={size}>{size}</option>
-                                    ))}
-                                </select>
-                            </div>)}
-                            <button className="pick-this-button" onClick={() => {
-                                let selectedSize;
-                                if(product.name.startsWith('top')) {
-                                    selectedSize = topSize;
-                                } else if(product.name.startsWith('pants')) {
-                                    selectedSize = bottomSize;
-                                } else if(product.name.startsWith('dress')) {
-                                    selectedSize = dressSize;
-                                } else {
-                                    selectedSize = 'N/A';
-                                }
-                                let garmentSize;
-                                if(isSelectSize) {
-                                    garmentSize = document.getElementById(`garmentSize-${product.id}`).value;
-                                } else {
-                                    garmentSize = selectedSize;
-                                }
-                                addToTryOnRoom(imageRef, product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching);
-                            }}>
-                                Pick This
-                            </button>
+    return (
+        <div>
+            {startSurvey && (<PostversionForm checkSurvey={checkSurvey} firstSite={firstSite} isUploadImage={isUploadImage} isSelectSize={isSelectSize} />)}
+            {!startSurvey && (<div>
+                <InstructionList numTryOnLeft={numTryOnLeft} handleNextPage={handleNextPage} />
+                {loading && (<div className="overlay">
+                    <div style={{ position: "relative" }}>
+                        <RotatingLines
+                            visible={true}
+                            height="150"
+                            width="150"
+                            strokeColor="#00BFFF"
+                            strokeWidth="5"
+                            animationDuration="0.75"
+                            ariaLabel="rotating-lines-loading"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                        />
+                    </div>
+                    <div style={{ position: "relative" }}>
+                        <h1>Trying on your clothes...</h1>
+                    </div>
+                </div>)}
+                <div className="section-container">
+                    <h2 className="section-title">All Products</h2>
+                    <div>
+                        <div className="products-container">
+                            {products.map((product) => (
+                                <div key={product.id} className="product">
+                                    <img src={product.image} alt={product.name} />
+                                    {isSelectSize && (<div className="size-container">
+                                        <label htmlFor={`garmentSize-${product.id}`} className="size-label">
+                                            Garment Size:
+                                        </label>
+                                        <select id={`garmentSize-${product.id}`} className="size-select">
+                                            {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                                                <option key={size} value={size}>{size}</option>
+                                            ))}
+                                        </select>
+                                    </div>)}
+                                    <button className="pick-this-button" onClick={() => {
+                                        let selectedSize;
+                                        if(product.name.startsWith('top')) {
+                                            selectedSize = topSize;
+                                        } else if(product.name.startsWith('pants')) {
+                                            selectedSize = bottomSize;
+                                        } else if(product.name.startsWith('dress')) {
+                                            selectedSize = dressSize;
+                                        } else {
+                                            selectedSize = 'N/A';
+                                        }
+                                        let garmentSize;
+                                        if(isSelectSize) {
+                                            garmentSize = document.getElementById(`garmentSize-${product.id}`).value;
+                                        } else {
+                                            garmentSize = selectedSize;
+                                        }
+                                        addToTryOnRoom(imageRef, product, selectedSize, garmentSize, setTryOnItems, tryOnItemsRef, image, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, isSelectSize, handleCaching, setNumTryOnLeft, firstSite);
+                                    }}>
+                                        Pick This
+                                    </button>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <style jsx>{`
+                        <style jsx>{`
         .products-container {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -237,45 +248,46 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
           border-radius: 5px;
         }
       `}</style>
-            </div>
-        </div>
-        <div className="section-container">
-            <h2 className="section-title">Try-On Room</h2>
-            <div className="user-image" style={{ position: "relative" }}>
-                <h3>Before Try-On</h3>
-                {!image && (<>
-                    <input
-                        type="file"
-                        id="imageUpload"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
-                {image && (<>
-                    <img src={localStorage.getItem("cachedImageURL")} id="initialImage"
-                        style={{ maxWidth: "100%", maxHeight: "100%" }} />
-                    {/* {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
+                    </div>
+                </div>
+                <div className="section-container">
+                    <h2 className="section-title">Try-On Room</h2>
+                    <div className="user-image" style={{ position: "relative" }}>
+                        <h3>Before Try-On</h3>
+                        {!image && (<>
+                            <input
+                                type="file"
+                                id="imageUpload"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
+                        {image && (<>
+                            <img src={localStorage.getItem("cachedImageURL")} id="initialImage"
+                                style={{ maxWidth: "100%", maxHeight: "100%" }} />
+                            {/* {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>)} */}
-                </>)}
-            </div>
-            <div className="added-items">
-                <h3>Try-On Results</h3>
-                <div id="tryOnResults" ref={tryOnResultsRef} style={{ display: "flex", flexWrap: "wrap" }}>
-                    <div className="products-container">
-                        <div className="try-on-results">{tryOnResults}</div>
+                        </>)}
+                    </div>
+                    <div className="added-items">
+                        <h3>Try-On Results</h3>
+                        <div id="tryOnResults" ref={tryOnResultsRef} style={{ display: "flex", flexWrap: "wrap" }}>
+                            <div className="products-container">
+                                <div className="try-on-results">{tryOnResults}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="added-items">
+                        <h3>Try-On Items</h3>
+                        <div id="tryOnItems" style={{ display: "flex", flexWrap: "wrap" }}>
+                            <div className="products-container">
+                                <div className="try-on-items">{tryOnItems}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="added-items">
-                <h3>Try-On Items</h3>
-                <div id="tryOnItems" style={{ display: "flex", flexWrap: "wrap" }}>
-                    <div className="products-container">
-                        <div className="try-on-items">{tryOnItems}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>);
+            </div>)}
+        </div>);
 }
 
 export default Page_B

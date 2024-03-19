@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import "survey-core/defaultV2.min.css";
 import dynamic from "next/dynamic";
+import React from "react";
+import "survey-core/defaultV2.min.css";
 
 const SurveyComponent = dynamic(() => import("../components/SampleForm"), {
     ssr: false,

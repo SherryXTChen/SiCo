@@ -32,6 +32,7 @@ export async function POST(req, res) {
         if (!validate(uid)) {
             return NextResponse.error(new Error('Invalid user id'));
         }
+        const firstSite = data.get('firstSite');
         const chosenImageBlobURL = modelURLs[`${path.parse(userImageData).base}`];
 
         const existsUser = await prisma.user.findUnique({
@@ -56,6 +57,7 @@ export async function POST(req, res) {
                 userImage: {
                     create: {
                         url: chosenImageBlobURL,
+                        firstSite: firstSite === 'true',
                     }
                 },
             },

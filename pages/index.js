@@ -1,14 +1,11 @@
-import { upload } from "@vercel/blob/client";
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import Page_A from "./page_A"
-import Page_B from "./page_B";
-// import SampleForm from "./SampleForm";
-import SampleFormPage from "./SampleFormPage";
-import prisma from "../lib/prisma";
 import "survey-core/defaultV2.min.css";
-import Consent from "./consent";
+import { v4 as uuidv4 } from "uuid";
 import PresurveyForm from "./PresurveyForm";
+import Consent from "./consent";
+import Page_A from "./page_A";
+import Page_B from "./page_B";
+import FinalSurveyForm from "./FinalSurveyForm";
 
 const Home = () => {
     const [image, setImage] = useState(null);
@@ -19,9 +16,13 @@ const Home = () => {
     const [pageAContinue, setPageAContinue] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
     const [isUploadImage, setIsUploadImage] = useState(false);
+    const [isUploadImage2, setIsUploadImage2] = useState(false);
     const [isSelectSize, setIsSelectSize] = useState(false);
+    const [isSelectSize2, setIsSelectSize2] = useState(false);
     const [givenConsent, setGivenConsent] = useState(false);
     const [donePresurvey, setDonePresurvey] = useState(false);
+    const [firstSite, setFirstSite] = useState(true);
+    const [finalSurvey, setFinalSurvey] = useState(false);
     const mainRef = React.useRef(null);
     const imageRef = React.useRef(null);
     const imageBlobRef = React.useRef(null);
@@ -62,6 +63,7 @@ const Home = () => {
 
         formData.append('userImage', userImageBlob);
         formData.append('uid', localStorage.getItem("uid"));
+        formData.append('firstSite', firstSite.toString());
 
         await fetch('/api/cache', {
             method: 'POST',
@@ -79,32 +81,92 @@ const Home = () => {
     };
 
     async function setSeed() {
-        const id = localStorage.getItem("uid");
-        setIsUploadImage(id % 4 === 0 || id % 4 === 1);
-        setIsSelectSize(id % 4 === 0 || id % 4 === 2);
-    };
-
-    async function setSeedDebug() {
-        if(!localStorage.getItem("seed")) {
-            localStorage.setItem("seed", Math.floor(Math.random() * 4));
+        const id = localStorage.getItem("debug")
+            ? localStorage.getItem("seed")
+            : await (await fetch(`/api/user/id/${localStorage.getItem("uid")}`)).text();
+        const seed = (parseInt(id) - 1) % 60 + 1;
+        // A = true true
+        // B = true false
+        // C = false true
+        // D = false false
+        if(seed <= 10) {
+            // AD then DA
+            setIsUploadImage(seed % 2 === 0);
+            setIsSelectSize(seed % 2 === 0);
+            setIsUploadImage2((seed + 1) % 2 === 0);
+            setIsSelectSize2((seed + 1) % 2 === 0);
+        } else if(seed <= 20) {
+            // AB then AC
+            setIsUploadImage(true);
+            setIsSelectSize(true);
+            setIsUploadImage2(seed % 2 === 0);
+            setIsSelectSize2((seed + 1) % 2 === 0);
+        } else if(seed <= 30) {
+            // BA then BC
+            setIsUploadImage(true);
+            setIsSelectSize(false);
+            setIsUploadImage2(seed % 2 === 0);
+            setIsSelectSize2(true);
+        } else if(seed <= 40) {
+            // BD then CA
+            setIsUploadImage(seed % 2 === 0);
+            setIsSelectSize((seed + 1) % 2 === 0);
+            setIsUploadImage2((seed + 1) % 2 === 0);
+            setIsSelectSize2((seed + 1) % 2 === 0);
+        } else if(seed <= 50) {
+            // CB then CD
+            setIsUploadImage(false);
+            setIsSelectSize(true);
+            setIsUploadImage2(seed % 2 === 0);
+            setIsSelectSize2(false);
+        } else if(seed <= 60) {
+            // DB then DC
+            setIsUploadImage(false);
+            setIsSelectSize(false);
+            setIsUploadImage2(seed % 2 === 0);
+            setIsSelectSize2((seed + 1) % 2 === 0);
         }
-        const seed = parseInt(localStorage.getItem("seed"));
-        setIsUploadImage(seed % 4 === 0 || seed % 4 === 1);
-        setIsSelectSize(seed % 4 === 0 || seed % 4 === 2);
     };
 
     async function checkConsent() {
         const consentEndpoint = `/api/user/initials/${localStorage.getItem("uid")}`;
         const consentResponse = await fetch(consentEndpoint);
         const consent = await consentResponse.text();
+        if(consent.length === 2) {
+            await setSeed();
+        }
         setGivenConsent(consent.length === 2);
     };
 
     async function checkPresurvey() {
-        const presurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const presurveyResponse = await fetch(presurveyEndpoint);
-        const presurvey = await presurveyResponse.text();
-        setDonePresurvey(parseInt(presurvey) >= 1);
+        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        const numSurveyResponse = await fetch(numSurveyEndpoint);
+        const numSurvey = await numSurveyResponse.text();
+        setDonePresurvey(parseInt(numSurvey) >= 1);
+    };
+
+    async function checkFirstSite() {
+        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        const numSurveyResponse = await fetch(numSurveyEndpoint);
+        const numSurvey = await numSurveyResponse.text();
+        if(parseInt(numSurvey) === 2) {
+            setImage(null);
+            setImageBlob(null);
+            setTopSize("XXS");
+            setBottomSize("XXS");
+            setDressSize("N/A");
+            setPageAContinue(false);
+            imageRef.current = null;
+            imageBlobRef.current = null;
+        }
+        setFirstSite(parseInt(numSurvey) < 2);
+    };
+
+    async function checkSecondSite() {
+        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        const numSurveyResponse = await fetch(numSurveyEndpoint);
+        const numSurvey = await numSurveyResponse.text();
+        setFinalSurvey(parseInt(numSurvey) >= 2);
     };
 
     useEffect(() => {
@@ -113,22 +175,18 @@ const Home = () => {
                 localStorage.setItem("uid", uuidv4());
             }
             getCachedImage();
-            // TODO: Change this back to setSeed
-            // setSeed();
-            setSeedDebug();
             checkConsent();
             checkPresurvey();
+            checkFirstSite();
             setFirstLoad(false);
         }
     });
 
     return (
         <div ref={mainRef}>
-            {/* TODO: Do something with this sample survey */}
-            {/* {!firstLoad && (<SampleFormPage />)} */}
             {!givenConsent && (<Consent setGivenConsent={setGivenConsent} checkConsent={checkConsent} />)}
             {!donePresurvey && (<PresurveyForm checkPresurvey={checkPresurvey} />)}
-            {givenConsent && donePresurvey && (<div>
+            {(givenConsent && donePresurvey && firstSite) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}
@@ -148,6 +206,7 @@ const Home = () => {
                     isSelectSize={isSelectSize}
                     getCachedImage={getCachedImage}
                     handleCaching={handleCaching}
+                    firstSite={firstSite}
                 />)}
                 {pageAContinue && (<Page_B
                     imageRef={imageRef}
@@ -162,8 +221,53 @@ const Home = () => {
                     isSelectSize={isSelectSize}
                     isUploadImage={isUploadImage}
                     handleCaching={handleCaching}
+                    firstSite={firstSite}
+                    checkSurvey={checkFirstSite}
                 />)}
             </div>)}
+            {(givenConsent && donePresurvey && !firstSite && !finalSurvey) && (<div>
+                {!pageAContinue && (<Page_A
+                    imageRef={imageRef}
+                    image={image}
+                    setImage={setImage}
+                    imageBlob={imageBlob}
+                    setImageBlob={setImageBlob}
+                    imageBlobRef={imageBlobRef}
+                    topSize={topSize}
+                    setTopSize={setTopSize}
+                    bottomSize={bottomSize}
+                    setBottomSize={setBottomSize}
+                    dressSize={dressSize}
+                    setDressSize={setDressSize}
+                    pageAContinue={pageAContinue}
+                    setPageAContinue={setPageAContinue}
+                    isUploadImage={isUploadImage2}
+                    isSelectSize={isSelectSize2}
+                    getCachedImage={getCachedImage}
+                    handleCaching={handleCaching}
+                    firstSite={firstSite}
+                />)}
+                {pageAContinue && (<Page_B
+                    imageRef={imageRef}
+                    image={image}
+                    setImage={setImage}
+                    imageBlob={imageBlob}
+                    imageBlobRef={imageBlobRef}
+                    setImageBlob={setImageBlob}
+                    topSize={topSize}
+                    bottomSize={bottomSize}
+                    dressSize={dressSize}
+                    isSelectSize={isSelectSize2}
+                    isUploadImage={isUploadImage2}
+                    handleCaching={handleCaching}
+                    firstSite={firstSite}
+                    checkSurvey={checkSecondSite}
+                />)}
+            </div>)}
+            {finalSurvey && (<FinalSurveyForm
+                isUploadImage={isUploadImage2}
+                isSelectSize={isSelectSize2}
+            />)}
         </div>
     );
 }

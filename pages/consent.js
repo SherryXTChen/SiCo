@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 function Consent({ setGivenConsent, checkConsent }) {
     const [wrongInitials, setWrongInitials] = useState(false);
