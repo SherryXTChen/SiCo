@@ -87,9 +87,9 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
                     </div>
                 ))}
             </div>
-            {selectedImage && (
+            {selectedImagen && (
                 <div>
-                    <h3>Selected Image:</h3>
+                    <h3>Selected Image (test code 123):</h3>
                     <img src={`${localStorage.getItem("cachedImageURL")}`} alt={selectedImage} />
                 </div>
             )}
