@@ -149,7 +149,7 @@ const Home = () => {
     };
 
     async function checkFirstSite() {
-        if(parseInt(localStorage.getItem("firstSite")) >= 2) {
+        if(localStorage.getItem("firstSite") === "true") {
             setFirstSite(false);
             return;
         }
