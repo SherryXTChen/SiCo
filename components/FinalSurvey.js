@@ -1,7 +1,7 @@
 import React from "react";
-import "survey-core/defaultV2.min.css";
 import { Model } from "survey-core";
-import { Survey, PopupSurvey } from "survey-react-ui";
+import "survey-core/defaultV2.min.css";
+import { Survey } from "survey-react-ui";
 
 const surveyJson = {
     "title": "Post Study Questionnaire",
