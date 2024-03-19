@@ -35,7 +35,6 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         const formData = new FormData();
         formData.append('userImage', localStorage.getItem("cachedImageURL"));
         formData.append('uid', localStorage.getItem("uid"));
-qweawdea
         handleCaching();
         await fetch('/api/scan', {
             method: 'POST',
