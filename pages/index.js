@@ -30,6 +30,9 @@ const Home = () => {
     imageBlobRef.current = imageBlob;
 
     async function getCachedImage() {
+        if(localStorage.getItem("cachedImageURL") && localStorage.getItem("cachedImageURL") === "shumil") {
+            return;
+        }
         if(!localStorage.getItem("cachedImageURL")) {
             const imageEndpoint = `/api/user/userImage/${localStorage.getItem("uid")}`;
             const imageResponse = await fetch(imageEndpoint);
@@ -158,6 +161,7 @@ const Home = () => {
             setPageAContinue(false);
             imageRef.current = null;
             imageBlobRef.current = null;
+            localStorage.setItem("cachedImageURL", "shumil");
         }
         setFirstSite(parseInt(numSurvey) < 2);
     };
