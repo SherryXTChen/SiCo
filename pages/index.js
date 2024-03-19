@@ -7,6 +7,7 @@ import Page_B from "./page_B";
 import SampleFormPage from "./SampleFormPage";
 import prisma from "../lib/prisma";
 import "survey-core/defaultV2.min.css";
+import Consent from "./consent";
 
 const Home = () => {
     const [image, setImage] = useState(null);
@@ -115,7 +116,7 @@ const Home = () => {
         <div ref={mainRef}>
             {/* TODO: Do something with this sample survey */}
             {/* {!firstLoad && (<SampleForm />)} */}
-            {!givenConsent && (<SampleFormPage />)}
+            {!givenConsent && (<Consent setGivenConsent={setGivenConsent} checkConsent={checkConsent} />)}
             {givenConsent && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
