@@ -4,8 +4,8 @@ import { Model } from "survey-core";
 import { Survey, PopupSurvey } from "survey-react-ui";
 
 const surveyJson = {
-    "title": "Alex's Template Survey",
-    "description": "This is a template survey. Please change the title and description to match your needs.",
+    "title": "Post Task Questionnaire",
+    // "description": "This is a template survey. Please change the title and description to match your needs.",
     // "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/UC_Santa_Barbara_logo.svg/1024px-UC_Santa_Barbara_logo.svg.png",
     // "logoFit": "cover",
     // "logoPosition": "right",
@@ -353,33 +353,34 @@ const surveyJson = {
 };
 
 const PostversionSurvey = ({ surveyCheck, firstSite, isUploadImage, isSelectSize }) => {
-    const survey = new Model(surveyJson);
-    survey.onComplete.add((result) => {
-        var data = result.data;
-        data["survey-type"] = "postversion";
-        data["first-site"] = firstSite;
-        data["is-upload-image"] = isUploadImage;
-        data["is-select-size"] = isSelectSize;
-        const formData = new FormData();
-        formData.append('uid', localStorage.getItem("uid"));
-        formData.append('data', JSON.stringify(data));
-        fetch('/api/survey', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(data => {
-                // console.log('Success:', data.message);
-                surveyCheck();
+    const [surveyState, setSurveyState] = useState(null);
+    if(!surveyState) {
+        const survey = new Model(surveyJson);
+        survey.onComplete.add((result) => {
+            var data = result.data;
+            data["survey-type"] = "postversion";
+            data["first-site"] = firstSite;
+            data["is-upload-image"] = isUploadImage;
+            data["is-select-size"] = isSelectSize;
+            const formData = new FormData();
+            formData.append('uid', localStorage.getItem("uid"));
+            formData.append('data', JSON.stringify(data));
+            fetch('/api/survey', {
+                method: 'POST',
+                body: formData,
             })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    });
-
-    // Use this to render the survey as part of the page
-    return <Survey model={survey} />;
-    // Use this to render the survey as a popup
-    return <PopupSurvey model={survey} isExpanded={true} />;
+                .then(response => response.json())
+                .then(data => {
+                    // console.log('Success:', data.message);
+                    surveyCheck();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+        setSurveyState(survey);
+    }
+    return surveyState ? <Survey model={surveyState} /> : null;
 }
 
 export default PostversionSurvey;
