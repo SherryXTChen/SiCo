@@ -16,7 +16,12 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                     const itemDiv = (
                         <div className="picked-item" key={imageName}>
                             <img src={image} width={"500px"} height={"auto"} />
-                            <button className="continue" onClick={() => { setImage(image); imageRef.current = image; handleCaching(); }} >Continue From Here</button>
+                            <button className="continue" onClick={() => {
+                                setImage(image);
+                                imageRef.current = image;
+                                localStorage.setItem("cachedImageURL", image);
+                                handleCaching();
+                            }} >Continue From Here</button>
                         </div>
                     );
                     tryOnResultsRef.current.push(itemDiv);
