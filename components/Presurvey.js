@@ -4,8 +4,8 @@ import { Model } from "survey-core";
 import { Survey, PopupSurvey } from "survey-react-ui";
 
 const surveyJson = {
-    "title": "Alex's Template Survey",
-    "description": "This is a template survey. Please change the title and description to match your needs.",
+    "title": "Pre-study Questionnaire",
+    // "description": "This is a template survey. Please change the title and description to match your needs.",
     // "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/UC_Santa_Barbara_logo.svg/1024px-UC_Santa_Barbara_logo.svg.png",
     // "logoFit": "cover",
     // "logoPosition": "right",
@@ -189,7 +189,7 @@ const Presurvey = ({ checkPresurvey }) => {
     // Use this to render the survey as part of the page
     return <Survey model={survey} />;
     // Use this to render the survey as a popup
-    return <PopupSurvey model={survey} isExpanded={true} />;
+    // return <PopupSurvey model={survey} isExpanded={true} />;
 }
 
 export default Presurvey;
