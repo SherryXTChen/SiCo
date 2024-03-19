@@ -28,6 +28,7 @@ model Survey {
   response  Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  id        Int      @unique @default(autoincrement())
   user      User     @relation("user_surveys", fields: [uid], references: [uid])
 }
 
