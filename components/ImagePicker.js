@@ -16,7 +16,9 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
             } else {
                 try {
                     const imageURL = localStorage.getItem("cachedImageURL").split('/').pop().split('-')[0];
-                    setSelectedImage(`/models/${imageURL}.jpg`);
+                    if(imageURL !== "shumil") {
+                        setSelectedImage(`/models/${imageURL}.jpg`);
+                    }
                 } catch(error) { }
             }
             setFirstLoad(false);
