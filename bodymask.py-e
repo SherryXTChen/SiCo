@@ -1,7 +1,7 @@
 import torch
 import sys
 import os
-
+import requests
 
 def make_dir(path):
     """
@@ -24,8 +24,14 @@ def get_body_mask(image_path, uid):
 
 
 def main():
-    user_image_path = sys.argv[1]
+    url = sys.argv[1]
     uid = sys.argv[2]
+    user_image_path = f'./cache/{uid}/user_image.jpg'
+    make_dir(f'./cache/{uid}')
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(user_image_path, 'wb') as f:
+            f.write(response.content)
 
     # create mask indicating the location of garment to be tried on
     make_dir(f'./cache/{uid}')

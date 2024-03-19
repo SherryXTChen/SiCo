@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import ImagePicker from "../components/ImagePicker";
 
-const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage }) => {
+const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching, firstSite }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
 
@@ -26,54 +26,16 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
     const handleImageChange = (e) => {
         // convert the image to a jpeg and then set the image state
         const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = Image;
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                canvas.toBlob((blob) => {
-                    setImage(new File([blob], file.name, { type: "image/jpeg" }));
-                }, "image/jpeg", 1);
-            }
-        }
-        reader.readAsDataURL(file);
         setImage(file);
         imageRef.current = file;
         handleCaching();
     };
 
-    const handleCaching = async () => {
-        const formData = new FormData();
-        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
-
-        formData.append('userImage', userImageBlob);
-        formData.append('uid', localStorage.getItem("uid"));
-
-        await fetch('/api/cache', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                // console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    };
-
     const handleNextPage = async () => {
         const formData = new FormData();
-        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
-
-        formData.append('userImage', userImageBlob);
+        formData.append('userImage', localStorage.getItem("cachedImageURL"));
         formData.append('uid', localStorage.getItem("uid"));
-
+        handleCaching();
         await fetch('/api/scan', {
             method: 'POST',
             body: formData,
@@ -114,7 +76,7 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
             {!isUploadImage && <div>
-                <ImagePicker getCachedImage={getCachedImage} setImage={setImage} />
+                <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
             </div>}
             {isSelectSize && (<div>
                 Please enter your true size for tops, bottoms, and dresses if applicable.<br />
@@ -130,7 +92,7 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
                         onChange={handleImageChange}
                         style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
                 {image && (<>
-                    <img src={URL.createObjectURL(image)} style={{ maxWidth: "100%", maxHeight: "100%" }} alt={<b>Upload a full-body image of yourself here</b>} />
+                    <img src={localStorage.getItem("cachedImageURL")} style={{ maxWidth: "100%", maxHeight: "100%" }} alt={<b>Upload a full-body image of yourself here</b>} />
                     <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>
@@ -176,12 +138,12 @@ const Page_A = ({ imageRef, image, setImage, topSize, setTopSize, bottomSize, se
                 </div>
             </div>)}
             {!image && <button className="done-button" id="doneButton" disabled>Continue</button>}
-            {image && <button className="done-button" id="doneButton"
+            {image && (<button className="done-button" id="doneButton"
                 onClick={() => {
                     handleNextPage();
                     setPageAContinue(true);
                 }}
-            >Continue</button>}
+            >Continue</button>)}
         </div>
     );
 }

@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 import sys
 import os
+import requests
 
 
 def make_dir(path):
@@ -254,9 +255,15 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 
 
 def main():
-    user_image_path = sys.argv[1]
+    url = sys.argv[1]
     garment_image_path = sys.argv[2]
     uid = sys.argv[3]
+    user_image_path = f'./cache/{uid}/user_image.jpg'
+    make_dir(f'./cache/{uid}')
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(user_image_path, 'wb') as f:
+            f.write(response.content)
 
     # get garment info
     garment_info = os.path.basename(
