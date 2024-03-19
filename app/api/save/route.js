@@ -52,6 +52,7 @@ export async function POST(req, res) {
                 uid: uid,
             },
             data: {
+                updatedAt: new Date(),
                 userImage: {
                     create: {
                         url: chosenImageBlobURL,
