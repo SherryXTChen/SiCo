@@ -149,7 +149,7 @@ const Home = () => {
     };
 
     async function checkFirstSite() {
-        if(localStorage.getItem("cachedImageURL") && parseInt(localStorage.getItem("cachedImageURL")) >= 2) {
+        if(parseInt(localStorage.getItem("firstSite")) >= 2) {
             setFirstSite(false);
             return;
         }
