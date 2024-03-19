@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { validate } from 'uuid';
 
+// TODO: remove this depreciated API endpoint
 export default function GET(req, res) {
     const { id } = req.query;
     const uid = id[0];
