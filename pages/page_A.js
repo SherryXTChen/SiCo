@@ -90,9 +90,9 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         id="imageUpload"
                         accept="image/*"
                         onChange={handleImageChange}
-                        style={{ position: "absolute", width: "20%", maxWidth: "100%", height: "auto" }} /></>)}
+                        style={{ position: "absolute", maxWidth: "20%", height: "auto" }} /></>)}
                 {image && (<>
-                    <img src={localStorage.getItem("cachedImageURL")} style={{ width: "20%", maxWidth: "100%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
+                    <img src={localStorage.getItem("cachedImageURL")} style={{ maxWidth: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
                     <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>
