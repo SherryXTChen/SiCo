@@ -23,7 +23,6 @@ export default async function GET(req, res) {
                 uid: id,
             },
         });
-        console.log("testing here 2:", userSurveys)
         if(!userSurveys) {
             res.setHeader('Content-Type', 'text/plain');
             res.end('0');

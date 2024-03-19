@@ -167,6 +167,7 @@ const Home = () => {
             imageRef.current = null;
             imageBlobRef.current = null;
             localStorage.setItem("cachedImageURL", "shumil");
+            localStorage.setItem("continued", false)
         }
         setFirstSite(parseInt(numSurvey) < 2);
         setFinalSurvey(parseInt(numSurvey) >= 2);
