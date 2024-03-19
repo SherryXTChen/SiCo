@@ -187,6 +187,7 @@ const Presurvey = ({ checkPresurvey }) => {
                     console.error('Error:', error);
                 });
         });
+        survey.showCompleteButton = false;
         setSurveyState(survey);
     }
     return surveyState ? <Survey model={surveyState} /> : null;
