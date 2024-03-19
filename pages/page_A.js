@@ -1,9 +1,8 @@
-import { upload } from "@vercel/blob/client";
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import ImagePicker from "../components/ImagePicker";
 
-const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching }) => {
+const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching, firstSite }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
 
@@ -78,7 +77,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
             {!isUploadImage && <div>
-                <ImagePicker getCachedImage={getCachedImage} />
+                <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
             </div>}
             {isSelectSize && (<div>
                 Please enter your true size for tops, bottoms, and dresses if applicable.<br />

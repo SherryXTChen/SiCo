@@ -17,6 +17,7 @@ export async function POST(req, res) {
         if (!validate(uid)) {
             return NextResponse.error(new Error('Invalid user id'));
         }
+        const firstSite = data.get('firstSite');
 
         const userImagePath = `${uid}/userImage.jpg`;
         const blob = await put(userImagePath, userImageData, {
@@ -45,6 +46,7 @@ export async function POST(req, res) {
                 userImage: {
                     create: {
                         url: blob.url,
+                        firstSite: firstSite === 'true',
                     }
                 },
             },

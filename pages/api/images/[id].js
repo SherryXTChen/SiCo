@@ -1,15 +1,14 @@
-const fs = require('fs');
-const path = require('path');
 import { validate } from 'uuid';
 import prisma from '../../../lib/db';
 
 // New API endpoint to list images in the /results directory
 export default async function GET(req, res) {
     const { id } = req.query;
-    if(!validate(id)) {
+    const uid = id.split('--')[0];
+    const firstSite = id.split('--')[1];
+    if(!validate(uid)) {
         res.status(401).json({ message: 'Invalid user id' });
     }
-    const uid = id;
 
     const existsUser = await prisma.user.findUnique({
         where: {
@@ -30,6 +29,9 @@ export default async function GET(req, res) {
             },
             select: {
                 userImageResult: {
+                    where: {
+                        firstSite: firstSite === "true",
+                    },
                     select: {
                         url: true,
                     },
@@ -44,14 +46,4 @@ export default async function GET(req, res) {
         console.error('Error processing files:', err);
         return NextResponse.error(new Error('Error processing files'));
     }
-
-    // const resultsFolderPath = path.join(process.cwd(), 'results', id);
-    // try {
-    //     const files = await fs.promises.readdir(resultsFolderPath);
-    //     const images = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
-    //     res.status(200).json({ message: images });
-    // } catch(err) {
-    //     console.error('Error reading the results directory:', err);
-    //     res.status(500).json({ message: 'Error reading files' });
-    // }
 };

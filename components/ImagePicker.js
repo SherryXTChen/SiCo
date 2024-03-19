@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const ImagePicker = ({ getCachedImage }) => {
+const ImagePicker = ({ getCachedImage, firstSite }) => {
     const [selectedImage, setSelectedImage] = useState('');
     const [firstLoad, setFirstLoad] = useState(true);
     const imagePickerRef = React.useRef(null);
@@ -29,6 +29,7 @@ const ImagePicker = ({ getCachedImage }) => {
             const formData = new FormData();
             formData.append('userImage', `${imagePath}`);
             formData.append('uid', localStorage.getItem("uid"));
+            formData.append('firstSite', firstSite);
             await fetch('/api/save', {
                 method: 'POST',
                 body: formData,

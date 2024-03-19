@@ -24,8 +24,12 @@ export async function POST(req, res) {
         if(!validate(uid)) {
             return NextResponse.error(new Error('Invalid user id'));
         }
+        const firstSite = data.get('firstSite');
+        if(!firstSite) {
+            return NextResponse.error(new Error('No first site found'));
+        }
 
-        sendTextToNetcat(`upload\n${uid}\n${userImage}\n${productImage}\n${garmentInfo}`);
+        sendTextToNetcat(`upload\n${uid}\n${userImage}\n${productImage}\n${garmentInfo}\n${firstSite}`);
         return NextResponse.json({ message: 'Files uploaded successfully.' }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);
