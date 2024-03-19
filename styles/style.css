@@ -189,6 +189,29 @@ button:hover {
     margin-right: 10px; /* Space between thumbnails */
 }
 
+/* Style for selecting model images */
+.image-picker .image-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.image-picker .image-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.image-picker .image-item.selected {
+    border-color: blue; /* Highlight color for selected image */
+}
+
+.image-picker .image-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 @media (min-width: 1024px) {
     .products {
         grid-template-columns: repeat(4, 1fr); /* Ensure 6 items per row */
