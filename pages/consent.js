@@ -63,7 +63,7 @@ function Consent({ setGivenConsent, checkConsent }) {
             <div style={{ margin: '20px' }}>
                 <form>
                     <label style={{ marginBottom: '10px' }} htmlFor="initials">Enter your first and last name:</label>
-                    <input style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '100%' }} type="text" id="initials" name="initials" placeholder="First and last name" maxLength="2" />
+                    <input style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '100%' }} type="text" id="initials" name="initials" placeholder="First and last name" />
                     {wrongInitials && <p style={{ color: 'red' }}>Please enter your first and last name</p>}
                     <label style={{ marginBottom: '10px' }} htmlFor="date">Date:</label>
                     <input style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '100%' }} type="date" id="date" name="date" />
