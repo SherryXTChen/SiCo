@@ -166,30 +166,29 @@ const surveyJson = {
 };
 
 const Presurvey = ({ checkPresurvey }) => {
-    const survey = new Model(surveyJson);
-    survey.onComplete.add((result) => {
-        var data = result.data;
-        data["survey-type"] = "presurvey";
-        const formData = new FormData();
-        formData.append('uid', localStorage.getItem("uid"));
-        formData.append('data', JSON.stringify(data));
-        fetch('/api/survey', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(data => {
-                // console.log('Success:', data.message);
-                checkPresurvey();
+    const [surveyState, setSurveyState] = useState(null);
+    if(!surveyState) {
+        const survey = new Model(surveyJson);
+        survey.onComplete.add((result) => {
+            var data = result.data;
+            data["survey-type"] = "presurvey";
+            const formData = new FormData();
+            formData.append('uid', localStorage.getItem("uid"));
+            formData.append('data', JSON.stringify(data));
+            fetch('/api/survey', {
+                method: 'POST',
+                body: formData,
             })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    });
-
-    // Use this to render the survey as part of the page
-    return <Survey model={survey} />;
-    // Use this to render the survey as a popup
-    // return <PopupSurvey model={survey} isExpanded={true} />;
+                .then(data => {
+                    checkPresurvey();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+        setSurveyState(survey);
+    }
+    return surveyState ? <Survey model={surveyState} /> : null;
 }
 
 export default Presurvey;
