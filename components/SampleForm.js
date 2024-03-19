@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "survey-core/defaultV2.min.css";
 import { Model } from "survey-core";
 import { Survey, PopupSurvey } from "survey-react-ui";
+// import dynamic from "next/dynamic";
 
 const surveyJson = {
     "title": "Alex's Template Survey",
@@ -536,7 +537,7 @@ const surveyJson = {
         "864px"
 };
 
-function SampleForm() {
+const SampleForm = () => {
     // const [Survey, setSurvey] = useState(null);
 
     // useEffect(() => {
