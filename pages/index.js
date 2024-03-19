@@ -27,7 +27,7 @@ const Home = () => {
         if(!localStorage.getItem("cachedImageURL")) {
             const imageEndpoint = `/api/user/userImage/${localStorage.getItem("uid")}`;
             const imageResponse = await fetch(imageEndpoint);
-            if (imageResponse.status !== 200) {
+            if(imageResponse.status !== 200) {
                 return;
             }
             const imageData = await imageResponse.text();
@@ -113,40 +113,43 @@ const Home = () => {
         <div ref={mainRef}>
             {/* TODO: Do something with this sample survey */}
             {/* {!firstLoad && (<SampleForm />)} */}
-            {!pageAContinue && (<Page_A
-                imageRef={imageRef}
-                image={image}
-                setImage={setImage}
-                imageBlob={imageBlob}
-                setImageBlob={setImageBlob}
-                imageBlobRef={imageBlobRef}
-                topSize={topSize}
-                setTopSize={setTopSize}
-                bottomSize={bottomSize}
-                setBottomSize={setBottomSize}
-                dressSize={dressSize}
-                setDressSize={setDressSize}
-                pageAContinue={pageAContinue}
-                setPageAContinue={setPageAContinue}
-                isUploadImage={isUploadImage}
-                isSelectSize={isSelectSize}
-                getCachedImage={getCachedImage}
-                handleCaching={handleCaching}
-            />)}
-            {pageAContinue && (<Page_B
-                imageRef={imageRef}
-                image={image}
-                setImage={setImage}
-                imageBlob={imageBlob}
-                imageBlobRef={imageBlobRef}
-                setImageBlob={setImageBlob}
-                topSize={topSize}
-                bottomSize={bottomSize}
-                dressSize={dressSize}
-                isSelectSize={isSelectSize}
-                isUploadImage={isUploadImage}
-                handleCaching={handleCaching}
-            />)}
+            {!givenConsent && (<SampleForm />)}
+            {givenConsent && (<div>
+                {!pageAContinue && (<Page_A
+                    imageRef={imageRef}
+                    image={image}
+                    setImage={setImage}
+                    imageBlob={imageBlob}
+                    setImageBlob={setImageBlob}
+                    imageBlobRef={imageBlobRef}
+                    topSize={topSize}
+                    setTopSize={setTopSize}
+                    bottomSize={bottomSize}
+                    setBottomSize={setBottomSize}
+                    dressSize={dressSize}
+                    setDressSize={setDressSize}
+                    pageAContinue={pageAContinue}
+                    setPageAContinue={setPageAContinue}
+                    isUploadImage={isUploadImage}
+                    isSelectSize={isSelectSize}
+                    getCachedImage={getCachedImage}
+                    handleCaching={handleCaching}
+                />)}
+                {pageAContinue && (<Page_B
+                    imageRef={imageRef}
+                    image={image}
+                    setImage={setImage}
+                    imageBlob={imageBlob}
+                    imageBlobRef={imageBlobRef}
+                    setImageBlob={setImageBlob}
+                    topSize={topSize}
+                    bottomSize={bottomSize}
+                    dressSize={dressSize}
+                    isSelectSize={isSelectSize}
+                    isUploadImage={isUploadImage}
+                    handleCaching={handleCaching}
+                />)}
+            </div>)}
         </div>
     );
 }

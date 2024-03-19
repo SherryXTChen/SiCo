@@ -10,3 +10,5 @@ const Consent = () => {
         </div>
     );
 }
+
+export default Consent;
