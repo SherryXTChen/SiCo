@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "survey-core/defaultV2.min.css";
+import { Model } from "survey-core";
+import { Survey, PopupSurvey } from "survey-react-ui";
 
 const surveyJson = {
     "title": "Alex's Template Survey",
@@ -535,23 +537,23 @@ const surveyJson = {
 };
 
 function SampleForm() {
-    const [Survey, setSurvey] = useState(null);
+    // const [Survey, setSurvey] = useState(null);
 
-    useEffect(() => {
-        import('survey-core').then((module) => {
-            setSurvey(module.Survey);
-        });
-    }, []);
+    // useEffect(() => {
+    //     import('survey-core').then((module) => {
+    //         setSurvey(module.Survey);
+    //     });
+    // }, []);
 
-    if (!Survey) {
-        return <div>Loading...</div>;
-    }
+    // if (!Survey) {
+    //     return <div>Loading...</div>;
+    // }
 
-    const survey = new Survey.Model(surveyJson);
+    const survey = new Model(surveyJson);
     // Use this to render the survey as part of the page
-    return <Survey.Survey model={survey} />;
+    return <Survey model={survey} />;
     // Use this to render the survey as a popup
-    return <Survey.PopupSurvey model={survey} isExpanded={true} />;
+    return <PopupSurvey model={survey} isExpanded={true} />;
 }
 
 export default SampleForm;
