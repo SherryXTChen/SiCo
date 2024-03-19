@@ -15,7 +15,7 @@ const InstructionList = ({ numTryOnLeft, handleNextPage }) => {
     return (
         <div style={style}>
             <h2>Instructions:</h2>
-            <ol style={{justifyContent: 'left', paddingLeft: '20px', paddingRight: '20px'}}>
+            <ol style={{ justifyContent: 'left', paddingLeft: '20px', paddingRight: '20px' }}>
                 <li>Pick a garment and size</li>
                 {numTryOnLeft > 0 && (<li>Try on <b>{numTryOnLeft}</b> more garments</li>)}
                 {numTryOnLeft <= 0 && (<div>
@@ -26,7 +26,8 @@ const InstructionList = ({ numTryOnLeft, handleNextPage }) => {
             {numTryOnLeft <= 0 && (<button className="done-button" id="nextPageButton"
                 style={{ justifyContent: 'center', width: '100%' }}
                 onClick={() => {
-                    handleNextPage();                }}
+                    handleNextPage();
+                }}
             >Continue</button>)}
         </div>
     );

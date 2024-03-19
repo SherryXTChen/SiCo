@@ -151,6 +151,7 @@ const Home = () => {
     async function checkFirstSite() {
         if(localStorage.getItem("firstSite") === "false") {
             setFirstSite(false);
+            setFinalSurvey(true);
             return;
         }
         const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
@@ -168,6 +169,7 @@ const Home = () => {
             localStorage.setItem("cachedImageURL", "shumil");
         }
         setFirstSite(parseInt(numSurvey) < 2);
+        setFinalSurvey(parseInt(numSurvey) >= 2);
         localStorage.setItem("firstSite", parseInt(numSurvey) < 2);
     };
 
