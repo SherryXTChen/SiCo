@@ -62,9 +62,9 @@ function Consent({ setGivenConsent, checkConsent }) {
             <p><strong>QUESTIONS:</strong> If you have any questions about this research project or if you have any questions or concerns about your rights and treatment as a research subject, please contact: Sherry Chen, xchen774@ucsb.edu and/or Misha Sra, sra@ucsb.edu,5127731665. If you have any questions regarding your rights and participation as a research subject, please contact the Human Subjects Committee at (805) 893-3807 or hsc@research.ucsb.edu. Or write to the University of California, Human Subjects Committee, Office of Research, Santa Barbara, CA 93106-2050</p>
             <div style={{ margin: '20px' }}>
                 <form>
-                    <label style={{ marginBottom: '10px' }} htmlFor="initials">Enter your first and last initial:</label>
-                    <input style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '100%' }} type="text" id="initials" name="initials" placeholder="FL" maxLength="2" />
-                    {wrongInitials && <p style={{ color: 'red' }}>Please enter your first and last initial</p>}
+                    <label style={{ marginBottom: '10px' }} htmlFor="initials">Enter your first and last name:</label>
+                    <input style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '100%' }} type="text" id="initials" name="initials" placeholder="First and last name" maxLength="2" />
+                    {wrongInitials && <p style={{ color: 'red' }}>Please enter your first and last name</p>}
                     <label style={{ marginBottom: '10px' }} htmlFor="date">Date:</label>
                     <input style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '100%' }} type="date" id="date" name="date" />
                     {wrongDate && <p style={{ color: 'red' }}>Please enter today's date</p>}
