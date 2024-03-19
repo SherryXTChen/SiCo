@@ -278,6 +278,8 @@ const Home = () => {
             {finalSurvey && (<FinalSurveyForm
                 isUploadImage={isUploadImage2}
                 isSelectSize={isSelectSize2}
+                isUploadImage2={isUploadImage2}
+                isSelectSize2={isSelectSize2}
             />)}
         </div>
     );

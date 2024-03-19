@@ -71,16 +71,17 @@ const surveyJson = {
         "864px"
 };
 
-const FinalSurvey = ({ isUploadImage, isSelectSize }) => {
+const FinalSurvey = ({ isUploadImage, isSelectSize, isUploadImage2, isSelectSize2 }) => {
     const [surveyState, setSurveyState] = useState(null);
     if(!surveyState) {
         const survey = new Model(surveyJson);
         survey.onComplete.add((result) => {
             var data = result.data;
             data["survey-type"] = "final";
-            data["first-site"] = firstSite;
             data["is-upload-image"] = isUploadImage;
             data["is-select-size"] = isSelectSize;
+            data["is-upload-image-2"] = isUploadImage2;
+            data["is-select-size-2"] = isSelectSize2;
             const formData = new FormData();
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('data', JSON.stringify(data));
