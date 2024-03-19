@@ -30,7 +30,7 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                 }
             }
         });
-        new Promise(resolve => {
+        await new Promise(resolve => {
             setTimeout(resolve, 4000);
         });
         setLoading(false);
