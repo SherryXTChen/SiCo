@@ -164,6 +164,7 @@ const Home = () => {
             localStorage.setItem("cachedImageURL", "shumil");
         }
         setFirstSite(parseInt(numSurvey) < 2);
+        localStorage.setItem("firstSite", parseInt(numSurvey) < 2);
     };
 
     async function checkSecondSite() {

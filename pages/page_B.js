@@ -4,7 +4,7 @@ import InstructionList from "../components/InstructionList";
 import PostversionForm from "./PostversionForm";
 
 async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching, setNumTryOnLeft, firstSite) {
-    const apiEndpoint = `/api/images/${localStorage.getItem("uid")}--${firstSite}`;
+    const apiEndpoint = `/api/images/${localStorage.getItem("uid")}--${localStorage.getItem("firstSite")}`;
     try {
         const response = await fetch(apiEndpoint);
         const jsonResponse = await response.json();
@@ -53,7 +53,7 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
         formData.append('productImage', `${product.name}`);
         formData.append('garmentInfo', `${product.id}_${product.name}_${trueSize}_${garmentSize}.jpg`)
         formData.append('uid', localStorage.getItem("uid"));
-        formData.append('firstSite', firstSite);
+        formData.append('firstSite', localStorage.getItem("firstSite"));
 
         // Remove the below await to speed up testing
         await fetch('/api/upload', {
