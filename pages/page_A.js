@@ -140,12 +140,12 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 </div>
             </div>)}
             {!image && <button className="done-button" id="doneButton" disabled>Continue</button>}
-            {image && <button className="done-button" id="doneButton"
+            {image && (<button className="done-button" id="doneButton"
                 onClick={() => {
                     handleNextPage();
                     setPageAContinue(true);
                 }}
-            >Continue</button>}
+            >Continue</button>)}
         </div>
     );
 }
