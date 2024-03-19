@@ -149,6 +149,10 @@ const Home = () => {
     };
 
     async function checkFirstSite() {
+        if(localStorage.getItem("cachedImageURL") && parseInt(localStorage.getItem("cachedImageURL")) >= 2) {
+            setFirstSite(false);
+            return;
+        }
         const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
         const numSurveyResponse = await fetch(numSurveyEndpoint);
         const numSurvey = await numSurveyResponse.text();
