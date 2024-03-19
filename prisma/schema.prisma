@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model User {
+  uid             String            @id @default(uuid())
+  unum            Int               @unique @default(autoincrement())
+  id              Int               @unique @default(autoincrement())
+  email           String?           @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime?         @updatedAt
+  consentDate     DateTime?
+  initials        String?
+  survey          Survey[]
+  userImage       UserImage[]
+  userImageResult UserImageResult[]
+
+  @@map("users")
+}
+
+model Survey {
+  uid       String
+  response  Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  id        Int       @unique @default(autoincrement())
+  user      User      @relation(fields: [uid], references: [uid])
+}
+
+model UserImage {
+  uid       String
+  url       String
+  createdAt DateTime  @default(now())
+  id        Int       @unique @default(autoincrement())
+  updatedAt DateTime? @updatedAt
+  firstSite Boolean   @default(true)
+  user      User      @relation(fields: [uid], references: [uid])
+}
+
+model UserImageResult {
+  uid       String
+  id        Int       @unique @default(autoincrement())
+  filename  String    @unique
+  url       String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  firstSite Boolean   @default(true)
+  user      User      @relation(fields: [uid], references: [uid])
+}

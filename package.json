@@ -3,25 +3,43 @@
     "scripts": {
         "build": "next build",
         "dev": "next dev",
-        "start": "next start"
+        "start": "next start",
+        "postinstall": "prisma generate"
     },
     "dependencies": {
+        "@prisma/client": "^5.11.0",
+        "@vercel/blob": "^0.22.1",
+        "@vercel/python": "^4.1.1",
         "date-fns": "^2.29.3",
         "gray-matter": "^4.0.3",
+        "net": "^1.0.2",
         "next": "latest",
+        "prisma": "^5.11.0",
         "react": "18.2.0",
         "react-dom": "^18.2.0",
         "react-loader-spinner": "^6.1.6",
         "react-scripts": "^5.0.1",
         "remark": "^14.0.2",
         "remark-html": "^15.0.1",
+        "safe-json-stringify": "^1.2.0",
         "sharp": "^0.33.2",
         "survey-core": "^1.9.131",
         "survey-react": "^1.9.131",
         "survey-react-ui": "^1.9.131",
-        "uuid": "^9.0.1"
+        "uuid": "^9.0.1",
+        "vercel": "^33.6.1"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=18 <19"
+    },
+    "vercel": {
+        "functions": {
+            "*.js": {
+                "runtime": "nodejs18.x"
+            }
+        }
+    },
+    "devDependencies": {
+        "prisma": "^5.11.0"
     }
 }

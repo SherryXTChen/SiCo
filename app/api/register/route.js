@@ -1,31 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
 import { validate } from 'uuid';
 import prisma from '../../../lib/prisma';
-const sharp = require('sharp');
 
 export async function POST(req, res) {
     try {
         const data = await req.formData();
-        const userImageData = data.get('userImage');
-        if(!userImageData) {
-            return NextResponse.error(new Error('No user image found'));
-        }
         const uid = data.get('uid');
+        const initials = `${data.get('initials')}`;
+        const date = `${data.get('date')}`;
         if(!uid) {
             return NextResponse.error(new Error('No user id found'));
         }
         if(!validate(uid)) {
             return NextResponse.error(new Error('Invalid user id'));
         }
-        const firstSite = data.get('firstSite');
-        const userImageBytes = await userImageData.arrayBuffer();
-        const userImageBuffer = Buffer.from(userImageBytes);
-        const userImagePath = `${uid}/userImage.jpg`;
-        const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
-        const blob = await put(userImagePath, userImageJpeg, {
-            access: 'public',
-        });
+        if(!initials) {
+            return NextResponse.error(new Error('No initials found'));
+        }
+        if(initials.length !== 2) {
+            return NextResponse.error(new Error('Invalid initials'));
+        }
+        if(!date) {
+            return NextResponse.error(new Error('No date found'));
+        }
+        const currentDate = new Date().toLocaleDateString().split('/');
+        const selectedDate = date.split('-');
+        if(parseInt(selectedDate[0]) !== parseInt(currentDate[2]) || parseInt(selectedDate[1]) !== parseInt(currentDate[0]) || parseInt(selectedDate[2]) !== parseInt(currentDate[1])) {
+            return NextResponse.error(new Error('Invalid date'));
+        }
 
         const existsUser = await prisma.user.findUnique({
             where: {
@@ -35,27 +37,23 @@ export async function POST(req, res) {
         if(!existsUser) {
             await prisma.user.create({
                 data: {
-                    uid: uid,
+                    uid: `${uid}`,
                 },
             });
         }
 
         await prisma.user.update({
             where: {
-                uid: uid,
+                uid: `${uid}`,
             },
             data: {
                 updatedAt: new Date(),
-                userImage: {
-                    create: {
-                        url: blob.url,
-                        firstSite: firstSite === 'true',
-                    }
-                },
+                initials: `${initials}`,
+                consentDate: new Date(),
             },
         });
 
-        return NextResponse.json({ message: `${blob.url}` }, { status: 200 });
+        return NextResponse.json({ message: `Successfully registered user` }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);
         return NextResponse.error(new Error('Error processing files'));
