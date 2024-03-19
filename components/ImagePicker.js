@@ -52,7 +52,7 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
     return (
         <div ref={imagePickerRef}>
             <h2>Select an Image:</h2>
-            {/* <ul>
+            <ul>
                 {images.map(image => (
                     <li key={image}>
                         <input
@@ -68,14 +68,14 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
                         </label>
                     </li>
                 ))}
-            </ul> */}
-            <div className="image-grid">
+            </ul>
+            {/* <div className="image-grid">
                 {images.map(image => (
                     <div key={image} className={`image-item ${selectedImage === image ? 'selected' : ''}`} onClick={() => handleImageSelect(image)}>
                         <img src={image} alt={image} />
                     </div>
                 ))}
-            </div>
+            </div> */}
             {selectedImage && (
                 <div>
                     <h3>Selected Image:</h3>
