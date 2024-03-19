@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { RotatingLines } from "react-loader-spinner";
 
-async function galleryImage(imageName) {
-    const imageEndpoint = `/api/result/${localStorage.getItem("uid")}/${imageName}`;
-    const imageResponse = await fetch(imageEndpoint);
-    const imageBlob = await imageResponse.blob();
-    return imageBlob;
-}
-
 async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, setTryOnResults, setChange, setLoading, handleCaching) {
     const apiEndpoint = `/api/images/${localStorage.getItem("uid")}`;
-
     try {
         const response = await fetch(apiEndpoint);
         const jsonResponse = await response.json();
         const imageFiles = jsonResponse.message;
-        await imageFiles.forEach(async (imageName) => {
+        await imageFiles.forEach(async (image) => {
+            const imageName = image.split('/').pop().split('-')[0];
             if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
-                const image = await galleryImage(imageName);
                 const itemDiv = (
                     <div className="picked-item" key={imageName}>
-                        <img src={URL.createObjectURL(image)} width={"500px"} height={"auto"} />
-                        <button className="continue" onClick={() => { setImage(image); imageRef.current = image; handleCaching(image); }} >Continue From Here</button>
+                        <img src={image} width={"500px"} height={"auto"} />
+                        <button className="continue" onClick={() => { setImage(image); imageRef.current = image; handleCaching(); }} >Continue From Here</button>
                     </div>
                 );
                 tryOnResultsRef.current.push(itemDiv);
@@ -46,10 +38,8 @@ const addToTryOnRoom = (imageRef, product, trueSize, garmentSize, setTryOnItems,
     const handleTryItOn = async () => {
         setLoading(true);
         const formData = new FormData();
-        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
 
         formData.append('userImage', localStorage.getItem("cachedImageURL"));
-        // const productImageblob = await fetch(product.image).then(r => r.blob());
         formData.append('productImage', `${product.name}`);
         formData.append('garmentInfo', `${product.id}_${product.name}_${trueSize}_${garmentSize}.jpg`)
         formData.append('uid', localStorage.getItem("uid"));
