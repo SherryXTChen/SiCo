@@ -19,7 +19,7 @@ export async function POST(req, res) {
             return NextResponse.error(new Error('Invalid user id'));
         }
         const firstSite = data.get('firstSite');
-        const userImageBytes = await userImage.arrayBuffer();
+        const userImageBytes = await userImageData.arrayBuffer();
         const userImageBuffer = Buffer.from(userImageBytes);
         const userImagePath = `${uid}/userImage.jpg`;
         const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
