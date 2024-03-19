@@ -7,7 +7,6 @@ export default async function GET(req, res) {
         if(!validate(id)) {
             res.status(401).json({ message: 'Invalid user id' });
         }
-        console.log('testing here 0.5:', id)
         const existsUser = await prisma.user.findUnique({
             where: {
                 uid: id,
@@ -18,7 +17,6 @@ export default async function GET(req, res) {
             res.end('0');
             return;
         }
-        console.log("testing here 1:", existsUser)
 
         const userSurveys = await prisma.survey.findMany({
             where: {
