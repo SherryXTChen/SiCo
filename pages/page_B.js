@@ -280,10 +280,10 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 id="imageUpload"
                                 accept="image/*"
                                 onChange={handleImageChange}
-                                style={{ position: "absolute", maxWidth: "20%", height: "auto"  }} /></>)}
+                                style={{ position: "absolute", width: "20%", height: "auto"  }} /></>)}
                         {image && (<>
                             <img src={localStorage.getItem("cachedImageURL")} id="initialImage"
-                                style={{ maxWidth: "20%", height: "auto"  }} />
+                                style={{ width: "20%", height: "auto"  }} />
                             {/* {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>)} */}
