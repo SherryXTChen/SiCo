@@ -210,13 +210,13 @@ button:hover {
 }
 
 .image-grid input[type="radio"]:checked + label {
-    border: 3px solid #007bff; /* Blue border for example, customize as needed */
-    box-shadow: 0px 0px 5px #007bff; /* Optional: add a shadow to make it pop */
+    border: 3px solid #00bfff; /* Blue border for example, customize as needed */
+    box-shadow: 0px 0px 5px #00bfff; /* Optional: add a shadow to make it pop */
 }
 
 @media (min-width: 1024px) {
     .products {
-        grid-template-columns: repeat(4, 1fr); /* Ensure 6 items per row */
+        grid-template-columns: repeat(6, 1fr); /* Ensure 6 items per row */
     }
 }
 

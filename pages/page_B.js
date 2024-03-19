@@ -268,8 +268,8 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
           border-radius: 5px;
         }
       `}</style>
-                    </div>
-                </div>
+        </div>
+            </div>
                 <div className="section-container">
                     <h2 className="section-title">Try-On Room</h2>
                     <div className="user-image" style={{ position: "relative" }}>
@@ -280,10 +280,10 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 id="imageUpload"
                                 accept="image/*"
                                 onChange={handleImageChange}
-                                style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
+                                style={{ position: "absolute", width: "20%", maxWidth: "100%", height: "auto"  }} /></>)}
                         {image && (<>
                             <img src={localStorage.getItem("cachedImageURL")} id="initialImage"
-                                style={{ maxWidth: "100%", maxHeight: "100%" }} />
+                                style={{ width: "20%", maxWidth: "100%", height: "auto"  }} />
                             {/* {isUploadImage && (<button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>)} */}
