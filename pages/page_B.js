@@ -25,7 +25,6 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                         </div>
                     );
                     tryOnResultsRef.current.push(itemDiv);
-                    // setNumTryOnLeft(3 - imageFiles.length);
                     setTryOnResults(tryOnResultsRef.current);
                     setChange(prevState => !prevState);
                 }
