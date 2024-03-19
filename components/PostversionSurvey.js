@@ -378,6 +378,7 @@ const PostversionSurvey = ({ surveyCheck, firstSite, isUploadImage, isSelectSize
                     console.error('Error:', error);
                 });
         });
+        survey.showCompleteButton = false;
         setSurveyState(survey);
     }
     return surveyState ? <Survey model={surveyState} /> : null;
