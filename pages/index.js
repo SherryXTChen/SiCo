@@ -185,7 +185,7 @@ const Home = () => {
     return (
         <div ref={mainRef}>
             {!givenConsent && (<Consent setGivenConsent={setGivenConsent} checkConsent={checkConsent} />)}
-            {!donePresurvey && (<PresurveyForm checkPresurvey={checkPresurvey} />)}
+            {givenConsent && !donePresurvey && (<PresurveyForm checkPresurvey={checkPresurvey} />)}
             {(givenConsent && donePresurvey && firstSite) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
