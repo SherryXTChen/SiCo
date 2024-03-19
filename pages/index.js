@@ -135,6 +135,9 @@ const Home = () => {
         if(consent.length === 2) {
             await setSeed();
         }
+        await new Promise(resolve => {
+            setTimeout(resolve, 2000);
+        });
         setGivenConsent(consent.length === 2);
     };
 
