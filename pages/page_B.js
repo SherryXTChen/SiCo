@@ -30,6 +30,9 @@ async function updateGallery(imageRef, tryOnResultsRef, setImage, tryOnResults, 
                 }
             }
         });
+        new Promise(resolve => {
+            setTimeout(resolve, 4000);
+        });
         setLoading(false);
         setNumTryOnLeft(3 - imageFiles.length);
         setChange(prevState => !prevState);
