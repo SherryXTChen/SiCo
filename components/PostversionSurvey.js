@@ -67,7 +67,7 @@ const surveyJson = {
                     "name": "tlx-rating-mental-demand",
                     "title": "Mental Demand: How mentally demanding was the task?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -77,7 +77,7 @@ const surveyJson = {
                     "name": "tlx-rating-physical-demand",
                     "title": "Physical Demand: How physically demanding was the task?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -87,7 +87,7 @@ const surveyJson = {
                     "name": "tlx-rating-temporal-demand",
                     "title": "Temporal Demand: How hurried or rushed was the pace of the task?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -97,7 +97,7 @@ const surveyJson = {
                     "name": "tlx-rating-performance",
                     "title": "Performance: How successful were you in accomplishing what you were asked to do?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Perfect",
                     "maxRateDescription": "Failure",
                     "isRequired": true
@@ -107,7 +107,7 @@ const surveyJson = {
                     "name": "tlx-rating-effort",
                     "title": "Effort: How hard did you have to work to accomplish your level of performance?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -117,7 +117,7 @@ const surveyJson = {
                     "name": "tlx-rating-frustration",
                     "title": "Frustration: How insecure, discouraged, irritated, stressed, and annoyed were you?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
