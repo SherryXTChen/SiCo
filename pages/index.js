@@ -135,10 +135,10 @@ const Home = () => {
         const consentEndpoint = `/api/user/initials/${localStorage.getItem("uid")}`;
         const consentResponse = await fetch(consentEndpoint);
         const consent = await consentResponse.text();
-        if(consent.length > 0) {
+        if(consent !== "null") {
             await setSeed();
         }
-        setGivenConsent(consent.length > 0);
+        setGivenConsent(consent !== "null");
     };
 
     async function checkPresurvey() {
