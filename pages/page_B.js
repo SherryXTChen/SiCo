@@ -417,6 +417,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     useEffect(() => {
         const interval = setInterval(() => {
             updateGallery();
+            setChange(prevState => !prevState);
         }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
