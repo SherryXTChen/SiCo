@@ -473,6 +473,18 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 </div>)}
                 <div className="section-container">
                     <h2 className="section-title">All Products</h2>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
                     <div>
                         <div className="products-container">
                             {products.map((product) => (
@@ -561,7 +573,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         <style jsx>{`
         .products-container {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(6, 1fr);
           grid-gap: 20px;
         }
         .product {
