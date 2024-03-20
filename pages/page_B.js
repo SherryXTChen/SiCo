@@ -283,7 +283,8 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                     </div>)}
                                     <button className="pick-this-button" onClick={() => {
                                         let selectedSize;
-                                        if(localStorage.getItem("debug") !== "true") {
+                                        const debug = localStorage.getItem("debug");
+                                        if(debug !== "true") {
                                             if(!product.name.startsWith('top') && !pickTop) {
                                                 return;
                                             }
