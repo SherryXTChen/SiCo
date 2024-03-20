@@ -37,7 +37,6 @@ const Home = () => {
             const imageEndpoint = `/api/user/userImage/${localStorage.getItem("uid")}`;
             const imageResponse = await fetch(imageEndpoint);
             if(imageResponse.status !== 200) {
-                console.log("testing here now")
                 return;
             }
             const imageData = await imageResponse.text();
