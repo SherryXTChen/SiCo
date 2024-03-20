@@ -215,7 +215,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                             setContinueFromBottomTrueSize(true);
                                         } else if(debug !== "true") { return; }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
-                                        const correctImage = imageFiles[imageFiles.length - 2];
+                                        const correctImage = imageFiles[imageFiles.length - 3];
                                         if(image === correctImage) {
                                             setContinueFromBottomTrueSize2(true);
                                         } else if(debug !== "true") { return; }
