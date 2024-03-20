@@ -36,17 +36,17 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         formData.append('userImage', localStorage.getItem("cachedImageURL"));
         formData.append('uid', localStorage.getItem("uid"));
         handleCaching();
-        await fetch('/api/scan', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                // console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        // await fetch('/api/scan', {
+        //     method: 'POST',
+        //     body: formData,
+        // })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         // console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
     };
 
     const handleTopSizeChange = (e) => {
