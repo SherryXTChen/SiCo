@@ -114,6 +114,9 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     const addToTryOnRoom = (product, trueSize, garmentSize) => {
         const handleRemove = () => {
+            if(localStorage.getItem("debug") !== "true") {
+                return;
+            }
             tryOnItemsRef.current = tryOnItemsRef.current.filter((item) => item.key != product.id);
             setTryOnItems(tryOnItemsRef.current);
         };
