@@ -37,6 +37,7 @@ const Home = () => {
             const imageEndpoint = `/api/user/userImage/${localStorage.getItem("uid")}`;
             const imageResponse = await fetch(imageEndpoint);
             if(imageResponse.status !== 200) {
+                console.log("testing here now")
                 return;
             }
             const imageData = await imageResponse.text();
@@ -135,10 +136,10 @@ const Home = () => {
         const consentEndpoint = `/api/user/initials/${localStorage.getItem("uid")}`;
         const consentResponse = await fetch(consentEndpoint);
         const consent = await consentResponse.text();
-        if(consent.length === 2) {
+        if(consent.length > 0) {
             await setSeed();
         }
-        setGivenConsent(consent.length === 2);
+        setGivenConsent(consent.length > 0);
     };
 
     async function checkPresurvey() {
