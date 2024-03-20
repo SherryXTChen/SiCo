@@ -85,7 +85,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
             const imageFiles = jsonResponse.message;
             await imageFiles.forEach(async (image) => {
                 const imageName = image.split('/').pop().split('-')[0];
-                if(tryOnResultsRef.current.length && !tryOnResultsRef.current.some((item) => item.key === imageName)) {
+                if(!tryOnResultsRef.current.some((item) => item.key === imageName)) {
                     const itemDiv = (
                         <div className="picked-item" key={imageName}>
                             <img src={image} style={{ width: "20%", height: "auto" }} />
@@ -103,8 +103,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     setChange(prevState => !prevState);
                 }
             });
-            setChange(prevState => !prevState);
-            setLoading(false);
             setNumTryOnLeft(3 - imageFiles.length);
             setChange(prevState => !prevState);
         } catch(error) {
@@ -175,8 +173,10 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 .then(response => response.json())
                 .then(data => {
                     // console.log('Success:', data);
+                    updateGallery();
                     setTimeout(() => {
                         updateGallery();
+                        setLoading(false);
                     }, 50000);
                 })
                 .catch((error) => {
@@ -231,7 +231,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     useEffect(() => {
         const interval = setInterval(() => {
             updateGallery();
-        }, 5000); // Checks every 5 seconds
+        }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
 
