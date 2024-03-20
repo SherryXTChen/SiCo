@@ -5,6 +5,8 @@ import PostversionForm from "./PostversionForm";
 import LoadingBar from "react-top-loading-bar";
 
 const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching, firstSite, checkSurvey }) => {
+    const [, forceUpdate] = React.useReducer(x => x + 1, 0);
+
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
@@ -418,6 +420,8 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         const interval = setInterval(() => {
             updateGallery();
             setChange(prevState => !prevState);
+            forceUpdate();
+            console.log("testing update")
         }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
