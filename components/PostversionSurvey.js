@@ -98,8 +98,8 @@ const surveyJson = {
                     "title": "Performance: How successful were you in accomplishing what you were asked to do?",
                     "rateMin": 1,
                     "rateMax": 21,
-                    "minRateDescription": "Failure",
-                    "maxRateDescription": "Perfect",
+                    "minRateDescription": "Perfect",
+                    "maxRateDescription": "Failure",
                     "isRequired": true
                 },
                 {
