@@ -352,7 +352,7 @@ const surveyJson = {
         "864px"
 };
 
-const PostversionSurvey = ({ surveyCheck, firstSite, isUploadImage, isSelectSize }) => {
+const PostversionSurvey = ({ checkSurvey, firstSite, isUploadImage, isSelectSize }) => {
     const [surveyState, setSurveyState] = useState(null);
     if(!surveyState) {
         const survey = new Model(surveyJson);
@@ -372,7 +372,7 @@ const PostversionSurvey = ({ surveyCheck, firstSite, isUploadImage, isSelectSize
                 .then(response => response.json())
                 .then(data => {
                     // console.log('Success:', data.message);
-                    surveyCheck();
+                    checkSurvey();
                 })
                 .catch((error) => {
                     console.error('Error:', error);

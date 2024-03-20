@@ -151,7 +151,6 @@ const Home = () => {
     async function checkFirstSite() {
         if(localStorage.getItem("firstSite") === "false") {
             setFirstSite(false);
-            setFinalSurvey(true);
             return;
         }
         const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
@@ -170,7 +169,7 @@ const Home = () => {
             localStorage.setItem("continued", false)
         }
         setFirstSite(parseInt(numSurvey) < 2);
-        setFinalSurvey(parseInt(numSurvey) >= 2);
+        setFinalSurvey(parseInt(numSurvey) >= 3);
         localStorage.setItem("firstSite", parseInt(numSurvey) < 2);
     };
 
@@ -178,7 +177,7 @@ const Home = () => {
         const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
         const numSurveyResponse = await fetch(numSurveyEndpoint);
         const numSurvey = await numSurveyResponse.text();
-        setFinalSurvey(parseInt(numSurvey) >= 2);
+        setFinalSurvey(parseInt(numSurvey) >= 3);
     };
 
     useEffect(() => {
