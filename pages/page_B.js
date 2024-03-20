@@ -156,7 +156,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 } else if(localStorage.getItem("debug") !== "true") {
                         return;
                     }
-                }
             }
 
             formData.append('userImage', localStorage.getItem("cachedImageURL"));
