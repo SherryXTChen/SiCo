@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { validate } from 'uuid';
 import prisma from '../../../lib/prisma';
 
@@ -17,7 +17,7 @@ export async function POST(req, res) {
         if(!initials) {
             return NextResponse.error(new Error('No initials found'));
         }
-        if(initials.length !== 2) {
+        if(initials.length <= 0) {
             return NextResponse.error(new Error('Invalid initials'));
         }
         if(!date) {
