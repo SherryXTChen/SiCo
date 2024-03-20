@@ -177,7 +177,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     // console.log('Success:', data);
                     setTimeout(() => {
                         updateGallery();
-                    }, 40000);
+                    }, 50000);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
