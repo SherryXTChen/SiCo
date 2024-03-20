@@ -142,7 +142,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 } else if(localStorage.getItem("debug") !== "true") {
                         return;
                     }
-                }
             }
             if(tryOnTop && !tryOnBottom) {
                 if(garmentType === 'pants' || garmentType === 'dress') {
@@ -150,7 +149,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 } else if(localStorage.getItem("debug") !== "true") {
                         return;
                     }
-                }
             }
             if(continueFromLast && !tryOnTopAgain) {
                 if(product.id === parseInt(localStorage.getItem("topId"))) {
