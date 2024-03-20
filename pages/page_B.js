@@ -228,6 +228,13 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         }
     });
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updateGallery();
+        }, 5000); // Checks every 5 seconds
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div>
             {startSurvey && (<PostversionForm checkSurvey={checkSurvey} firstSite={firstSite} isUploadImage={isUploadImage} isSelectSize={isSelectSize} />)}
