@@ -132,22 +132,33 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
             };
 
             if(tryOnTop && tryOnBottom && tryOnTopAgain) {
-                return;
+                if(localStorage.getItem("debug") !== "true") {
+                    return;
+                }
             }
             if(!tryOnTop) {
                 if(garmentType === 'top') {
                     setTryOnTop(true);
-                } else { return; }
+                } else if(localStorage.getItem("debug") !== "true") {
+                        return;
+                    }
+                }
             }
             if(tryOnTop && !tryOnBottom) {
                 if(garmentType === 'pants' || garmentType === 'dress') {
                     setTryOnBottom(true);
-                } else { return; }
+                } else if(localStorage.getItem("debug") !== "true") {
+                        return;
+                    }
+                }
             }
             if(continueFromLast && !tryOnTopAgain) {
                 if(product.id === parseInt(localStorage.getItem("topId"))) {
                     setTryOnTopAgain(true);
-                } else { return; }
+                } else if(localStorage.getItem("debug") !== "true") {
+                        return;
+                    }
+                }
             }
 
             formData.append('userImage', localStorage.getItem("cachedImageURL"));
@@ -272,20 +283,22 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                     </div>)}
                                     <button className="pick-this-button" onClick={() => {
                                         let selectedSize;
-                                        if(!product.name.startsWith('top') && !pickTop) {
-                                            return;
-                                        }
-                                        if(!product.name.startsWith('pants') && !product.name.startsWith('dress') && tryOnTop && !pickBottom) {
-                                            return;
-                                        }
-                                        if(product.name.startsWith('top') && pickTop) {
-                                            return;
-                                        }
-                                        if((product.name.startsWith('pants') || product.name.startsWith('dress')) && pickBottom) {
-                                            return;
-                                        }
-                                        if(pickTop && pickBottom) {
-                                            return;
+                                        if(localStorage.getItem("debug") !== "true") {
+                                            if(!product.name.startsWith('top') && !pickTop) {
+                                                return;
+                                            }
+                                            if(!product.name.startsWith('pants') && !product.name.startsWith('dress') && tryOnTop && !pickBottom) {
+                                                return;
+                                            }
+                                            if(product.name.startsWith('top') && pickTop) {
+                                                return;
+                                            }
+                                            if((product.name.startsWith('pants') || product.name.startsWith('dress')) && pickBottom) {
+                                                return;
+                                            }
+                                            if(pickTop && pickBottom) {
+                                                return;
+                                            }
                                         }
                                         if(!pickTop && product.name.startsWith('top')) {
                                             selectedSize = topSize;
