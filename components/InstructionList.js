@@ -59,18 +59,20 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                     {tryOnTopTrueSizeAgain3 && (<li style={{ color: "green" }}>Try on the top from step 3 again</li>)}
                 </div>)}
             </ol>
-            {!isSelectSize && pickTop && tryOnTop && pickBottom && tryOnBottom && continueFromLast && tryOnTopAgain
-                && (<button className="done-button" id="nextPageButton"
+            {/* !isSelectSize && pickTop && tryOnTop && pickBottom && tryOnBottom && continueFromLast && tryOnTopAgain
+                && */}
+            { (<button className="done-button" id="nextPageButton"
                     style={{ justifyContent: 'center', width: '100%' }}
                     onClick={() => {
                         handleNextPage();
                     }}
                 >Continue</button>)}
-            {isSelectSize && pickTopTrueSize && tryOnTopTrueSize && changeTopTrueSize
+            {/* isSelectSize && pickTopTrueSize && tryOnTopTrueSize && changeTopTrueSize
                 && tryOnTopTrueSizeAgain && pickBottomTrueSize && tryOnBottomTrueSize
                 && changeBottomTrueSize && tryOnBottomTrueSizeAgain && continueFromBottomTrueSize
                 && tryOnTopTrueSizeAgain2 && continueFromBottomTrueSize2 && tryOnTopTrueSizeAgain3
-                && (<button className="done-button" id="nextPageButton"
+                &&  */}
+            {(<button className="done-button" id="nextPageButton"
                     style={{ justifyContent: 'center', width: '100%' }}
                     onClick={() => {
                         handleNextPage();
