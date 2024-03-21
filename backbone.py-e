@@ -77,11 +77,13 @@ def fal_api(
         elif relative_fit > 0:  # over sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
-            min_x, _ = indices.min(axis=0)
-            max_x, _ = indices.max(axis=0)
+            min_x, min_y = indices.min(axis=0)
+            max_x, max_y = indices.max(axis=0)
             input_mask = cv2.dilate(input_mask, kernel=np.ones(
-                (5, 5)), iterations=10 * relative_fit)
+                (5, 5)), iterations=5 * relative_fit)
             input_mask[:max(0, min_x-5)] = 0  # remove top
+            input_mask[:, max(0, min_y-5)] = 0 # remove left
+            input_mask[:, min(input_mask.shape[1]-1, max_y+5)] = 0 # remove right
             prompt = "a big baggy loose overfitted"
         else:  # under sized
             indices = np.argwhere(input_mask > 0)
