@@ -76,7 +76,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
             {!isUploadImage && (<div>
-                To start, please select an image from below. The selected image will be used to visualize virtual try-on results in the next page. <br />
+                To start, please select a model image from below. Virtual try-on results will be visualized with respect to the selected model image in the next page.<br />
                 <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
             </div>)}
             {isSelectSize && (<div>
