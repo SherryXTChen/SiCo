@@ -217,7 +217,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                             setContinueFromBottomTrueSize(true);
                                         } else if(debug !== "true") { return; }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
-                                        const correctImage = imageFiles[imageFiles.length - 3];
+                                        const correctImage = imageFiles[3];
                                         if(image === correctImage) {
                                             setContinueFromBottomTrueSize2(true);
                                         } else if(debug !== "true") { return; }
@@ -466,7 +466,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         />
                     </div>
                     <div style={{ position: "relative" }}>
-                        <h1>Trying on your clothes...</h1>
+                        <h1>Trying on your clothes... Expected waiting time: 1-2 minutes.</h1>
                     </div>
                 </div>)}
                 <div className="section-container">
