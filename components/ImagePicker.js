@@ -14,11 +14,14 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
                 localStorage.setItem("uid", uuidv4());
                 if(!localStorage.getItem("cachedImageURL")) {
                     getCachedImage();
+                    setSelectedImage(localStorage.getItem("cachedImageURL"));
                 }
             } else {
                 try {
                     const imageURL = localStorage.getItem("cachedImageURL").split('/').pop().split('-')[0];
-                    if(imageURL !== "shumil") {
+                    if(imageURL === "userImage" || imageURL.length >= 5 || (imageURL.substring(0, 3) === "man" || imageURL.substring(0, 5) === "woman" )) {
+                        setSelectedImage(localStorage.getItem("cachedImageURL"));
+                    } else if(imageURL !== "shumil") {
                         setSelectedImage(`/models/${imageURL}`);
                     }
                 } catch(error) { }

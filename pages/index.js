@@ -189,6 +189,7 @@ const Home = () => {
             checkConsent();
             checkPresurvey();
             checkFirstSite();
+            checkSecondSite();
             setFirstLoad(false);
         }
     });
