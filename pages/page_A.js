@@ -75,9 +75,10 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 Here are some acceptable and unacceptable image examples. <br />
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
-            {!isUploadImage && <div>
+            {!isUploadImage && (<div>
+                To start, please select an image from below. The selected image will be used to visualize virtual try-on results in the next page. <br />
                 <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
-            </div>}
+            </div>)}
             {isSelectSize && (<div>
                 Please enter your true size for tops, bottoms, and dresses if applicable.<br />
                 Your true size for any type of garment is defined by the size of the garment of the same type that leads to a regular fit on you.<br />
