@@ -12,12 +12,14 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
         if(imagePickerRef.current && firstLoad) {
             if(!localStorage.getItem("uid")) {
                 localStorage.setItem("uid", uuidv4());
-                getCachedImage();
+                if(!localStorage.getItem("cachedImageURL")) {
+                    getCachedImage();
+                }
             } else {
                 try {
                     const imageURL = localStorage.getItem("cachedImageURL").split('/').pop().split('-')[0];
                     if(imageURL !== "shumil") {
-                        setSelectedImage(`/models/${imageURL}.jpg`);
+                        setSelectedImage(`/models/${imageURL}`);
                     }
                 } catch(error) { }
             }
@@ -90,7 +92,7 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
             {selectedImage && (
                 <div>
                     <h3>Selected Image:</h3>
-                    <img src={`${localStorage.getItem("cachedImageURL")}`} alt={selectedImage} />
+                    <img src={selectedImage} alt={selectedImage} />
                 </div>
             )}
         </div>
