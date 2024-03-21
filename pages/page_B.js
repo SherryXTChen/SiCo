@@ -203,7 +203,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     const itemDiv = (
                         <div className="picked-item" key={imageName}>
                             <img src={image} style={{ width: "20%", height: "auto" }} />
-                            <button className="continue" onClick={() => {
+                            <button className="continue" key={tryOnResultsRef.current.length} onClick={() => {
                                 const debug = localStorage.getItem("debug");
                                 if(!isSelectSize) {
                                     const lastImageFile = imageFiles[imageFiles.length - 1];
@@ -230,7 +230,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                             }} >Continue From Here</button>
                         </div>
                     );
-                    tryOnResultsRef.current?.push(itemDiv);
+                    tryOnResultsRef.current.push(itemDiv);
                     loadingBarRef.current?.complete();
                     setLoading(false);
                     setTryOnResults(tryOnResultsRef.current);
@@ -350,7 +350,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     updateGallery();
                     setTimeout(() => {
                         updateGallery();
-                        setLoading(false);
                     }, 60000);
                 })
                 .catch((error) => {
@@ -421,7 +420,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
             updateGallery();
             setChange(prevState => !prevState);
             forceUpdate();
-            console.log("testing update")
         }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
