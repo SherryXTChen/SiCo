@@ -66,13 +66,14 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const products = [
         { id: 1, name: 'top short none', image: 'garments/dress/020714_1.jpg' },
         { id: 2, name: 'top short none', image: 'garments/dress/020715_1.jpg' },
-        { id: 3, name: 'top long none', image: 'garments/upper_body/000000_1.jpg' },
-        { id: 4, name: 'top long none', image: 'garments/upper_body/000001_1.jpg' },
-        { id: 5, name: 'top short none', image: 'garments/upper_body/000002_1.jpg' },
-        { id: 6, name: 'top long none', image: 'garments/upper_body/000003_1.jpg' },
+        { id: 3, name: 'pants none long', image: 'garments/dress/020716_1.jpg' },
+        { id: 4, name: 'pants none long', image: 'garments/dress/020717_1.jpg' },
 
-        { id: 7, name: 'pants none long', image: 'garments/dress/020716_1.jpg' },
-        { id: 8, name: 'pants none long', image: 'garments/dress/020717_1.jpg' },
+        { id: 5, name: 'top long none', image: 'garments/upper_body/000000_1.jpg' },
+        { id: 6, name: 'top long none', image: 'garments/upper_body/000001_1.jpg' },
+        { id: 7, name: 'top short none', image: 'garments/upper_body/000002_1.jpg' },
+        { id: 8, name: 'top long none', image: 'garments/upper_body/000003_1.jpg' },
+
         { id: 9, name: 'pants none long', image: 'garments/lower_body/013563_1.jpg' },
         { id: 10, name: 'pants none short', image: 'garments/lower_body/013564_1.jpg' },
         { id: 11, name: 'pants none short', image: 'garments/lower_body/013565_1.jpg' },
