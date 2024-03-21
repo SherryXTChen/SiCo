@@ -129,10 +129,10 @@ def fal_api(
         path="/inpaint",
         arguments=arguments,
     )
-    # for event in handler.iter_events():
-    #     if isinstance(event, fal.apps.InProgress):
-    #         print('Request in progress')
-    #         print(event.logs)
+    for event in handler.iter_events():
+        if isinstance(event, fal.apps.InProgress):
+            print('Request in progress')
+            print(event.logs)
     result = handler.get()
     url = result['images'][0]['url']
     return url
@@ -148,10 +148,10 @@ def fal_api_segment(user_image_path, text):
         },
     )
 
-    # for event in handler.iter_events():
-    #     if isinstance(event, fal.apps.InProgress):
-    #         print('Request in progress')
-    #         print(event.logs)
+    for event in handler.iter_events():
+        if isinstance(event, fal.apps.InProgress):
+            print('Request in progress')
+            print(event.logs)
 
     result = handler.get()
     url = result['image']['url']
