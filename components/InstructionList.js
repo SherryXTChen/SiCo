@@ -51,11 +51,11 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                     {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom / dress on again</li>)}
                     {!continueFromBottomTrueSize && (<li>Continue from the result in step 6.</li>)}
                     {continueFromBottomTrueSize && (<li style={{ color: "green" }}>Continue from the result in step 6.</li>)}
-                    {!tryOnTopTrueSizeAgain2 && (<li>Try on the top from step 1 again</li>)}
+                    {!tryOnTopTrueSizeAgain2 && (<li>Try on the top from step 1 (with your true size) again</li>)}
                     {tryOnTopTrueSizeAgain2 && (<li style={{ color: "green" }}>Try on the top from step 1 (with your true size) again</li>)}
                     {!continueFromBottomTrueSize2 && (<li>Continue from the result in step 8.</li>)}
                     {continueFromBottomTrueSize2 && (<li style={{ color: "green" }}>Continue from the result in step 8.</li>)}
-                    {!tryOnTopTrueSizeAgain3 && (<li>Try on the top from step 3 again</li>)}
+                    {!tryOnTopTrueSizeAgain3 && (<li>Try on the top from step 3 (with a changed size) again</li>)}
                     {tryOnTopTrueSizeAgain3 && (<li style={{ color: "green" }}>Try on the top from step 3 (with a changed size) again</li>)}
                 </div>)}
             </ol>
