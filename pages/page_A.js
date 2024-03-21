@@ -80,7 +80,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
             </div>)}
             {isSelectSize && (<div>
-                Please enter your true size for tops, bottoms, and dresses if applicable.<br />
+                Please enter your true size for tops and bottoms.<br />
                 Your true size for any type of garment is defined by the size of the garment of the same type that leads to a regular fit on you.<br />
                 For example, if your true size for tops is M, then wearing any top with size M will leads to a regular fit on you.<br />
             </div>)}
@@ -124,7 +124,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         <option value="XXL">XXL</option>
                     </select>
                 </div>
-                <div>
+                {/* <div>
                     <label htmlFor="dressSize">Select Your True Size for Dresses (If Applicable):</label>
                     <select id="dressSize" name="dressSize" value={dressSize} onChange={handleDressSizeChange}>
                         <option value="N/A">N/A</option>
@@ -136,7 +136,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         <option value="XL">XL</option>
                         <option value="XXL">XXL</option>
                     </select>
-                </div>
+                </div> */}
             </div>)}
             {!image && <button className="done-button" id="doneButton" disabled>Continue</button>}
             {image && (<button className="done-button" id="doneButton"
