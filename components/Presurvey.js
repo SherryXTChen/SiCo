@@ -45,14 +45,14 @@ const surveyJson = {
                 {
                     "type": "boolean",
                     "name": "prior-exp-use-online",
-                    "title": "Have you ever used an online clothing website?",
+                    "title": "Have you ever browsed an online clothing website?",
                     "isRequired": true,
                 },
                 {
                     "type": "radiogroup",
                     "name": "prior-exp-use-online-freq",
                     "visibleIf": "{prior-exp-use-online} = true",
-                    "title": "If so, how often do you use an online clothing website (for yourself)?",
+                    "title": "If so, how often do you browse an online clothing website to view clothings for yourself?",
                     "choices": [
                         "Daily",
                         "Several times a week",
@@ -89,14 +89,14 @@ const surveyJson = {
                 {
                     "type": "boolean",
                     "name": "prior-exp-purchase",
-                    "title": "Have you ever purchased clothing online (for yourself)",
+                    "title": "Have you ever purchased clothings online (for yourself)",
                     "isRequired": true,
                 },
                 {
                     "type": "radiogroup",
                     "name": "prior-exp-purchase-freq",
                     "visibleIf": "{prior-exp-purchase} = true",
-                    "title": "If so, how often do you typically purchase clothing online (for yourself)?",
+                    "title": "If so, how often do you typically purchase clothings online (for yourself)?",
                     "choices": [
                         "Daily",
                         "Several times a week",
