@@ -8,6 +8,7 @@ from PIL import Image
 import sys
 import os
 import requests
+from collections import defaultdict
 
 
 def make_dir(path):
@@ -36,10 +37,12 @@ def image_to_base64_data_uri(image_path):
 def fal_api(
     user_image_path,
     mask_image_path,
+    out_path,
     garment_image_path,
     garment_type,
     relative_fit,
     prompt,
+    mask_only,
 ):
     arguments = {
         "negative_prompt": "(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)",
@@ -53,7 +56,20 @@ def fal_api(
         input_mask = np.array(Image.open(mask_image_path))
         input_mask = cv2.dilate(
             input_mask, kernel=np.ones((5, 5)), iterations=1)
+        if mask_only:
+            return input_mask
         Image.fromarray(input_mask).save(mask_image_path)
+
+        # check if out_path exist, if so, check unmasked area
+        if os.path.exists(out_path):
+            unmask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) <= 0)
+            input_image = np.array(Image.open(user_image_path).convert('RGB'))
+            output_image = np.array(Image.open(out_path).convert('RGB'))
+            # with open('out.txt', 'a') as out:
+            #     out.write(f'found existing naked result at {out_path} with diff = {np.mean(np.abs(input_image - output_image) * unmask_area)}\n')
+            # # if np.mean(np.abs(input_image - output_image) * unmask_area) <= 20:
+            return None
+
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
         additional_arguments = {
             "performance": "Speed",
@@ -73,7 +89,7 @@ def fal_api(
         if relative_fit == 0:  # regular fit
             input_mask = cv2.dilate(
                 input_mask, kernel=np.ones((5, 5)), iterations=1)
-            prompt = "a fitted"
+            prompt = "fitted"
         elif relative_fit > 0:  # over sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
@@ -82,9 +98,9 @@ def fal_api(
             input_mask = cv2.dilate(input_mask, kernel=np.ones(
                 (5, 5)), iterations=5 * relative_fit)
             input_mask[:max(0, min_x-5)] = 0  # remove top
-            input_mask[:, max(0, min_y-5)] = 0 # remove left
-            input_mask[:, min(input_mask.shape[1]-1, max_y+5)] = 0 # remove right
-            prompt = "a big baggy loose overfitted"
+            # input_mask[:,:max(0, min_y-10)] = 0  # remove left
+            # input_mask[:,min(input_mask.shape[1], max_y+10):] = 0  # remove right
+            prompt = "big baggy loose overfitted"
         else:  # under sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
@@ -92,14 +108,31 @@ def fal_api(
             max_x, _ = indices.max(axis=0)
             remove_leng = (max_x - min_x) * (-relative_fit) // 6
             input_mask[max_x - remove_leng:] = 0  # remove bottom
-            prompt = "a very tight cropped"
+            prompt = "very tight cropped"
+        if mask_only:
+            return input_mask
 
         Image.fromarray(input_mask).save(mask_image_path)
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
         garment_image_uri = image_to_base64_data_uri(garment_image_path)
 
         assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
-        prompt += garment_type
+        prompt = f'{garment_type}+++ , {prompt}'
+
+        # we have generated a previous result with the same garment and mask
+        # if type(out_path) == tuple:
+        #     previous_output_path, out_path = out_path
+        #     with open('out.txt', 'a') as out:
+        #         out.write(f'find existing garment result at {out_path}\n')
+        #     mask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) > 0)
+        #     input_image = np.array(Image.open(user_image_path).convert('RGB'))
+        #     prev_output_image = np.array(Image.open(previous_output_path).convert('RGB'))
+        #     output_image = Image.fromarray(prev_output_image * mask_area + input_image * (1 - mask_area))
+        #     output_image.save(out_path)
+        #     return
+        # else:
+        #     with open('out.txt', 'a') as out:
+        #         out.write(f'find no existing garment result at {out_path}\n')
 
         additional_arguments = {
             "performance": "Speed",
@@ -119,7 +152,7 @@ def fal_api(
                 "image_url": input_mask_uri,
                 "type": "PyraCanny",
                 "stop_at": 1,
-                "weight": 1.6
+                "weight": 1
             },
         }
     arguments.update(additional_arguments)
@@ -128,13 +161,19 @@ def fal_api(
         path="/inpaint",
         arguments=arguments,
     )
-    for event in handler.iter_events():
-        if isinstance(event, fal.apps.InProgress):
-            print('Request in progress')
-            print(event.logs)
+    # for event in handler.iter_events():
+    #     if isinstance(event, fal.apps.InProgress):
+    #         print('Request in progress')
+    #         print(event.logs)
     result = handler.get()
     url = result['images'][0]['url']
-    return url
+    os.system(f'wget -O "{out_path}" "{url}"')
+
+    mask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) > 0)
+    input_image = np.array(Image.open(user_image_path).convert('RGB'))
+    output_image = np.array(Image.open(out_path).convert('RGB'))
+    output_image = Image.fromarray(output_image * mask_area + input_image * (1 - mask_area))
+    output_image.save(out_path)
 
 
 def fal_api_segment(user_image_path, text):
@@ -147,11 +186,10 @@ def fal_api_segment(user_image_path, text):
         },
     )
 
-    for event in handler.iter_events():
-        if isinstance(event, fal.apps.InProgress):
-            print('Request in progress')
-            print(event.logs)
-
+    # for event in handler.iter_events():
+    #     if isinstance(event, fal.apps.InProgress):
+    #         print('Request in progress')
+    #         print(event.logs)
     result = handler.get()
     url = result['image']['url']
     return url
@@ -257,9 +295,30 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
 
 
 def main():
+    # user_image_path = sys.argv[1]
+    # garment_image_path = sys.argv[2]
+    # uid = sys.argv[3]
+
+    # # get garment info
+    # body_mask_args = 'top long none'
+    # user_size = 'M'
+    # garment_size = 'M'
+    # body_mask_labels = body_mask_args
+    # body_mask_args = body_mask_args.split()
+    # body_mask_args = [x if x != 'none' else None for x in body_mask_args]
+    # body_mask_args = {
+    #     'garment_type': body_mask_args[0],
+    #     'top_sleeve_length': body_mask_args[1],
+    #     'bottom_leg_length': body_mask_args[2],
+    #     'uid': uid,
+    # }
+
+    # os.system('touch out.txt')
     url = sys.argv[1]
     garment_image_path = sys.argv[2]
     uid = sys.argv[3]
+    firstSite = sys.argv[4]
+    uid = os.path.join(uid, firstSite)
     user_image_path = f'./cache/{uid}/user_image.jpg'
     make_dir(f'./cache/{uid}')
     response = requests.get(url)
@@ -271,9 +330,6 @@ def main():
     garment_info = os.path.basename(
         os.path.splitext(garment_image_path)[0]).split('_')
     _, body_mask_args, user_size, garment_size = tuple(garment_info)
-    # body_mask_args = 'dress no long'
-    # user_size = 'M'
-    # garment_size = 'M'
     body_mask_labels = body_mask_args
     body_mask_args = body_mask_args.split()
     body_mask_args = [x if x != 'none' else None for x in body_mask_args]
@@ -326,37 +382,66 @@ def main():
             np.uint8) * 255).save(body_mask_path)
 
     # remove existing garment and replace with naked body part
-    out_path = f'cache/{uid}/{body_mask_labels}/user_body.png'
-    if not os.path.exists(out_path):
-        url = fal_api(
-            user_image_path=user_image_path,
-            mask_image_path=body_mask_path,
-            garment_image_path=None,
-            garment_type=None,
-            relative_fit=None,
-            prompt=prompt,
-        )
-        os.system(f'wget -O "{out_path}" "{url}"')
+    # if the unmasked area of existing out_path is the same as the unmasked area of user_image_path
+    naked_out_path = f'cache/{uid}/{body_mask_labels}/user_body_{prompt}.jpg'
+    old_garment_mask = fal_api(
+        user_image_path=user_image_path,
+        mask_image_path=body_mask_path,
+        out_path=naked_out_path,
+        garment_image_path=None,
+        garment_type=None,
+        relative_fit=None,
+        prompt=prompt,
+        mask_only=True,
+    )
 
-    # add garment
+     # prepare to add garment
     size_list = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']
     user_size_index = size_list.index(user_size)
     garment_size_index = size_list.index(garment_size)
-    url = fal_api(
-        user_image_path=out_path,
+    make_dir(f'./results/{uid}')
+    basename = str(
+        len(glob.glob(f'results/{uid}/*.jpg')) + 1).zfill(10) + ".jpg"
+    final_out_path = os.path.join('results', uid, basename)
+    
+    # compare old garment and new garment
+    # only remove old garment if it has a larger mask
+    new_garment_mask = fal_api(
+        user_image_path=user_image_path,
         mask_image_path=garment_mask_path,
+        out_path=final_out_path,
         garment_image_path=garment_image_path,
         garment_type=body_mask_args['garment_type'],
         relative_fit=garment_size_index-user_size_index,
         prompt=None,
+        mask_only=True,
     )
 
-    make_dir(f'./results/{uid}')
-    basename = str(
-        len(glob.glob(f'results/{uid}/*.jpg')) + 1).zfill(10) + ".jpg"
-    out_path = os.path.join('results', uid, basename)
-    os.system(f'wget -O "{out_path}" "{url}"')
-
+    if np.min(1. * new_garment_mask - old_garment_mask) < 0:
+        _ = fal_api(
+            user_image_path=user_image_path,
+            mask_image_path=body_mask_path,
+            out_path=naked_out_path,
+            garment_image_path=None,
+            garment_type=None,
+            relative_fit=None,
+            prompt=prompt,
+            mask_only=False,
+        )
+        final_input_path = naked_out_path
+    else:
+        final_input_path = user_image_path
+    
+    _ = fal_api(
+        user_image_path=final_input_path,
+        mask_image_path=garment_mask_path,
+        out_path=final_out_path,
+        garment_image_path=garment_image_path,
+        garment_type=body_mask_args['garment_type'],
+        relative_fit=garment_size_index-user_size_index,
+        prompt=None,
+        mask_only=False,
+    )
 
 if __name__ == '__main__':
     main()
