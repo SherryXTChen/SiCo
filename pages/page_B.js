@@ -250,20 +250,22 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 } else if(isSelectSize) {
                                     if(tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current) {
                                         // 2 should correspond to Step 6 which is tryOnBottomTrueSize
-                                        if(e.currentTarget.id === 2) {
-                                            setContinueFromBottomTrueSize(true);
-                                        } else if(debug !== "true") {
-                                            setInvalidAction(true);
-                                            return;
-                                        }
+                                        setContinueFromBottomTrueSize(true);
+                                        // if(e.currentTarget.id === 2) {
+                                        //     setContinueFromBottomTrueSize(true);
+                                        // } else if(debug !== "true") {
+                                        //     setInvalidAction(true);
+                                        //     return;
+                                        // }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
                                         // 3 should correspond to Step 8 which is tryOnTopTrueSizeAgain2
-                                        if(e.currentTarget.id === 3) {
-                                            setContinueFromBottomTrueSize2(true);
-                                        } else if(debug !== "true") {
-                                            setInvalidAction(true);
-                                            return;
-                                        }
+                                        setContinueFromBottomTrueSize2(true);
+                                        // if(e.currentTarget.id === 3) {
+                                        //     setContinueFromBottomTrueSize2(true);
+                                        // } else if(debug !== "true") {
+                                        //     setInvalidAction(true);
+                                        //     return;
+                                        // }
                                     } else if(debug !== "true") {
                                         setInvalidAction(true);
                                         return;
