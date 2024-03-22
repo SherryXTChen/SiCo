@@ -10,7 +10,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [tryOnItems, setTryOnItems] = useState([]);
     const [tryOnResults, setTryOnResults] = useState([]);
     const [change, setChange] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, _setLoading] = useState(false);
     const [startSurvey, setStartSurvey] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
     const [progress, _setProgress] = useState(0);
@@ -45,6 +45,8 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     tryOnResultsRef.current = tryOnResults;
     const invalidActionRef = React.useRef(null);
     invalidActionRef.current = invalidAction;
+    const loadingRef = React.useRef(null);
+    loadingRef.current = loading;
 
     const topIdRef = React.useRef(0);
     const pickTopRef = React.useRef(pickTop);
@@ -83,6 +85,10 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         { id: 12, name: 'pants none short', image: 'garments/lower_body/013566_1.jpg' },
     ];
 
+    const setLoading = (arg) => {
+        loadingRef.current = arg;
+        _setLoading(arg);
+    };
     const setProgress = (arg) => {
         progressRef.current = arg;
         _setProgress(arg);
@@ -474,9 +480,11 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     useEffect(() => {
         const interval = setInterval(() => {
-            updateGallery();
-            setChange(prevState => !prevState);
-            forceUpdate();
+            if(loadingRef.current) {
+                updateGallery();
+                setChange(prevState => !prevState);
+                forceUpdate();
+            }
         }, 3000); // Checks every 3 seconds
         return () => clearInterval(interval);
     }, []);
