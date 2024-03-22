@@ -12,7 +12,7 @@ const Home = () => {
     const [imageBlob, setImageBlob] = useState(null);
     const [topSize, setTopSize] = useState("XXS");
     const [bottomSize, setBottomSize] = useState("XXS");
-    const [dressSize, setDressSize] = useState("N/A");
+    const [dressSize, setDressSize] = useState("XXS");
     const [pageAContinue, setPageAContinue] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
     const [isUploadImage, setIsUploadImage] = useState(false);
@@ -161,7 +161,7 @@ const Home = () => {
             setImageBlob(null);
             setTopSize("XXS");
             setBottomSize("XXS");
-            setDressSize("N/A");
+            setDressSize("XXS");
             setPageAContinue(false);
             imageRef.current = null;
             imageBlobRef.current = null;

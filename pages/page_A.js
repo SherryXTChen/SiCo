@@ -132,19 +132,6 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         <option value="XXL">XXL</option>
                     </select>
                 </div>
-                {/* <div>
-                    <label htmlFor="dressSize">Select Your True Size for Dresses (If Applicable):</label>
-                    <select id="dressSize" name="dressSize" value={dressSize} onChange={handleDressSizeChange}>
-                        <option value="N/A">N/A</option>
-                        <option value="XXS">XXS</option>
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                </div> */}
             </div>)}
             {!image && <button className="done-button" id="doneButton" disabled>Continue</button>}
             {image && (<button className="done-button" id="doneButton"
