@@ -22,8 +22,8 @@ export async function POST(req, res) {
         const userImageBytes = await userImageData.arrayBuffer();
         const userImageBuffer = Buffer.from(userImageBytes);
         const userImagePath = `${uid}/userImage.jpg`;
-        const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
-        const blob = await put(userImagePath, userImageJpeg, {
+        // const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
+        const blob = await put(userImagePath, userImageBuffer, {
             access: 'public',
         });
 
