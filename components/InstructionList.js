@@ -26,12 +26,12 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                     {(!invalidAction || !pickTop) && !tryOnTop && (<li>Try the top on</li>)}
                     {tryOnTop && (<li style={{ color: "green" }}>Try the top on</li>)}
                     {invalidAction && pickTop && !tryOnTop && (<li style={{ color: "red" }}>Try the top on</li>)}
-                    {(!invalidAction || !tryOnTop) && !pickBottom && (<li>Pick a bottom or a skirt</li>)}
-                    {pickBottom && (<li style={{ color: "green" }}>Pick a bottom or a skirt</li>)}
-                    {invalidAction && tryOnTop && !pickBottom && (<li style={{ color: "red" }}>Pick a bottom or a skirt</li>)}
-                    {(!invalidAction || !pickBottom) && !tryOnBottom && (<li>Try the bottom / skirt on</li>)}
-                    {tryOnBottom && (<li style={{ color: "green" }}>Try the bottom / skirt on</li>)}
-                    {invalidAction && pickBottom && !tryOnBottom && (<li style={{ color: "red" }}>Try the bottom / skirt on</li>)}
+                    {(!invalidAction || !tryOnTop) && !pickBottom && (<li>Pick a bottom</li>)}
+                    {pickBottom && (<li style={{ color: "green" }}>Pick a bottom</li>)}
+                    {invalidAction && tryOnTop && !pickBottom && (<li style={{ color: "red" }}>Pick a bottom</li>)}
+                    {(!invalidAction || !pickBottom) && !tryOnBottom && (<li>Try the bottom on</li>)}
+                    {tryOnBottom && (<li style={{ color: "green" }}>Try the bottom on</li>)}
+                    {invalidAction && pickBottom && !tryOnBottom && (<li style={{ color: "red" }}>Try the bottom on</li>)}
                     {(!invalidAction || !tryOnBottom) && !continueFromLast && (<li>Continue from the last result</li>)}
                     {continueFromLast && (<li style={{ color: "green" }}>Continue from the last result</li>)}
                     {invalidAction && tryOnBottom && !continueFromLast && (<li style={{ color: "red" }}>Continue from the last result</li>)}
@@ -52,18 +52,18 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                     {(!invalidAction || !changeTopTrueSize) && !tryOnTopTrueSizeAgain && (<li>Try the top on again</li>)}
                     {tryOnTopTrueSizeAgain && (<li style={{ color: "green" }}>Try the top on again</li>)}
                     {invalidAction && changeTopTrueSize && !tryOnTopTrueSizeAgain && (<li style={{ color: "red" }}>Try the top on again</li>)}
-                    {(!invalidAction || !tryOnTopTrueSizeAgain) && !pickBottomTrueSize && (<li>Pick a bottom or a skirt with your true size</li>)}
-                    {pickBottomTrueSize && (<li style={{ color: "green" }}>Pick a bottom or a skirt with your true size</li>)}
-                    {invalidAction && tryOnTopTrueSizeAgain && !pickBottomTrueSize && (<li style={{ color: "red" }}>Pick a bottom or a skirt with your true size</li>)}
-                    {(!invalidAction || !pickBottomTrueSize) && !tryOnBottomTrueSize && (<li>Try the bottom / skirt on</li>)}
-                    {tryOnBottomTrueSize && (<li style={{ color: "green" }}>Try the bottom / skirt on</li>)}
-                    {invalidAction && pickBottomTrueSize && !tryOnBottomTrueSize && (<li style={{ color: "red" }}>Try the bottom / skirt on</li>)}
-                    {(!invalidAction || !tryOnBottomTrueSize) && !changeBottomTrueSize && (<li>Change the garment size of the bottom / skirt to a different size</li>)}
-                    {changeBottomTrueSize && (<li style={{ color: "green" }}>Change the garment size of the bottom / skirt to a different size</li>)}
-                    {invalidAction && tryOnBottomTrueSize && !changeBottomTrueSize && (<li style={{ color: "red" }}>Change the garment size of the bottom / skirt to a different size</li>)}
-                    {(!invalidAction || !changeBottomTrueSize) && !tryOnBottomTrueSizeAgain && (<li>Try the bottom / skirt on again</li>)}
-                    {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom / skirt on again</li>)}
-                    {invalidAction && changeBottomTrueSize && !tryOnBottomTrueSizeAgain && (<li style={{ color: "red" }}>Try the bottom / skirt on again</li>)}
+                    {(!invalidAction || !tryOnTopTrueSizeAgain) && !pickBottomTrueSize && (<li>Pick a bottom with your true size</li>)}
+                    {pickBottomTrueSize && (<li style={{ color: "green" }}>Pick a bottom with your true size</li>)}
+                    {invalidAction && tryOnTopTrueSizeAgain && !pickBottomTrueSize && (<li style={{ color: "red" }}>Pick a bottom with your true size</li>)}
+                    {(!invalidAction || !pickBottomTrueSize) && !tryOnBottomTrueSize && (<li>Try the bottom on</li>)}
+                    {tryOnBottomTrueSize && (<li style={{ color: "green" }}>Try the bottom on</li>)}
+                    {invalidAction && pickBottomTrueSize && !tryOnBottomTrueSize && (<li style={{ color: "red" }}>Try the bottom on</li>)}
+                    {(!invalidAction || !tryOnBottomTrueSize) && !changeBottomTrueSize && (<li>Change the garment size of the bottom to a different size</li>)}
+                    {changeBottomTrueSize && (<li style={{ color: "green" }}>Change the garment size of the bottom to a different size</li>)}
+                    {invalidAction && tryOnBottomTrueSize && !changeBottomTrueSize && (<li style={{ color: "red" }}>Change the garment size of the bottom to a different size</li>)}
+                    {(!invalidAction || !changeBottomTrueSize) && !tryOnBottomTrueSizeAgain && (<li>Try the bottom on again</li>)}
+                    {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom on again</li>)}
+                    {invalidAction && changeBottomTrueSize && !tryOnBottomTrueSizeAgain && (<li style={{ color: "red" }}>Try the bottom on again</li>)}
                     {(!invalidAction || !tryOnBottomTrueSizeAgain) && !continueFromBottomTrueSize && (<li>Continue from the result in step 6.</li>)}
                     {continueFromBottomTrueSize && (<li style={{ color: "green" }}>Continue from the result in step 6.</li>)}
                     {invalidAction && tryOnBottomTrueSizeAgain && !continueFromBottomTrueSize && (<li style={{ color: "red" }}>Continue from the result in step 6.</li>)}
