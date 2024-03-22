@@ -182,9 +182,8 @@ const Home = () => {
 
     useEffect(() => {
         if(mainRef.current && firstLoad) {
-            if(!localStorage.getItem("uid")) {
-                localStorage.setItem("uid", uuidv4());
-            }
+            localStorage.clear()
+            localStorage.setItem("uid", uuidv4());
             getCachedImage();
             checkConsent();
             checkPresurvey();
