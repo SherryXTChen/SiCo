@@ -70,19 +70,19 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const tryOnTopTrueSizeAgain3Ref = React.useRef(tryOnTopTrueSizeAgain3);
 
     const products = [
-        { id: 1, name: 'top short none', image: 'garments/upper_body/000000_1.jpg' },
+        { id: 1, name: 'top long none', image: 'garments/upper_body/000000_1.jpg' },
         { id: 2, name: 'top long none', image: 'garments/upper_body/000001_1.jpg' },
-        { id: 3, name: 'top long none', image: 'garments/upper_body/020714_1.jpg' },
+        { id: 3, name: 'top short none', image: 'garments/upper_body/020714_1.jpg' },
         { id: 4, name: 'top short none', image: 'garments/upper_body/020715_1.jpg' },
-        { id: 5, name: 'top long none', image: 'garments/upper_body/020716_1.jpg' },
-        { id: 6, name: 'top long none', image: 'garments/upper_body/020717_1.jpg' },
+        { id: 5, name: 'top none long', image: 'garments/upper_body/020716_1.jpg' },
+        { id: 6, name: 'top none long', image: 'garments/upper_body/020717_1.jpg' },
         
-        { id: 7, name: 'skirt none long', image: 'garments/lower_body/000002_1.jpg' },
-        { id: 8, name: 'pants none long', image: 'garments/lower_body/000003_1.jpg' },
+        { id: 7, name: 'skirt short none', image: 'garments/lower_body/000002_1.jpg' },
+        { id: 8, name: 'pants long none', image: 'garments/lower_body/000003_1.jpg' },
         { id: 9, name: 'pants none long', image: 'garments/lower_body/013563_1.jpg' },
         { id: 10, name: 'pants none short', image: 'garments/lower_body/013564_1.jpg' },
-        { id: 11, name: 'skirt none short', image: 'garments/lower_body/013565_1.jpg' },
-        { id: 12, name: 'pants none long', image: 'garments/lower_body/013566_1.jpg' },
+        { id: 11, name: 'pants none short', image: 'garments/lower_body/013565_1.jpg' },
+        { id: 12, name: 'pants none short', image: 'garments/lower_body/013566_1.jpg' },
     ];
 
     const setLoading = (arg) => {
@@ -237,11 +237,12 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     const itemDiv = (
                         <div className="picked-item" key={imageName} id={tryOnResultsRef ? tryOnResultsRef.current.length : 0}>
                             <img src={image} style={{ width: "20%", height: "auto" }} />
-                            <button className="continue" onClick={(e) => {
+                            <button className="continue" id={tryOnResultsRef ? tryOnResultsRef.current.length : 0} onClick={(e) => {
                                 const debug = localStorage.getItem("debug");
+                                console.log("Continue from here:", e.currentTarget.id);
                                 if(!isSelectSize) {
                                     // 1 should correspond with the last result which is tryOnBottom
-                                    if(tryOnBottomRef.current && !continueFromLastRef.current && item.id === 1) {
+                                    if(tryOnBottomRef.current && !continueFromLastRef.current && e.currentTarget.id === 1) {
                                         setContinueFromLast(true);
                                     } else if(debug !== "true") {
                                         setInvalidAction(true);
@@ -250,22 +251,20 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 } else if(isSelectSize) {
                                     if(tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current) {
                                         // 2 should correspond to Step 6 which is tryOnBottomTrueSize
-                                        setContinueFromBottomTrueSize(true);
-                                        // if(e.currentTarget.id === 2) {
-                                        //     setContinueFromBottomTrueSize(true);
-                                        // } else if(debug !== "true") {
-                                        //     setInvalidAction(true);
-                                        //     return;
-                                        // }
+                                        if(e.currentTarget.id === 2) {
+                                            setContinueFromBottomTrueSize(true);
+                                        } else if(debug !== "true") {
+                                            setInvalidAction(true);
+                                            return;
+                                        }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
                                         // 3 should correspond to Step 8 which is tryOnTopTrueSizeAgain2
-                                        setContinueFromBottomTrueSize2(true);
-                                        // if(e.currentTarget.id === 3) {
-                                        //     setContinueFromBottomTrueSize2(true);
-                                        // } else if(debug !== "true") {
-                                        //     setInvalidAction(true);
-                                        //     return;
-                                        // }
+                                        if(e.currentTarget.id === 3) {
+                                            setContinueFromBottomTrueSize2(true);
+                                        } else if(debug !== "true") {
+                                            setInvalidAction(true);
+                                            return;
+                                        }
                                     } else if(debug !== "true") {
                                         setInvalidAction(true);
                                         return;
