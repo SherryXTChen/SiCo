@@ -8,6 +8,7 @@ from PIL import Image
 import sys
 import os
 import cv2
+import requests
 
 
 def make_dir(path):
