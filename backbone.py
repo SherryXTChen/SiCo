@@ -300,20 +300,6 @@ def main():
     # garment_image_path = sys.argv[2]
     # uid = sys.argv[3]
 
-    # # get garment info
-    # body_mask_args = 'top long none'
-    # user_size = 'M'
-    # garment_size = 'M'
-    # body_mask_labels = body_mask_args
-    # body_mask_args = body_mask_args.split()
-    # body_mask_args = [x if x != 'none' else None for x in body_mask_args]
-    # body_mask_args = {
-    #     'garment_type': body_mask_args[0],
-    #     'top_sleeve_length': body_mask_args[1],
-    #     'bottom_leg_length': body_mask_args[2],
-    #     'uid': uid,
-    # }
-
     # os.system('touch out.txt')
     url = sys.argv[1]
     garment_image_path = sys.argv[2]
@@ -345,11 +331,18 @@ def main():
     make_dir(f'./cache/{uid}')
     make_dir(f'./cache/{uid}/{body_mask_labels}')
     garment_mask_path = f'./cache/{uid}/{body_mask_labels}/mask.png'
+    existing_garment_bound_mask_path = f'./cache/{uid}/{body_mask_labels}/bound_mask.png'
     if not os.path.exists(f"./cache/{uid}/densepose.torso.png"):
         get_body_mask(user_image_path, uid)
     if not os.path.exists(garment_mask_path):
         body_mask = combine_body_mask(**body_mask_args)
         Image.fromarray(body_mask).save(garment_mask_path)
+    if not os.path.exists(existing_garment_bound_mask_path):
+        existing_garment_bound_mask = combine_body_mask(
+            garment_type='jump suit', top_sleeve_length='long', bottom_leg_length='long', uid=uid)
+        existing_garment_bound_mask = cv2.dilate(existing_garment_bound_mask, kernel=np.ones((5, 5)), iterations=1)
+        Image.fromarray(existing_garment_bound_mask).save(existing_garment_bound_mask_path)
+    existing_garment_bound_mask = np.array(Image.open(existing_garment_bound_mask_path).convert('L'))
 
     # get mask of existing garment
     if body_mask_args['garment_type'] in ['jump suit', 'dress']:
@@ -379,6 +372,7 @@ def main():
             body_mask_url = fal_api_segment(user_image_path, text)
             os.system(f'wget -O "{body_mask_path}" "{body_mask_url}"')
         body_mask = np.array(Image.open(body_mask_path).convert('L'))
+        body_mask[existing_garment_bound_mask <= 0] = 0 # heuristic to reduce segmentation mask inaccuracy 
         Image.fromarray((body_mask > 0).astype(
             np.uint8) * 255).save(body_mask_path)
 
