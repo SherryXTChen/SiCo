@@ -9,7 +9,8 @@ import sys
 import os
 import cv2
 import requests
-
+import io
+DILATE_ITERATIONS = 5
 
 def make_dir(path):
     """
@@ -27,7 +28,13 @@ def image_to_base64_data_uri(image_path):
         with open(image_path, "rb") as img_file:
             img_data = img_file.read()
     else:
-        img_data = image_path
+        img_bytes_io = io.BytesIO()
+        Image.fromarray(image_path).save(img_bytes_io, format='JPEG')  # You can choose format as per your requirement (e.g., JPEG, PNG)
+        img_bytes_io.seek(0)
+
+        # Step 3: Read the bytes object to get the image data
+        img_data = img_bytes_io.read()
+
     img_base64 = base64.b64encode(img_data).decode("utf-8")
     mime_type = "image/jpeg"
     data_uri = f"data:{mime_type};base64,{img_base64}"
@@ -54,20 +61,11 @@ def fal_api(
     if garment_image_path is None:
         assert prompt is not None
         input_mask = np.array(Image.open(mask_image_path))
-        # input_mask = cv2.dilate(
-        #     input_mask, kernel=np.ones((5, 5)), iterations=1)
         if mask_only:
             return input_mask
-        Image.fromarray(input_mask).save(mask_image_path)
 
         # check if out_path exist, if so, check unmasked area
         if os.path.exists(out_path):
-            unmask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) <= 0)
-            input_image = np.array(Image.open(user_image_path).convert('RGB'))
-            output_image = np.array(Image.open(out_path).convert('RGB'))
-            # with open('out.txt', 'a') as out:
-            #     out.write(f'found existing naked result at {out_path} with diff = {np.mean(np.abs(input_image - output_image) * unmask_area)}\n')
-            # # if np.mean(np.abs(input_image - output_image) * unmask_area) <= 20:
             return None
 
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
@@ -86,9 +84,10 @@ def fal_api(
         }
     else:
         input_mask = np.array(Image.open(mask_image_path))
+        input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS-3 if garment_type == 'top' else DILATE_ITERATIONS+2)
+        
         if relative_fit == 0:  # regular fit
-            input_mask = cv2.dilate(
-                input_mask, kernel=np.ones((5, 5)), iterations=1)
+            input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=1)
             prompt = "fitted"
         elif relative_fit > 0:  # over sized
             indices = np.argwhere(input_mask > 0)
@@ -96,7 +95,7 @@ def fal_api(
             min_x, min_y = indices.min(axis=0)
             max_x, max_y = indices.max(axis=0)
             input_mask = cv2.dilate(input_mask, kernel=np.ones(
-                (5, 5)), iterations=5 * relative_fit)
+                (5, 5)), iterations=3 * relative_fit)
             input_mask[:max(0, min_x-5)] = 0  # remove top
             # input_mask[:,:max(0, min_y-10)] = 0  # remove left
             # input_mask[:,min(input_mask.shape[1], max_y+10):] = 0  # remove right
@@ -112,8 +111,8 @@ def fal_api(
         if mask_only:
             return input_mask
 
-        Image.fromarray(input_mask).save(mask_image_path)
-        input_mask_uri = image_to_base64_data_uri(mask_image_path)
+        # Image.fromarray(input_mask).save(mask_image_path)
+        input_mask_uri = image_to_base64_data_uri(input_mask)
         garment_image_uri = image_to_base64_data_uri(garment_image_path)
 
         assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
@@ -137,7 +136,7 @@ def fal_api(
                 "image_url": input_mask_uri,
                 "type": "PyraCanny",
                 "stop_at": 1,
-                "weight": 2.0
+                "weight": 1.6
             },
         }
     arguments.update(additional_arguments)
@@ -276,7 +275,6 @@ def main():
     # garment_image_path = sys.argv[2]
     # uid = sys.argv[3]
 
-    # os.system('touch out.txt')
     url = sys.argv[1]
     garment_image_path = sys.argv[2]
     uid = sys.argv[3]
@@ -309,14 +307,10 @@ def main():
     garment_mask_path = f'./cache/{uid}/{body_mask_labels}/mask.png'
     existing_garment_bound_mask_path = f'./cache/{uid}/{body_mask_labels}/bound_mask.png'
 
-    DILATE_ITERATIONS = 5
-
     if not os.path.exists(f"./cache/{uid}/densepose.torso.png"):
         get_body_mask(user_image_path, uid)
     if not os.path.exists(garment_mask_path):
         body_mask = combine_body_mask(**body_mask_args)
-        body_mask = cv2.dilate(
-            body_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS-3 if body_mask_args['garment_type'] == 'top' else DILATE_ITERATIONS+2)
         Image.fromarray(body_mask).save(garment_mask_path)
     if not os.path.exists(existing_garment_bound_mask_path):
         existing_garment_bound_mask = combine_body_mask(
