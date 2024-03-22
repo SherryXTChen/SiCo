@@ -8,6 +8,7 @@ from PIL import Image
 import sys
 import os
 import cv2
+import requests
 os.environ["FAL_KEY"] = "150008a7-249c-4575-9fa4-e391f6ad5b33:006bf483d5b59cad3807ebac247f4a82"
 
 
