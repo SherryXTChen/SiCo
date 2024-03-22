@@ -2,7 +2,8 @@ import React from 'react';
 
 const InstructionList = ({ handleNextPage, isSelectSize,
     pickTop, tryOnTop, pickBottom, tryOnBottom, continueFromLast, tryOnTopAgain,
-    pickTopTrueSize, tryOnTopTrueSize, changeTopTrueSize, tryOnTopTrueSizeAgain, pickBottomTrueSize, tryOnBottomTrueSize, changeBottomTrueSize, tryOnBottomTrueSizeAgain, continueFromBottomTrueSize, tryOnTopTrueSizeAgain2, continueFromBottomTrueSize2, tryOnTopTrueSizeAgain3 }) => {
+    pickTopTrueSize, tryOnTopTrueSize, changeTopTrueSize, tryOnTopTrueSizeAgain, pickBottomTrueSize, tryOnBottomTrueSize, changeBottomTrueSize, tryOnBottomTrueSizeAgain, continueFromBottomTrueSize, tryOnTopTrueSizeAgain2, continueFromBottomTrueSize2, tryOnTopTrueSizeAgain3,
+    invalidAction }) => {
     const style = {
         position: 'fixed',
         top: 0,
@@ -19,44 +20,62 @@ const InstructionList = ({ handleNextPage, isSelectSize,
             <h2>Instructions:</h2>
             <ol style={{ justifyContent: 'left', paddingLeft: '20px', paddingRight: '20px' }}>
                 {!isSelectSize && (<div>
-                    {!pickTop && (<li>Pick a top</li>)}
+                    {!invalidAction && !pickTop && (<li>Pick a top</li>)}
                     {pickTop && (<li style={{ color: "green" }}>Pick a top</li>)}
-                    {!tryOnTop && (<li>Try the top on</li>)}
+                    {invalidAction && !pickTop && (<li style={{ color: "red" }}>Pick a top</li>)}
+                    {(!invalidAction || !pickTop) && !tryOnTop && (<li>Try the top on</li>)}
                     {tryOnTop && (<li style={{ color: "green" }}>Try the top on</li>)}
-                    {!pickBottom && (<li>Pick a bottom or a dress</li>)}
+                    {invalidAction && pickTop && !tryOnTop && (<li style={{ color: "red" }}>Try the top on</li>)}
+                    {(!invalidAction || !tryOnTop) && !pickBottom && (<li>Pick a bottom or a dress</li>)}
                     {pickBottom && (<li style={{ color: "green" }}>Pick a bottom or a dress</li>)}
-                    {!tryOnBottom && (<li>Try the bottom / dress on</li>)}
+                    {invalidAction && tryOnTop && !pickBottom && (<li style={{ color: "red" }}>Pick a bottom or a dress</li>)}
+                    {(!invalidAction || !pickBottom) && !tryOnBottom && (<li>Try the bottom / dress on</li>)}
                     {tryOnBottom && (<li style={{ color: "green" }}>Try the bottom / dress on</li>)}
-                    {!continueFromLast && (<li>Continue from the last result</li>)}
+                    {invalidAction && pickBottom && !tryOnBottom && (<li style={{ color: "red" }}>Try the bottom / dress on</li>)}
+                    {(!invalidAction || !tryOnBottom) && !continueFromLast && (<li>Continue from the last result</li>)}
                     {continueFromLast && (<li style={{ color: "green" }}>Continue from the last result</li>)}
-                    {!tryOnTopAgain && (<li>Try the top from step 1 on again</li>)}
+                    {invalidAction && tryOnBottom && !continueFromLast && (<li style={{ color: "red" }}>Continue from the last result</li>)}
+                    {(!invalidAction || !continueFromLast) && !tryOnTopAgain && (<li>Try the top from step 1 on again</li>)}
                     {tryOnTopAgain && (<li style={{ color: "green" }}>Try the top from step 1 on again</li>)}
+                    {invalidAction && continueFromLast && !tryOnTopAgain && (<li style={{ color: "red" }}>Try the top from step 1 on again</li>)}
                 </div>)}
                 {isSelectSize && (<div>
-                    {!pickTopTrueSize && (<li>Pick a top with your true size</li>)}
+                    {!invalidAction && !pickTopTrueSize && (<li>Pick a top with your true size</li>)}
                     {pickTopTrueSize && (<li style={{ color: "green" }}>Pick a top with your true size</li>)}
-                    {!tryOnTopTrueSize && (<li>Try the top on</li>)}
+                    {invalidAction && !pickTopTrueSize && (<li style={{ color: "red" }}>Pick a top with your true size</li>)}
+                    {(!invalidAction || !pickTopTrueSize) && !tryOnTopTrueSize && (<li>Try the top on</li>)}
                     {tryOnTopTrueSize && (<li style={{ color: "green" }}>Try the top on</li>)}
-                    {!changeTopTrueSize && (<li>Change the garment size of the top</li>)}
+                    {invalidAction && pickTopTrueSize && !tryOnTopTrueSize && (<li style={{ color: "red" }}>Try the top on</li>)}
+                    {(!invalidAction || !tryOnTopTrueSize) && !changeTopTrueSize && (<li>Change the garment size of the top</li>)}
                     {changeTopTrueSize && (<li style={{ color: "green" }}>Change the garment size of the top</li>)}
-                    {!tryOnTopTrueSizeAgain && (<li>Try the top on again</li>)}
+                    {invalidAction && tryOnTopTrueSize && !changeTopTrueSize && (<li style={{ color: "red" }}>Change the garment size of the top</li>)}
+                    {(!invalidAction || !changeTopTrueSize) && !tryOnTopTrueSizeAgain && (<li>Try the top on again</li>)}
                     {tryOnTopTrueSizeAgain && (<li style={{ color: "green" }}>Try the top on again</li>)}
-                    {!pickBottomTrueSize && (<li>Pick a bottom or a dress with your true size</li>)}
+                    {invalidAction && changeTopTrueSize && !tryOnTopTrueSizeAgain && (<li style={{ color: "red" }}>Try the top on again</li>)}
+                    {(!invalidAction || !tryOnTopTrueSizeAgain) && !pickBottomTrueSize && (<li>Pick a bottom or a dress with your true size</li>)}
                     {pickBottomTrueSize && (<li style={{ color: "green" }}>Pick a bottom or a dress with your true size</li>)}
-                    {!tryOnBottomTrueSize && (<li>Try the bottom / dress on</li>)}
+                    {invalidAction && tryOnTopTrueSizeAgain && !pickBottomTrueSize && (<li style={{ color: "red" }}>Pick a bottom or a dress with your true size</li>)}
+                    {(!invalidAction || !pickBottomTrueSize) && !tryOnBottomTrueSize && (<li>Try the bottom / dress on</li>)}
                     {tryOnBottomTrueSize && (<li style={{ color: "green" }}>Try the bottom / dress on</li>)}
-                    {!changeBottomTrueSize && (<li>Change the garment size of the bottom / dress to a different size</li>)}
+                    {invalidAction && pickBottomTrueSize && !tryOnBottomTrueSize && (<li style={{ color: "red" }}>Try the bottom / dress on</li>)}
+                    {(!invalidAction || !tryOnBottomTrueSize) && !changeBottomTrueSize && (<li>Change the garment size of the bottom / dress to a different size</li>)}
                     {changeBottomTrueSize && (<li style={{ color: "green" }}>Change the garment size of the bottom / dress to a different size</li>)}
-                    {!tryOnBottomTrueSizeAgain && (<li>Try the bottom / dress on again</li>)}
+                    {invalidAction && tryOnBottomTrueSize && !changeBottomTrueSize && (<li style={{ color: "red" }}>Change the garment size of the bottom / dress to a different size</li>)}
+                    {(!invalidAction || !changeBottomTrueSize) && !tryOnBottomTrueSizeAgain && (<li>Try the bottom / dress on again</li>)}
                     {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom / dress on again</li>)}
-                    {!continueFromBottomTrueSize && (<li>Continue from the result in step 6.</li>)}
+                    {invalidAction && changeBottomTrueSize && !tryOnBottomTrueSizeAgain && (<li style={{ color: "red" }}>Try the bottom / dress on again</li>)}
+                    {(!invalidAction || !tryOnBottomTrueSizeAgain) && !continueFromBottomTrueSize && (<li>Continue from the result in step 6.</li>)}
                     {continueFromBottomTrueSize && (<li style={{ color: "green" }}>Continue from the result in step 6.</li>)}
-                    {!tryOnTopTrueSizeAgain2 && (<li>Try on the top from step 1 (with your true size) again</li>)}
+                    {invalidAction && tryOnBottomTrueSizeAgain && !continueFromBottomTrueSize && (<li style={{ color: "red" }}>Continue from the result in step 6.</li>)}
+                    {(!invalidAction || !continueFromBottomTrueSize) && !tryOnTopTrueSizeAgain2 && (<li>Try on the top from step 1 (with your true size) again</li>)}
                     {tryOnTopTrueSizeAgain2 && (<li style={{ color: "green" }}>Try on the top from step 1 (with your true size) again</li>)}
-                    {!continueFromBottomTrueSize2 && (<li>Continue from the result in step 8.</li>)}
+                    {invalidAction && continueFromBottomTrueSize && !tryOnTopTrueSizeAgain2 && (<li style={{ color: "red" }}>Try on the top from step 1 (with your true size) again</li>)}
+                    {(!invalidAction || !tryOnTopTrueSizeAgain2) && !continueFromBottomTrueSize2 && (<li>Continue from the result in step 8.</li>)}
                     {continueFromBottomTrueSize2 && (<li style={{ color: "green" }}>Continue from the result in step 8.</li>)}
-                    {!tryOnTopTrueSizeAgain3 && (<li>Try on the top from step 3 (with a changed size) again</li>)}
+                    {invalidAction && tryOnTopTrueSizeAgain2 && !continueFromBottomTrueSize2 && (<li style={{ color: "red" }}>Continue from the result in step 8.</li>)}
+                    {(!invalidAction || !continueFromBottomTrueSize2) && !tryOnTopTrueSizeAgain3 && (<li>Try on the top from step 3 (with a changed size) again</li>)}
                     {tryOnTopTrueSizeAgain3 && (<li style={{ color: "green" }}>Try on the top from step 3 (with a changed size) again</li>)}
+                    {invalidAction && continueFromBottomTrueSize2 && !tryOnTopTrueSizeAgain3 && (<li style={{ color: "red" }}>Try on the top from step 3 (with a changed size) again</li>)}
                 </div>)}
             </ol>
             {!isSelectSize && pickTop && tryOnTop && pickBottom && tryOnBottom && continueFromLast && tryOnTopAgain

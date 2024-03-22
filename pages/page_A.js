@@ -5,6 +5,7 @@ import ImagePicker from "../components/ImagePicker";
 const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching, firstSite }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
+    const [tempImage, setTempImage] = useState(null);
 
     useEffect(() => {
         const handleResize = () => {
@@ -27,6 +28,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         // convert the image to a jpeg and then set the image state
         const file = e.target.files[0];
         setImage(file);
+        setTempImage(URL.createObjectURL(file));
         imageRef.current = file;
         handleCaching();
     };
@@ -92,7 +94,13 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         accept="image/*"
                         onChange={handleImageChange}
                         style={{ position: "absolute", width: "20%", height: "auto" }} /></>)}
-                {image && (<>
+                {image && tempImage && (<>
+                    <img src={tempImage} style={{ width: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
+                    <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
+                        style={{ position: "absolute", top: "0", right: "0" }}
+                    >x</button>
+                </>)}
+                {image && !tempImage && (<>
                     <img src={localStorage.getItem("cachedImageURL")} style={{ width: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
                     <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
                         style={{ position: "absolute", top: "0", right: "0" }}
