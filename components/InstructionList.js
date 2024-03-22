@@ -64,15 +64,15 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                     {(!invalidAction || !changeBottomTrueSize) && !tryOnBottomTrueSizeAgain && (<li>Try the bottom on again</li>)}
                     {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom on again</li>)}
                     {invalidAction && changeBottomTrueSize && !tryOnBottomTrueSizeAgain && (<li style={{ color: "red" }}>Try the bottom on again</li>)}
-                    {(!invalidAction || !tryOnBottomTrueSizeAgain) && !continueFromBottomTrueSize && (<li>Continue from the result in step 6.</li>)}
-                    {continueFromBottomTrueSize && (<li style={{ color: "green" }}>Continue from the result in step 6.</li>)}
+                    {(!invalidAction || !tryOnBottomTrueSizeAgain) && !continueFromBottomTrueSize && (<li>Continue from the result in step 6 (3rd result from the top).</li>)}
+                    {continueFromBottomTrueSize && (<li style={{ color: "green" }}>Continue from the result in step 6 (3rd result from the top).</li>)}
                     {invalidAction && tryOnBottomTrueSizeAgain && !continueFromBottomTrueSize && (<li style={{ color: "red" }}>Continue from the result in step 6.</li>)}
                     {(!invalidAction || !continueFromBottomTrueSize) && !tryOnTopTrueSizeAgain2 && (<li>Try on the top from step 1 (with your true size) again</li>)}
                     {tryOnTopTrueSizeAgain2 && (<li style={{ color: "green" }}>Try on the top from step 1 (with your true size) again</li>)}
                     {invalidAction && continueFromBottomTrueSize && !tryOnTopTrueSizeAgain2 && (<li style={{ color: "red" }}>Try on the top from step 1 (with your true size) again</li>)}
-                    {(!invalidAction || !tryOnTopTrueSizeAgain2) && !continueFromBottomTrueSize2 && (<li>Continue from the result in step 8.</li>)}
-                    {continueFromBottomTrueSize2 && (<li style={{ color: "green" }}>Continue from the result in step 8.</li>)}
-                    {invalidAction && tryOnTopTrueSizeAgain2 && !continueFromBottomTrueSize2 && (<li style={{ color: "red" }}>Continue from the result in step 8.</li>)}
+                    {(!invalidAction || !tryOnTopTrueSizeAgain2) && !continueFromBottomTrueSize2 && (<li>Continue from the result in step 8 (4th result from the top).</li>)}
+                    {continueFromBottomTrueSize2 && (<li style={{ color: "green" }}>Continue from the result in step 8 (4th result from the top).</li>)}
+                    {invalidAction && tryOnTopTrueSizeAgain2 && !continueFromBottomTrueSize2 && (<li style={{ color: "red" }}>Continue from the result in step 8 (4th result from the top).</li>)}
                     {(!invalidAction || !continueFromBottomTrueSize2) && !tryOnTopTrueSizeAgain3 && (<li>Try on the top from step 3 (with a changed size) again</li>)}
                     {tryOnTopTrueSizeAgain3 && (<li style={{ color: "green" }}>Try on the top from step 3 (with a changed size) again</li>)}
                     {invalidAction && continueFromBottomTrueSize2 && !tryOnTopTrueSizeAgain3 && (<li style={{ color: "red" }}>Try on the top from step 3 (with a changed size) again</li>)}
