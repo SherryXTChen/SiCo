@@ -81,7 +81,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         { id: 8, name: 'pants none long', image: 'garments/lower_body/000003_1.jpg' },
         { id: 9, name: 'pants none long', image: 'garments/lower_body/013563_1.jpg' },
         { id: 10, name: 'pants none short', image: 'garments/lower_body/013564_1.jpg' },
-        { id: 11, name: 'skirt none short', image: 'garments/lower_body/013565_1.jpg' },
+        { id: 11, name: 'pants none short', image: 'garments/lower_body/013565_1.jpg' },
         { id: 12, name: 'pants none long', image: 'garments/lower_body/013566_1.jpg' },
     ];
 
