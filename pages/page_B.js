@@ -239,7 +239,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                             <img src={image} style={{ width: "20%", height: "auto" }} />
                             <button className="continue" id={tryOnResultsRef ? tryOnResultsRef.current.length : 0} onClick={(e) => {
                                 const debug = localStorage.getItem("debug");
-                                console.log("Continue from here:", e.currentTarget.id);
                                 if(!isSelectSize) {
                                     // 1 should correspond with the last result which is tryOnBottom
                                     if(tryOnBottomRef.current && !continueFromLastRef.current && e.currentTarget.id === 1) {
