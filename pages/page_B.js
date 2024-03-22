@@ -47,6 +47,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     invalidActionRef.current = invalidAction;
     const loadingRef = React.useRef(null);
     loadingRef.current = loading;
+    const checkerRef = React.useRef(null);
 
     const topIdRef = React.useRef(0);
     const pickTopRef = React.useRef(pickTop);
@@ -88,6 +89,9 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const setLoading = (arg) => {
         loadingRef.current = arg;
         _setLoading(arg);
+        if(!arg) {
+            checkerRef.current = false;
+        }
     };
     const setProgress = (arg) => {
         progressRef.current = arg;
@@ -298,6 +302,9 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
         const handleTryItOn = async () => {
             setLoading(true);
+            setTimeout(() => {
+                checkerRef.current = true;
+            }, 30000);
             loadingBarRef.current?.continuousStart(0, 6000)
             const formData = new FormData();
             const garmentType = product.name.split(' ')[0];
@@ -480,7 +487,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if(loadingRef.current) {
+            if(checkerRef.current) {
                 updateGallery();
                 setChange(prevState => !prevState);
                 forceUpdate();
