@@ -7,8 +7,7 @@ import numpy as np
 from PIL import Image
 import sys
 import os
-import requests
-from collections import defaultdict
+import cv2
 os.environ["FAL_KEY"] = "150008a7-249c-4575-9fa4-e391f6ad5b33:006bf483d5b59cad3807ebac247f4a82"
 
 
@@ -55,8 +54,8 @@ def fal_api(
     if garment_image_path is None:
         assert prompt is not None
         input_mask = np.array(Image.open(mask_image_path))
-        input_mask = cv2.dilate(
-            input_mask, kernel=np.ones((5, 5)), iterations=1)
+        # input_mask = cv2.dilate(
+        #     input_mask, kernel=np.ones((5, 5)), iterations=1)
         if mask_only:
             return input_mask
         Image.fromarray(input_mask).save(mask_image_path)
@@ -120,21 +119,6 @@ def fal_api(
         assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
         prompt = f'{garment_type}+++ , {prompt}'
 
-        # we have generated a previous result with the same garment and mask
-        # if type(out_path) == tuple:
-        #     previous_output_path, out_path = out_path
-        #     with open('out.txt', 'a') as out:
-        #         out.write(f'find existing garment result at {out_path}\n')
-        #     mask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) > 0)
-        #     input_image = np.array(Image.open(user_image_path).convert('RGB'))
-        #     prev_output_image = np.array(Image.open(previous_output_path).convert('RGB'))
-        #     output_image = Image.fromarray(prev_output_image * mask_area + input_image * (1 - mask_area))
-        #     output_image.save(out_path)
-        #     return
-        # else:
-        #     with open('out.txt', 'a') as out:
-        #         out.write(f'find no existing garment result at {out_path}\n')
-
         additional_arguments = {
             "performance": "Speed",
             "inpaint_image_url": input_image_uri,
@@ -153,7 +137,7 @@ def fal_api(
                 "image_url": input_mask_uri,
                 "type": "PyraCanny",
                 "stop_at": 1,
-                "weight": 1
+                "weight": 2.0
             },
         }
     arguments.update(additional_arguments)
@@ -170,13 +154,6 @@ def fal_api(
     url = result['images'][0]['url']
     os.system(f'wget -O "{out_path}" "{url}"')
 
-    mask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) > 0)
-    input_image = np.array(Image.open(user_image_path).convert('RGB'))
-    output_image = np.array(Image.open(out_path).convert('RGB'))
-    output_image = Image.fromarray(output_image * mask_area + input_image * (1 - mask_area))
-    output_image.save(out_path)
-
-
 def fal_api_segment(user_image_path, text):
     handler = fal.apps.submit(
         "fal-ai/imageutils",
@@ -186,7 +163,6 @@ def fal_api_segment(user_image_path, text):
             "text_prompt": text,
         },
     )
-
     # for event in handler.iter_events():
     #     if isinstance(event, fal.apps.InProgress):
     #         print('Request in progress')
@@ -230,7 +206,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
             assert len(indices) != 0
             min_x, _ = indices.min(axis=0)
             max_x, _ = indices.max(axis=0)
-            leng = (max_x - min_x) // 2
+            leng = (max_x - min_x) // 3
             bottom_body_mask[max(0, max_x-leng):, :] = 0
 
         if garment_type in ['skirt', 'dress']:
@@ -270,7 +246,7 @@ def combine_body_mask(garment_type, top_sleeve_length=None, bottom_leg_length=No
                 assert len(indices) != 0
                 min_x, _ = indices.min(axis=0)
                 max_x, _ = indices.max(axis=0)
-                leng = (max_x - min_x) // 2
+                leng = (max_x - min_x) // 3
                 top_body_mask[max(0, max_x-leng):, :] = 0
 
             mask_list.append(top_body_mask)
@@ -332,28 +308,34 @@ def main():
     make_dir(f'./cache/{uid}/{body_mask_labels}')
     garment_mask_path = f'./cache/{uid}/{body_mask_labels}/mask.png'
     existing_garment_bound_mask_path = f'./cache/{uid}/{body_mask_labels}/bound_mask.png'
+
+    DILATE_ITERATIONS = 5
+
     if not os.path.exists(f"./cache/{uid}/densepose.torso.png"):
         get_body_mask(user_image_path, uid)
     if not os.path.exists(garment_mask_path):
         body_mask = combine_body_mask(**body_mask_args)
+        body_mask = cv2.dilate(
+            body_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS-3 if body_mask_args['garment_type'] == 'top' else DILATE_ITERATIONS+2)
         Image.fromarray(body_mask).save(garment_mask_path)
     if not os.path.exists(existing_garment_bound_mask_path):
         existing_garment_bound_mask = combine_body_mask(
             garment_type='jump suit', top_sleeve_length='long', bottom_leg_length='long', uid=uid)
-        existing_garment_bound_mask = cv2.dilate(existing_garment_bound_mask, kernel=np.ones((5, 5)), iterations=1)
+        existing_garment_bound_mask = cv2.dilate(
+            existing_garment_bound_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS * 2)
         Image.fromarray(existing_garment_bound_mask).save(existing_garment_bound_mask_path)
-    existing_garment_bound_mask = np.array(Image.open(existing_garment_bound_mask_path).convert('L'))
 
+    existing_garment_bound_mask = np.array(Image.open(existing_garment_bound_mask_path).convert('L'))
+    
     # get mask of existing garment
+    text = ['shirt, t shirt, bra', 'pants, shorts, skirts']
+    prompt = "a naked person, (skin color)+++, (body)+++"
     if body_mask_args['garment_type'] in ['jump suit', 'dress']:
-        text = ['shirt, top clothing', 'pants, bottom clothing']
-        prompt = "a naked person, (skin color)+++"
+        pass
     elif body_mask_args['garment_type'] in ['pants', 'skirt']:
-        text = 'pants, bottom clothing'
-        prompt = "a person, naked lower body, with a shirt, (skin color)+++"
+        text = text[1] + ", naked lower body, wearing shirt"
     else:
-        text = 'shirt, top clothing'
-        prompt = "a person, naked upper body, with pants, (skin color)+++"
+        text = text[0] + ", naked upper body, wearing pants"
 
     body_mask_path = f'./cache/{uid}/{body_mask_labels}/body_mask.png'
     if not os.path.exists(body_mask_path):
@@ -371,7 +353,8 @@ def main():
         else:
             body_mask_url = fal_api_segment(user_image_path, text)
             os.system(f'wget -O "{body_mask_path}" "{body_mask_url}"')
-        body_mask = np.array(Image.open(body_mask_path).convert('L'))
+        body_mask = np.array(Image.open(body_mask_path).convert('L').resize(Image.open(user_image_path).size)) # sam may resize image
+        body_mask = cv2.dilate(body_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS) # sam tend to cut inside
         body_mask[existing_garment_bound_mask <= 0] = 0 # heuristic to reduce segmentation mask inaccuracy 
         Image.fromarray((body_mask > 0).astype(
             np.uint8) * 255).save(body_mask_path)
