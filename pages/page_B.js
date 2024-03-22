@@ -318,7 +318,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         return;
                     }
                 } else if(tryOnTopRef.current && !tryOnBottomRef.current) {
-                    if(garmentType === 'pants' || garmentType === 'dress') {
+                    if(garmentType === 'pants' || garmentType === 'skirt') {
                         setTryOnBottom(true);
                     } else if(debug !== "true") {
                         setInvalidAction(true);
@@ -356,7 +356,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         return;
                     }
                 } else if(pickBottomTrueSizeRef.current && !tryOnBottomTrueSizeRef.current) {
-                    if((garmentType === 'pants' || garmentType === 'dress') && garmentSize === trueSize) {
+                    if((garmentType === 'pants' || garmentType === 'skirt') && garmentSize === trueSize) {
                         setTryOnBottomTrueSize(true);
                     } else if(debug !== "true") {
                         setInvalidAction(true);
@@ -364,7 +364,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         return;
                     }
                 } else if(changeBottomTrueSizeRef.current && !tryOnBottomTrueSizeAgainRef.current) {
-                    if((garmentType === 'pants' || garmentType === 'dress') && garmentSize !== trueSize) {
+                    if((garmentType === 'pants' || garmentType === 'skirt') && garmentSize !== trueSize) {
                         setTryOnBottomTrueSizeAgain(true);
                     } else if(debug !== "true") {
                         setInvalidAction(true);
@@ -441,7 +441,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                     //     setInvalidAction(true);
                                     //     return;
                                     // }
-                                } else if(tryOnBottomTrueSizeRef.current && !changeBottomTrueSizeRef.current && garmentType === 'pants' || garmentType === 'dress') {
+                                } else if(tryOnBottomTrueSizeRef.current && !changeBottomTrueSizeRef.current && garmentType === 'pants' || garmentType === 'skirt') {
                                     if(e.target.value !== trueSize) {
                                         setChangeBottomTrueSize(true);
                                     }
@@ -575,41 +575,38 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                         let garmentSize;
                                         const debug = localStorage.getItem("debug");
                                         if(!isSelectSize) {
-                                            if(debug !== "true") {
-                                                if(!product.name.startsWith('top') && !pickTopRef.current) {
-                                                    setInvalidAction(true);
-                                                    return;
-                                                }
-                                                if(!product.name.startsWith('pants')
-                                                    && !product.name.startsWith('dress')
-                                                    && tryOnTopRef.current && !pickBottomRef.current) {
-                                                    setInvalidAction(true);
-                                                    return;
-                                                }
-                                                if(product.name.startsWith('top') && pickTopRef.current) {
-                                                    setInvalidAction(true);
-                                                    return;
-                                                }
-                                                if((product.name.startsWith('pants')
-                                                    || product.name.startsWith('dress'))
-                                                    && pickBottomRef.current) {
-                                                    setInvalidAction(true);
-                                                    return;
-                                                }
-                                                if(pickTopRef.current && pickBottomRef.current) {
-                                                    setInvalidAction(true);
-                                                    return;
-                                                }
-                                            }
+                                            // if(debug !== "true") {
+                                            //     if(!product.name.startsWith('top') && !pickTopRef.current) {
+                                            //         setInvalidAction(true);
+                                            //         return;
+                                            //     }
+                                            //     if(!product.name.startsWith('pants')
+                                            //         && !product.name.startsWith('dress')
+                                            //         && tryOnTopRef.current && !pickBottomRef.current) {
+                                            //         setInvalidAction(true);
+                                            //         return;
+                                            //     }
+                                            //     if(product.name.startsWith('top') && pickTopRef.current) {
+                                            //         setInvalidAction(true);
+                                            //         return;
+                                            //     }
+                                            //     if((product.name.startsWith('pants')
+                                            //         || product.name.startsWith('dress'))
+                                            //         && pickBottomRef.current) {
+                                            //         setInvalidAction(true);
+                                            //         return;
+                                            //     }
+                                            //     if(pickTopRef.current && pickBottomRef.current) {
+                                            //         setInvalidAction(true);
+                                            //         return;
+                                            //     }
+                                            // }
                                             if(!pickTop && product.name.startsWith('top')) {
                                                 selectedSize = topSize;
                                                 topIdRef.current = product.id;
                                                 setPickTop(true);
-                                            } else if(tryOnTopRef.current && !pickBottomRef.current && product.name.startsWith('pants')) {
+                                            } else if(tryOnTopRef.current && !pickBottomRef.current && (product.name.startsWith('pants') || product.name.startsWith('skirt'))) {
                                                 selectedSize = bottomSize;
-                                                setPickBottom(true);
-                                            } else if(tryOnTopRef.current && !pickBottomRef.current && product.name.startsWith('dress')) {
-                                                selectedSize = dressSize;
                                                 setPickBottom(true);
                                             } else {
                                                 selectedSize = 'N/A';
@@ -618,29 +615,27 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                         } else if(isSelectSize) {
                                             if(product.name.startsWith('top')) {
                                                 selectedSize = topSize;
-                                            } else if(product.name.startsWith('pants')) {
+                                            } else if(product.name.startsWith('pants') || product.name.startsWith('skirt')) {
                                                 selectedSize = bottomSize;
-                                            } else if(product.name.startsWith('dress')) {
-                                                selectedSize = dressSize;
                                             }
                                             garmentSize = document.getElementById(`garmentSize-${product.id}`).value;
 
                                             if(!pickTopTrueSizeRef.current) {
-                                                if(!product.name.startsWith('top')) {
-                                                    if(debug !== "true") {
-                                                        setInvalidAction(true);
-                                                        return;
-                                                    }
-                                                }
-                                                else if(selectedSize !== garmentSize) {
-                                                    if(debug !== "true") {
-                                                        setInvalidAction(true);
-                                                        return;
-                                                    }
-                                                }
-                                                else if(selectedSize === garmentSize) { setPickTopTrueSize(true); }
+                                                // if(!product.name.startsWith('top')) {
+                                                //     if(debug !== "true") {
+                                                //         setInvalidAction(true);
+                                                //         return;
+                                                //     }
+                                                // }
+                                                // else if(selectedSize !== garmentSize) {
+                                                //     if(debug !== "true") {
+                                                //         setInvalidAction(true);
+                                                //         return;
+                                                //     }
+                                                // }
+                                                if(selectedSize === garmentSize) { setPickTopTrueSize(true); }
                                             } else if(tryOnTopTrueSizeAgainRef.current && !pickBottomTrueSizeRef.current) {
-                                                if(!product.name.startsWith('pants') && !product.name.startsWith('dress')) { if(debug !== "true") { return; } }
+                                                if(!product.name.startsWith('pants') && !product.name.startsWith('skirt')) { if(debug !== "true") { return; } }
                                                 else if(selectedSize !== garmentSize) {
                                                     if(debug !== "true") {
                                                         setInvalidAction(true);
