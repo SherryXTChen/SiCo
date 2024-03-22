@@ -14,6 +14,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [startSurvey, setStartSurvey] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
     const [progress, _setProgress] = useState(0);
+    const [invalidAction, _setInvalidAction] = useState(false);
 
     const [pickTop, _setPickTop] = useState(false);
     const [tryOnTop, _setTryOnTop] = useState(false);
@@ -42,6 +43,8 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const tryOnResultsRef = React.useRef(null);
     tryOnItemsRef.current = tryOnItems;
     tryOnResultsRef.current = tryOnResults;
+    const invalidActionRef = React.useRef(null);
+    invalidActionRef.current = invalidAction;
 
     const topIdRef = React.useRef(0);
     const pickTopRef = React.useRef(pickTop);
@@ -84,75 +87,97 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         progressRef.current = arg;
         _setProgress(arg);
     };
+    const setInvalidAction = (arg) => {
+        invalidActionRef.current = arg;
+        _setInvalidAction(arg);
+    };
     const setPickTop = (arg) => {
+        setInvalidAction(false);
         pickTopRef.current = arg;
         _setPickTop(arg);
     };
     const setTryOnTop = (arg) => {
+        setInvalidAction(false);
         tryOnTopRef.current = arg;
         _setTryOnTop(arg);
     };
     const setPickBottom = (arg) => {
+        setInvalidAction(false);
         pickBottomRef.current = arg;
         _setPickBottom(arg);
     };
     const setTryOnBottom = (arg) => {
+        setInvalidAction(false);
         tryOnBottomRef.current = arg;
         _setTryOnBottom(arg);
     };
     const setContinueFromLast = (arg) => {
+        setInvalidAction(false);
         continueFromLastRef.current = arg;
         _setContinueFromLast(arg);
     };
     const setTryOnTopAgain = (arg) => {
+        setInvalidAction(false);
         tryOnTopAgainRef.current = arg;
         _setTryOnTopAgain(arg);
     };
     const setPickTopTrueSize = (arg) => {
+        setInvalidAction(false);
         pickTopTrueSizeRef.current = arg;
         _setPickTopTrueSize(arg);
     };
     const setTryOnTopTrueSize = (arg) => {
+        setInvalidAction(false);
         tryOnTopTrueSizeRef.current = arg;
         _setTryOnTopTrueSize(arg);
     };
     const setChangeTopTrueSize = (arg) => {
+        setInvalidAction(false);
         changeTopTrueSizeRef.current = arg;
         _setChangeTopTrueSize(arg);
     };
     const setTryOnTopTrueSizeAgain = (arg) => {
+        setInvalidAction(false);
         tryOnTopTrueSizeAgainRef.current = arg;
         _setTryOnTopTrueSizeAgain(arg);
     };
     const setPickBottomTrueSize = (arg) => {
+        setInvalidAction(false);
         pickBottomTrueSizeRef.current = arg;
         _setPickBottomTrueSize(arg);
     };
     const setTryOnBottomTrueSize = (arg) => {
+        setInvalidAction(false);
         tryOnBottomTrueSizeRef.current = arg;
         _setTryOnBottomTrueSize(arg);
     };
     const setChangeBottomTrueSize = (arg) => {
+        setInvalidAction(false);
         changeBottomTrueSizeRef.current = arg;
         _setChangeBottomTrueSize(arg);
     };
     const setTryOnBottomTrueSizeAgain = (arg) => {
+        setInvalidAction(false);
         tryOnBottomTrueSizeAgainRef.current = arg;
         _setTryOnBottomTrueSizeAgain(arg);
     };
     const setContinueFromBottomTrueSize = (arg) => {
+        setInvalidAction(false);
         continueFromBottomTrueSizeRef.current = arg;
         _setContinueFromBottomTrueSize(arg);
     };
     const setTryOnTopTrueSizeAgain2 = (arg) => {
+        setInvalidAction(false);
         tryOnTopTrueSizeAgain2Ref.current = arg;
         _setTryOnTopTrueSizeAgain2(arg);
     };
     const setContinueFromBottomTrueSize2 = (arg) => {
+        setInvalidAction(false);
         continueFromBottomTrueSize2Ref.current = arg;
         _setContinueFromBottomTrueSize2(arg);
     };
     const setTryOnTopTrueSizeAgain3 = (arg) => {
+        setInvalidAction(false);
         tryOnTopTrueSizeAgain3Ref.current = arg;
         _setTryOnTopTrueSizeAgain3(arg);
     };
@@ -201,27 +226,39 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 const imageName = image.split('/').pop().split('-')[0];
                 if(!tryOnResultsRef.current?.some((item) => item.key === imageName)) {
                     const itemDiv = (
-                        <div className="picked-item" key={imageName}>
+                        <div className="picked-item" key={imageName} id={tryOnResultsRef ? tryOnResultsRef.current.length : 0}>
                             <img src={image} style={{ width: "20%", height: "auto" }} />
-                            <button className="continue" key={tryOnResultsRef.current.length} onClick={() => {
+                            <button className="continue" onClick={(e) => {
                                 const debug = localStorage.getItem("debug");
                                 if(!isSelectSize) {
-                                    const lastImageFile = imageFiles[imageFiles.length - 1];
-                                    if(tryOnBottomRef.current && !continueFromLastRef.current && image === lastImageFile) {
+                                    // 1 should correspond with the last result which is tryOnBottom
+                                    if(tryOnBottomRef.current && !continueFromLastRef.current && item.id === 1) {
                                         setContinueFromLast(true);
-                                    } else if(debug !== "true") { return; }
+                                    } else if(debug !== "true") {
+                                        setInvalidAction(true);
+                                        return;
+                                    }
                                 } else if(isSelectSize) {
                                     if(tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current) {
-                                        const correctImage = imageFiles[2];
-                                        if(image === correctImage) {
+                                        // 2 should correspond to Step 6 which is tryOnBottomTrueSize
+                                        if(e.currentTarget.id === 2) {
                                             setContinueFromBottomTrueSize(true);
-                                        } else if(debug !== "true") { return; }
+                                        } else if(debug !== "true") {
+                                            setInvalidAction(true);
+                                            return;
+                                        }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
-                                        const correctImage = imageFiles[3];
-                                        if(image === correctImage) {
+                                        // 3 should correspond to Step 8 which is tryOnTopTrueSizeAgain2
+                                        if(e.currentTarget.id === 3) {
                                             setContinueFromBottomTrueSize2(true);
-                                        } else if(debug !== "true") { return; }
-                                    } else if(debug !== "true") { return; }
+                                        } else if(debug !== "true") {
+                                            setInvalidAction(true);
+                                            return;
+                                        }
+                                    } else if(debug !== "true") {
+                                        setInvalidAction(true);
+                                        return;
+                                    }
                                 }
                                 setImage(image);
                                 imageRef.current = image;
@@ -245,9 +282,10 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     const addToTryOnRoom = (product, trueSize, garmentSize) => {
         const handleRemove = () => {
-            if(localStorage.getItem("debug") !== "true") {
-                return;
-            }
+            // if(localStorage.getItem("debug") !== "true") {
+            //     setInvalidAction(true);
+            //     return;
+            // }
             tryOnItemsRef.current = tryOnItemsRef.current?.filter((item) => item.key != product.id);
             setTryOnItems(tryOnItemsRef.current);
         };
@@ -263,6 +301,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(garmentType === 'top') {
                         setTryOnTop(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -270,6 +309,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(garmentType === 'pants' || garmentType === 'dress') {
                         setTryOnBottom(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -277,10 +317,12 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(product.id === topIdRef.current) {
                         setTryOnTopAgain(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
                 } else if(debug !== "true") {
+                    setInvalidAction(true);
                     setLoading(false);
                     return;
                 }
@@ -289,6 +331,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(garmentType === 'top' && garmentSize === trueSize) {
                         setTryOnTopTrueSize(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -296,6 +339,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(garmentType === 'top' && garmentSize !== trueSize) {
                         setTryOnTopTrueSizeAgain(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -303,6 +347,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if((garmentType === 'pants' || garmentType === 'dress') && garmentSize === trueSize) {
                         setTryOnBottomTrueSize(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -310,6 +355,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if((garmentType === 'pants' || garmentType === 'dress') && garmentSize !== trueSize) {
                         setTryOnBottomTrueSizeAgain(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -317,6 +363,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(garmentType === 'top' && garmentSize === trueSize) {
                         setTryOnTopTrueSizeAgain2(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
@@ -324,10 +371,12 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     if(garmentType === 'top' && garmentSize !== trueSize) {
                         setTryOnTopTrueSizeAgain3(true);
                     } else if(debug !== "true") {
+                        setInvalidAction(true);
                         setLoading(false);
                         return;
                     }
                 } else if(debug !== "true") {
+                    setInvalidAction(true);
                     setLoading(false);
                     return;
                 }
@@ -375,11 +424,19 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 if(tryOnTopTrueSizeRef.current && !changeTopTrueSizeRef.current && garmentType === 'top') {
                                     if(e.target.value !== trueSize) {
                                         setChangeTopTrueSize(true);
-                                    } else if(localStorage.getItem("debug") !== "true") { return; }
+                                    }
+                                    // else if(localStorage.getItem("debug") !== "true") {
+                                    //     setInvalidAction(true);
+                                    //     return;
+                                    // }
                                 } else if(tryOnBottomTrueSizeRef.current && !changeBottomTrueSizeRef.current && garmentType === 'pants' || garmentType === 'dress') {
                                     if(e.target.value !== trueSize) {
                                         setChangeBottomTrueSize(true);
-                                    } else if(localStorage.getItem("debug") !== "true") { return; }
+                                    }
+                                    // else if(localStorage.getItem("debug") !== "true") {
+                                    //     setInvalidAction(true);
+                                    //     return;
+                                    // }
                                 }
                                 garmentSize = e.target.value;
                             }}>
@@ -450,6 +507,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     tryOnTopTrueSizeAgain2={tryOnTopTrueSizeAgain2}
                     continueFromBottomTrueSize2={continueFromBottomTrueSize2}
                     tryOnTopTrueSizeAgain3={tryOnTopTrueSizeAgain3}
+                    invalidAction={invalidAction}
                 />
                 {loading && (<div className="overlay">
                     <div style={{ position: "relative" }}>
@@ -471,18 +529,18 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 </div>)}
                 <div className="section-container">
                     <h2 className="section-title">All Products</h2>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
                     <div>
                         <div className="products-container">
                             {products.map((product) => (
@@ -505,20 +563,27 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                         if(!isSelectSize) {
                                             if(debug !== "true") {
                                                 if(!product.name.startsWith('top') && !pickTopRef.current) {
+                                                    setInvalidAction(true);
                                                     return;
                                                 }
                                                 if(!product.name.startsWith('pants')
-                                                    && !product.name.startsWith('dress') && tryOnTopRef.current && !pickBottomRef.current) {
+                                                    && !product.name.startsWith('dress')
+                                                    && tryOnTopRef.current && !pickBottomRef.current) {
+                                                    setInvalidAction(true);
                                                     return;
                                                 }
                                                 if(product.name.startsWith('top') && pickTopRef.current) {
+                                                    setInvalidAction(true);
                                                     return;
                                                 }
                                                 if((product.name.startsWith('pants')
-                                                    || product.name.startsWith('dress')) && pickBottomRef.current) {
+                                                    || product.name.startsWith('dress'))
+                                                    && pickBottomRef.current) {
+                                                    setInvalidAction(true);
                                                     return;
                                                 }
                                                 if(pickTopRef.current && pickBottomRef.current) {
+                                                    setInvalidAction(true);
                                                     return;
                                                 }
                                             }
@@ -547,12 +612,27 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                             garmentSize = document.getElementById(`garmentSize-${product.id}`).value;
 
                                             if(!pickTopTrueSizeRef.current) {
-                                                if(!product.name.startsWith('top')) { if(debug !== "true") { return; } }
-                                                else if(selectedSize !== garmentSize) { if(debug !== "true") { return; } }
+                                                if(!product.name.startsWith('top')) {
+                                                    if(debug !== "true") {
+                                                        setInvalidAction(true);
+                                                        return;
+                                                    }
+                                                }
+                                                else if(selectedSize !== garmentSize) {
+                                                    if(debug !== "true") {
+                                                        setInvalidAction(true);
+                                                        return;
+                                                    }
+                                                }
                                                 else if(selectedSize === garmentSize) { setPickTopTrueSize(true); }
                                             } else if(tryOnTopTrueSizeAgainRef.current && !pickBottomTrueSizeRef.current) {
                                                 if(!product.name.startsWith('pants') && !product.name.startsWith('dress')) { if(debug !== "true") { return; } }
-                                                else if(selectedSize !== garmentSize) { if(debug !== "true") { return; } }
+                                                else if(selectedSize !== garmentSize) {
+                                                    if(debug !== "true") {
+                                                        setInvalidAction(true);
+                                                        return;
+                                                    }
+                                                }
                                                 else if(selectedSize === garmentSize) { setPickBottomTrueSize(true); }
                                             }
                                         }
