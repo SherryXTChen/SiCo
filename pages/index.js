@@ -187,12 +187,13 @@ const Home = () => {
         localStorage.setItem("cachedImageURL", "shumil");
         localStorage.setItem("continued", false)
         setFirstSite(false);
-        setFinalSurvey(false);
         localStorage.setItem("firstSite", false);
     };
 
     async function checkSecondSite() {
-        setFinalSurvey(true);
+        if(localStorage.getItem("firstSite") === "false") {
+            setFinalSurvey(true);
+        }
     };
 
     function checkDebug() {
@@ -213,6 +214,7 @@ const Home = () => {
             const seed = localStorage.getItem("seed");
             const state = parseInt(localStorage.getItem("state"));
             localStorage.clear();
+            localStorage.setItem("firstSite", true)
             localStorage.setItem("debug", debugState);
             localStorage.setItem("seed", seed);
             localStorage.setItem("state", state);
