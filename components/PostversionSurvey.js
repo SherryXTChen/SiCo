@@ -95,7 +95,7 @@ const surveyJson = {
                 {
                     "type": "rating",
                     "name": "tlx-rating-performance",
-                    "title": "Performance: How successful were you in accomplishing what you were asked to do?",
+                    "title": "Performance: How successful were you in accomplishing what you were asked to do (lower value -> more successful)?",
                     "rateMin": 1,
                     "rateMax": 11,
                     "minRateDescription": "Perfect",
@@ -302,11 +302,11 @@ const surveyJson = {
                             "value": "sus-easy-to-use"
                         },
                         {
-                            "text": "I think that I could use the website without the suppose of a technical person.",
+                            "text": "I think that I could use the website without the support of a technical person.",
                             "value": "sus-without-tech-support"
                         },
                         {
-                            "text": "I found the variou functions in the website were well integrated.",
+                            "text": "I found the various functions in the website were well integrated.",
                             "value": "sus-well-integrated"
                         },
                         {
