@@ -95,7 +95,7 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                         handleNextPage();
                     }}
                 >Continue</button>)}
-            {debug === "true" && 
+            {debug && 
                 (<button className="done-button" id="nextPageButton"
                 style={{ justifyContent: 'center', width: '100%' }}
                 onClick={() => {

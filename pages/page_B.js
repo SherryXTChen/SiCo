@@ -41,6 +41,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [generating, setGenerating] = useState(false);
     const [starting, setStarting] = useState(false);
     const [processing, setProcessing] = useState(false);
+    const [debug, setDebug] = useState(false);
 
     const progressRef = React.useRef(progress);
     const loadingBarRef = React.useRef(null);
@@ -527,6 +528,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         if(mainRef.current && firstLoad) {
             setImage(localStorage.getItem("cachedImageURL"));
             setFirstLoad(false);
+            setDebug(localStorage.getItem("debug") === "true");
         }
     });
 
@@ -568,7 +570,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     continueFromBottomTrueSize2={continueFromBottomTrueSize2}
                     tryOnTopTrueSizeAgain3={tryOnTopTrueSizeAgain3}
                     invalidAction={invalidAction}
-                    debug={localStorage.getItem("debug")}
+                    debug={debug}
                 />
                 {loading && (<div className="overlay">
                     <div style={{ position: "relative" }}>
