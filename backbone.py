@@ -96,7 +96,7 @@ def fal_api(
             min_x, min_y = indices.min(axis=0)
             max_x, max_y = indices.max(axis=0)
             input_mask = cv2.dilate(input_mask, kernel=np.ones(
-                (5, 5)), iterations=3 * relative_fit)
+                (5, 5)), iterations=5 * relative_fit)
             input_mask[:max(0, min_x-5)] = 0  # remove top
             # input_mask[:,:max(0, min_y-10)] = 0  # remove left
             # input_mask[:,min(input_mask.shape[1], max_y+10):] = 0  # remove right
@@ -107,7 +107,7 @@ def fal_api(
             min_x, _ = indices.min(axis=0)
             max_x, _ = indices.max(axis=0)
             remove_leng = (max_x - min_x) * (-relative_fit) // 6
-            input_mask[max_x - remove_leng:] = 0  # remove bottom
+            input_mask[max(0, max_x - remove_leng):] = 0  # remove bottom
             prompt = "very tight cropped"
         if mask_only:
             return input_mask
