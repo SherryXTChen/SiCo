@@ -205,7 +205,13 @@ const Home = () => {
         setGivenConsent(state >= 1);  // Skip to presurvey
         setDonePresurvey(state >= 2); // Skip to first site
         setFirstSite(state >= 3);     // Skip to second site
-        localStorage.setItem("firstSite", state >= 3);
+        console.log("setting up debug")
+        if(state >= 3) {
+            localStorage.setItem("firstSite", state >= 3);
+        }
+        if(state >= 4) {
+            setFinalSurvey(true);
+        }
     }
 
     useEffect(() => {
