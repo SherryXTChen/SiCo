@@ -76,7 +76,7 @@ const Home = () => {
         }
 
         if(!imageRef.current) {
-            console.log("No image to cache");
+            console.error("No image to cache");
             return;
         }
         const imageURL = localStorage.getItem("cachedImageURL");
@@ -176,7 +176,7 @@ const Home = () => {
         // const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
         // const numSurveyResponse = await fetch(numSurveyEndpoint);
         // const numSurvey = await numSurveyResponse.text();
-        console.log("Checking first site");
+        // console.log("Checking first site");
         setImage(null);
         setImageBlob(null);
         setTopSize("XXS");
@@ -196,7 +196,7 @@ const Home = () => {
     };
 
     async function checkSecondSite() {
-        console.log("Checking second site");
+        // console.log("Checking second site");
         if(localStorage.getItem("firstSite") === "false") {
             setFinalSurvey(true);
         }
@@ -210,7 +210,7 @@ const Home = () => {
         const state = parseInt(localStorage.getItem("state"));
         setGivenConsent(state >= 1);  // Skip to presurvey
         setDonePresurvey(state >= 2); // Skip to first site
-        console.log("setting up debug")
+        // console.log("setting up debug")
         if(state >= 3) {
             setFirstSite(true);     // Skip to second site
             localStorage.setItem("firstSite", true);

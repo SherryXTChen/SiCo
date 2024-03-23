@@ -371,7 +371,7 @@ const PostversionSurvey = ({ checkSurvey, firstSite, isUploadImage, isSelectSize
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Success:', data.message);
+                    // console.log('Success:', data.message);
                     checkSurvey();
                 })
                 .catch((error) => {
