@@ -668,11 +668,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
           grid-template-columns: repeat(6, 1fr);
           grid-gap: 20px;
         }
-        .larger-products-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 20px;
-        }
         .product {
           display: flex;
           flex-direction: column;
@@ -729,7 +724,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     <div className="added-items">
                         <h3>Try-On Results</h3>
                         <div id="tryOnResults" ref={tryOnResultsRef} style={{ display: "flex", flexWrap: "wrap" }}>
-                            <div className="larger-products-container">
+                            <div className="products-container">
                                 <div className="try-on-results">{tryOnResults}</div>
                             </div>
                         </div>
