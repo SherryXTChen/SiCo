@@ -365,14 +365,14 @@ const PostversionSurvey = ({ checkSurvey, firstSite, isUploadImage, isSelectSize
             const formData = new FormData();
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('data', JSON.stringify(data));
+            checkSurvey();
             fetch('/api/survey', {
                 method: 'POST',
                 body: formData,
             })
                 .then(response => response.json())
                 .then(data => {
-                    // console.log('Success:', data.message);
-                    checkSurvey();
+                    console.log('Success:', data.message);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
