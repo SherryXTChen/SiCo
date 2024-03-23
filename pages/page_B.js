@@ -568,6 +568,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     continueFromBottomTrueSize2={continueFromBottomTrueSize2}
                     tryOnTopTrueSizeAgain3={tryOnTopTrueSizeAgain3}
                     invalidAction={invalidAction}
+                    debug={localStorage.getItem("debug")}
                 />
                 {loading && (<div className="overlay">
                     <div style={{ position: "relative" }}>
