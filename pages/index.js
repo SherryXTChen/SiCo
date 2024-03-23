@@ -236,7 +236,7 @@ const Home = () => {
         <div ref={mainRef}>
             {!givenConsent && (<Consent setGivenConsent={setGivenConsent} />)}
             {givenConsent && !donePresurvey && (<PresurveyForm checkPresurvey={checkPresurvey} />)}
-            {(givenConsent && donePresurvey && firstSite) && (<div>
+            {(donePresurvey && firstSite) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}
@@ -276,7 +276,7 @@ const Home = () => {
                     finishedImage={finishedImage}
                 />)}
             </div>)}
-            {(givenConsent && donePresurvey && !firstSite && !finalSurvey) && (<div>
+            {(donePresurvey && !firstSite && !finalSurvey) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}

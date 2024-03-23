@@ -356,7 +356,7 @@ const PostversionSurvey = ({ checkSurvey, firstSite, isUploadImage, isSelectSize
     const [surveyState, setSurveyState] = useState(null);
     if(!surveyState) {
         const survey = new Model(surveyJson);
-        survey.onComplete.add((result) => {
+        survey.onComplete.add(async (result) => {
             var data = result.data;
             data["survey-type"] = "postversion";
             data["first-site"] = firstSite;
@@ -365,14 +365,14 @@ const PostversionSurvey = ({ checkSurvey, firstSite, isUploadImage, isSelectSize
             const formData = new FormData();
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('data', JSON.stringify(data));
-            checkSurvey();
-            fetch('/api/survey', {
+            await fetch('/api/survey', {
                 method: 'POST',
                 body: formData,
             })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data.message);
+                    checkSurvey();
                 })
                 .catch((error) => {
                     console.error('Error:', error);
