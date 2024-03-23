@@ -240,12 +240,12 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                             <button className="continue" id={tryOnResultsRef ? tryOnResultsRef.current.length : 0} onClick={(e) => {
                                 const debug = localStorage.getItem("debug");
                                 console.log("Continue from here:", e.currentTarget.id);
-                                console.log("Continue from here 1:", e.currentTarget.id === 1);
-                                console.log("Continue from here 2:", e.currentTarget.id === 2);
-                                console.log("Continue from here 3:", e.currentTarget.id === 3);
+                                console.log("Continue from here 1:", parseInt(e.currentTarget.id) === 1);
+                                console.log("Continue from here 2:", parseInt(e.currentTarget.id) === 2);
+                                console.log("Continue from here 3:", parseInt(e.currentTarget.id) === 3);
                                 if(!isSelectSize) {
                                     // 1 should correspond with the last result which is tryOnBottom
-                                    if(tryOnBottomRef.current && !continueFromLastRef.current && e.currentTarget.id === 1) {
+                                    if(tryOnBottomRef.current && !continueFromLastRef.current && parseInt(e.currentTarget.id) === 1) {
                                         setContinueFromLast(true);
                                     } else if(debug !== "true") {
                                         setInvalidAction(true);
@@ -254,7 +254,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 } else if(isSelectSize) {
                                     if(tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current) {
                                         // 2 should correspond to Step 6 which is tryOnBottomTrueSize
-                                        if(e.currentTarget.id === 2) {
+                                        if(parseInt(e.currentTarget.id === 2)) {
                                             setContinueFromBottomTrueSize(true);
                                         } else if(debug !== "true") {
                                             setInvalidAction(true);
@@ -262,7 +262,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                         }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
                                         // 3 should correspond to Step 8 which is tryOnTopTrueSizeAgain2
-                                        if(e.currentTarget.id === 3) {
+                                        if(parseInt(e.currentTarget.id === 3)) {
                                             setContinueFromBottomTrueSize2(true);
                                         } else if(debug !== "true") {
                                             setInvalidAction(true);
@@ -308,7 +308,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
             setTimeout(() => {
                 checkerRef.current = true;
             }, 30000);
-            loadingBarRef.current?.continuousStart(0, 6000)
+            loadingBarRef.current?.continuousStart(0, 12000)
             const formData = new FormData();
             const garmentType = product.name.split(' ')[0];
             const debug = localStorage.getItem("debug");
