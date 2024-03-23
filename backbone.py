@@ -327,7 +327,7 @@ def main():
     
     # get mask of existing garment
     text = ['shirt, t shirt, bra', 'pants, shorts, skirts']
-    prompt = "a naked person, (skin color)+++, (body)+++"
+    prompt = "a naked person wearing (underwear and bra)+++, (skin color)+++,"
     if body_mask_args['garment_type'] in ['jump suit', 'dress']:
         pass
     elif body_mask_args['garment_type'] in ['pants', 'skirt']:
