@@ -175,7 +175,6 @@ const Presurvey = ({ checkPresurvey }) => {
             const formData = new FormData();
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('data', JSON.stringify(data));
-            checkPresurvey();
             await fetch('/api/survey', {
                 method: 'POST',
                 body: formData,
@@ -183,6 +182,7 @@ const Presurvey = ({ checkPresurvey }) => {
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data.message);
+                    checkPresurvey();
                 })
                 .catch((error) => {
                     console.error('Error:', error);
