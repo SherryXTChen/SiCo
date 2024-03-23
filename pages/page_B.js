@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
+import LoadingBar from "react-top-loading-bar";
 import InstructionList from "../components/InstructionList";
 import PostversionForm from "./PostversionForm";
-import LoadingBar from "react-top-loading-bar";
 
-const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching, firstSite, checkSurvey }) => {
+const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching, firstSite, checkSurvey, finishedImage }) => {
     const [, forceUpdate] = React.useReducer(x => x + 1, 0);
 
     const [tryOnItems, setTryOnItems] = useState([]);
@@ -35,6 +35,12 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [tryOnTopTrueSizeAgain2, _setTryOnTopTrueSizeAgain2] = useState(false);
     const [continueFromBottomTrueSize2, _setContinueFromBottomTrueSize2] = useState(false);
     const [tryOnTopTrueSizeAgain3, _setTryOnTopTrueSizeAgain3] = useState(false);
+    const [sentData, setSentData] = useState(false);
+    const [packagedData, setPackagedData] = useState(false);
+    const [connected, setConnected] = useState(false);
+    const [generating, setGenerating] = useState(false);
+    const [starting, setStarting] = useState(false);
+    const [processing, setProcessing] = useState(false);
 
     const progressRef = React.useRef(progress);
     const loadingBarRef = React.useRef(null);
@@ -76,7 +82,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         { id: 4, name: 'top short none', image: 'garments/upper_body/020715_1.jpg' },
         { id: 5, name: 'top long none', image: 'garments/upper_body/020716_1.jpg' },
         { id: 6, name: 'top long none', image: 'garments/upper_body/020717_1.jpg' },
-        
+
         { id: 7, name: 'skirt none long', image: 'garments/lower_body/000002_1.jpg' },
         { id: 8, name: 'pants none long', image: 'garments/lower_body/000003_1.jpg' },
         { id: 9, name: 'pants none long', image: 'garments/lower_body/013563_1.jpg' },
@@ -239,10 +245,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                             <img src={image} style={{ width: "20%", height: "auto" }} />
                             <button className="continue" id={tryOnResultsRef ? tryOnResultsRef.current.length : 0} onClick={(e) => {
                                 const debug = localStorage.getItem("debug");
-                                console.log("Continue from here:", e.currentTarget.id);
-                                console.log("Continue from here 1:", parseInt(e.currentTarget.id) === 1);
-                                console.log("Continue from here 2:", parseInt(e.currentTarget.id) === 2);
-                                console.log("Continue from here 3:", parseInt(e.currentTarget.id) === 3);
                                 if(!isSelectSize) {
                                     // 1 should correspond with the last result which is tryOnBottom
                                     if(tryOnBottomRef.current && !continueFromLastRef.current && parseInt(e.currentTarget.id) === 1) {
@@ -269,7 +271,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                             return;
                                         }
                                     } else if(debug !== "true") {
-                                        console.log("invalid action here 2")
                                         setInvalidAction(true);
                                         return;
                                     }
@@ -306,10 +307,12 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
         const handleTryItOn = async () => {
             setLoading(true);
+            setPackagedData(false);
+            setSentData(false);
             setTimeout(() => {
                 checkerRef.current = true;
             }, 30000);
-            loadingBarRef.current?.continuousStart(0, 12000)
+            loadingBarRef.current?.continuousStart(0, 9500)
             const formData = new FormData();
             const garmentType = product.name.split(' ')[0];
             const debug = localStorage.getItem("debug");
@@ -405,6 +408,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('firstSite', localStorage.getItem("firstSite"));
 
+            setPackagedData(true);
             // Remove the below await to speed up testing
             await fetch('/api/upload', {
                 method: 'POST',
@@ -413,12 +417,49 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 .then(response => response.json())
                 .then(data => {
                     // console.log('Success:', data);
-                    updateGallery();
                     setTimeout(() => {
-                        updateGallery();
-                    }, 60000);
+                        setSentData(true);
+                        setTimeout(() => {
+                            setConnected(true);
+                            setTimeout(() => {
+                                setStarting(true);
+                                setTimeout(() => {
+                                    setGenerating(true);
+                                    setTimeout(() => {
+                                        setProcessing(true);
+                                        setTimeout(() => {
+                                            checkerRef.current = true;
+                                        }, Math.random() * 5000 + 1500);
+                                    }, Math.random() * 9000 + 2000);
+                                }, Math.random() * 8117 + 3042);
+                            }, Math.random() * 2000 + 1500);
+                        }, Math.random * 3000 + 2000);
+                    }, Math.random() * 5117 + 2042);
                 })
                 .catch((error) => {
+                    setLoading(false);
+                    if(!isSelectSize) {
+                        if(tryOnTopAgainRef.current) {
+                            setTryOnTopAgain(false);
+                        } else if(tryOnBottomRef.current) {
+                            setTryOnBottom(false);
+                        } else if(tryOnTopRef.current) {
+                            setTryOnTop(false);
+                        }
+                    } else if(isSelectSize) {
+                        if(tryOnTopTrueSizeAgain3Ref) {
+                            setTryOnTopTrueSizeAgain3(false);
+                        } else if(tryOnTopTrueSizeAgain2Ref) {
+                            setTryOnTopTrueSizeAgain2(false);
+                        } else if(tryOnBottomTrueSizeAgainRef) {
+                            setTryOnBottomTrueSizeAgain(false);
+                        } else if(tryOnBottomTrueSizeRef) {
+                            setTryOnBottomTrueSize(false);
+                        } else if(tryOnTopTrueSizeAgainRef) {
+                            setTryOnTopTrueSizeAgain(false);
+                        }
+                    }
+                    alert("Error trying on clothes. Please try again.");
                     console.error('Error:', error);
                 });
         };
@@ -465,7 +506,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         </select>
                     </div>
                 )}
-                <button className="try-on" onClick={handleTryItOn}>
+                <button className="try-on" onClick={handleTryItOn} disabled={!finishedImage}>
                     Try It On
                 </button>
                 {/* <button className="remove" onClick={handleRemove}>
@@ -484,7 +525,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
     useEffect(() => {
         if(mainRef.current && firstLoad) {
-            updateGallery();
+            setImage(localStorage.getItem("cachedImageURL"));
             setFirstLoad(false);
         }
     });
@@ -543,7 +584,16 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         />
                     </div>
                     <div style={{ position: "relative" }}>
-                        <h1>Trying on your clothes... Expected waiting time: 1-2 minutes.</h1>
+                        <h1>{!packagedData && "Packaging your clothes..."}
+                            {packagedData && !sentData && "Sending your clothes..."}
+                            {sentData && !connected && "Confirming arrival..."}
+                            {connected && !starting && "Trying on your clothes..."}
+                            {starting && !generating && "Starting final generation..."}
+                            {generating && !processing && "Generating final result..."}
+                            {processing && "Processing your results..."}
+                            <br />
+                            Expected wait time: 1-2 minutes.
+                        </h1>
                     </div>
                 </div>)}
                 <div className="section-container">

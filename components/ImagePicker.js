@@ -1,81 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState } from 'react';
 
-const ImagePicker = ({ getCachedImage, firstSite }) => {
+const ImagePicker = ({ setImage }) => {
     const [selectedImage, setSelectedImage] = useState('');
-    const [firstLoad, setFirstLoad] = useState(true);
     const imagePickerRef = React.useRef(null);
     const images = [1, 2, 4, 5].map(num => `/models/woman_${num}.jpg`).concat(
         [1, 2, 4, 5].map(num => `/models/man_${num}.jpg`));
 
-    useEffect(() => {
-        if(imagePickerRef.current && firstLoad) {
-            if(!localStorage.getItem("uid")) {
-                localStorage.setItem("uid", uuidv4());
-            }
-            if(!localStorage.getItem("cachedImageURL")) {
-                getCachedImage();
-                if(localStorage.getItem("cachedImageURL") !== "shumil") {
-                    setSelectedImage(localStorage.getItem("cachedImageURL"));
-                }
-            } else {
-                try {
-                    const imageURL = localStorage.getItem("cachedImageURL").split('/').pop().split('-')[0];
-                    if(imageURL === "userImage" || (imageURL.length >= 5 && (imageURL.substring(0, 3) === "man" || imageURL.substring(0, 5) === "woman" ))) {
-                        setSelectedImage(localStorage.getItem("cachedImageURL"));
-                    } else if(imageURL !== "shumil") {
-                        setSelectedImage(`/models/${imageURL}`);
-                    }
-                } catch(error) { }
-            }
-            setFirstLoad(false);
-        }
-    });
-
     const handleImageSelect = (imageName) => {
         setSelectedImage(imageName);
-        async function getImageBlobUrl(imagePath) {
-            const formData = new FormData();
-            formData.append('userImage', `${imagePath}`);
-            formData.append('uid', localStorage.getItem("uid"));
-            formData.append('firstSite', firstSite);
-            await fetch('/api/save', {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // console.log('Success:', data.message);
-                    localStorage.setItem("cachedImageURL", data.message);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-            getCachedImage();
-        }
-        getImageBlobUrl(imageName);
+        setImage(imageName);
+        localStorage.setItem("cachedImageURL", imageName);
     };
 
     return (
         <div ref={imagePickerRef}>
             <h2>Select an Image:</h2>
-            {/* <ul>
-                {images.map(image => (
-                    <li key={image}>
-                        <input
-                            type="radio"
-                            id={image}
-                            name="image"
-                            value={image}
-                            checked={selectedImage === image}
-                            onChange={() => handleImageSelect(image)}
-                        />
-                        <label>
-                            <img src={image} alt={image} />
-                        </label>
-                    </li>
-                ))}
-            </ul> */}
             <div className="image-grid">
                 {images.map(image => (
                     <div className="image-item" key={image}>
