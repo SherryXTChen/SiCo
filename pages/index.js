@@ -182,6 +182,8 @@ const Home = () => {
         setDressSize("XXS");
         setPageAContinue(false);
         setFinishedImage(false);
+        setGivenConsent(true);
+        setDonePresurvey(true);
         imageRef.current = null;
         imageBlobRef.current = null;
         localStorage.setItem("cachedImageURL", "shumil");
