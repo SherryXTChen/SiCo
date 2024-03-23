@@ -87,42 +87,42 @@ const Home = () => {
         const id = localStorage.getItem("debug")
             ? localStorage.getItem("seed")
             : await (await fetch(`/api/user/id/${localStorage.getItem("uid")}`)).text();
-        const seed = (parseInt(id) - 1) % 60 + 1;
+        const seed = (parseInt(id) - 1) % 24 + 1;
         // A = true true
         // B = true false
         // C = false true
         // D = false false
-        if(seed <= 10) {
+        if(seed <= 4) {
             // AD then DA
             setIsUploadImage(seed % 2 === 0);
             setIsSelectSize(seed % 2 === 0);
             setIsUploadImage2((seed + 1) % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
-        } else if(seed <= 20) {
+        } else if(seed <= 8) {
             // AB then AC
             setIsUploadImage(true);
             setIsSelectSize(true);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
-        } else if(seed <= 30) {
+        } else if(seed <= 12) {
             // BA then BC
             setIsUploadImage(true);
             setIsSelectSize(false);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2(true);
-        } else if(seed <= 40) {
+        } else if(seed <= 16) {
             // BD then CA
             setIsUploadImage(seed % 2 === 0);
             setIsSelectSize((seed + 1) % 2 === 0);
             setIsUploadImage2((seed + 1) % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
-        } else if(seed <= 50) {
+        } else if(seed <= 20) {
             // CB then CD
             setIsUploadImage(false);
             setIsSelectSize(true);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2(false);
-        } else if(seed <= 60) {
+        } else if(seed <= 24) {
             // DB then DC
             setIsUploadImage(false);
             setIsSelectSize(false);
@@ -182,16 +182,16 @@ const Home = () => {
 
     useEffect(() => {
         if(mainRef.current && firstLoad) {
-            const debugState = localStorage.getItem("debug");
-            if(debugState) {
-                const seed = localStorage.getItem("seed");
-            }
+            // const debugState = localStorage.getItem("debug");
+            // if(debugState) {
+            //     const seed = localStorage.getItem("seed");
+            // }
             localStorage.clear()
             localStorage.setItem("uid", uuidv4());
-            if(debugState) {
-                localStorage.setItem("debug", debugState);
-                localStorage.setItem("seed", seed);
-            }
+            // if(debugState) {
+            //     localStorage.setItem("debug", debugState);
+            //     localStorage.setItem("seed", seed);
+            // }
             getCachedImage();
             checkConsent();
             checkPresurvey();
