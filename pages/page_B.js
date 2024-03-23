@@ -245,7 +245,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 console.log("Continue from here 3:", e.currentTarget.id === 3);
                                 if(!isSelectSize) {
                                     // 1 should correspond with the last result which is tryOnBottom
-                                    if(tryOnBottomRef.current && !continueFromLastRef.current) { // && e.currentTarget.id === 1) {
+                                    if(tryOnBottomRef.current && !continueFromLastRef.current && e.currentTarget.id === 1) {
                                         setContinueFromLast(true);
                                     } else if(debug !== "true") {
                                         setInvalidAction(true);
@@ -254,22 +254,20 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 } else if(isSelectSize) {
                                     if(tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current) {
                                         // 2 should correspond to Step 6 which is tryOnBottomTrueSize
-                                        setContinueFromBottomTrueSize(true);
-                                        // if(e.currentTarget.id === 2) {
-                                        //     setContinueFromBottomTrueSize(true);
-                                        // } else if(debug !== "true") {
-                                        //     setInvalidAction(true);
-                                        //     return;
-                                        // }
+                                        if(e.currentTarget.id === 2) {
+                                            setContinueFromBottomTrueSize(true);
+                                        } else if(debug !== "true") {
+                                            setInvalidAction(true);
+                                            return;
+                                        }
                                     } else if(tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current) {
                                         // 3 should correspond to Step 8 which is tryOnTopTrueSizeAgain2
-                                        setContinueFromBottomTrueSize2(true);
-                                        // if(e.currentTarget.id === 3) {
-                                        //     setContinueFromBottomTrueSize2(true);
-                                        // } else if(debug !== "true") {
-                                        //     setInvalidAction(true);
-                                        //     return;
-                                        // }
+                                        if(e.currentTarget.id === 3) {
+                                            setContinueFromBottomTrueSize2(true);
+                                        } else if(debug !== "true") {
+                                            setInvalidAction(true);
+                                            return;
+                                        }
                                     } else if(debug !== "true") {
                                         setInvalidAction(true);
                                         return;
