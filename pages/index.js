@@ -25,6 +25,7 @@ const Home = () => {
     const [firstSite, setFirstSite] = useState(true);
     const [finalSurvey, setFinalSurvey] = useState(false);
     const [finishedImage, setFinishedImage] = useState(false);
+    const [, forceUpdate] = React.useReducer(x => x + 1, 0);
     const mainRef = React.useRef(null);
     const imageRef = React.useRef(image);
     const imageBlobRef = React.useRef(imageBlob);
@@ -175,6 +176,7 @@ const Home = () => {
         // const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
         // const numSurveyResponse = await fetch(numSurveyEndpoint);
         // const numSurvey = await numSurveyResponse.text();
+        console.log("Checking first site");
         setImage(null);
         setImageBlob(null);
         setTopSize("XXS");
@@ -190,9 +192,11 @@ const Home = () => {
         localStorage.setItem("continued", false)
         setFirstSite(false);
         localStorage.setItem("firstSite", false);
+        forceUpdate();
     };
 
     async function checkSecondSite() {
+        console.log("Checking second site");
         if(localStorage.getItem("firstSite") === "false") {
             setFinalSurvey(true);
         }
@@ -206,10 +210,10 @@ const Home = () => {
         const state = parseInt(localStorage.getItem("state"));
         setGivenConsent(state >= 1);  // Skip to presurvey
         setDonePresurvey(state >= 2); // Skip to first site
-        setFirstSite(state >= 3);     // Skip to second site
         console.log("setting up debug")
         if(state >= 3) {
-            localStorage.setItem("firstSite", state >= 3);
+            setFirstSite(true);     // Skip to second site
+            localStorage.setItem("firstSite", true);
         }
         if(state >= 4) {
             setFinalSurvey(true);
@@ -276,7 +280,7 @@ const Home = () => {
                     finishedImage={finishedImage}
                 />)}
             </div>)}
-            {(donePresurvey && !firstSite && !finalSurvey) && (<div>
+            {(donePresurvey && !firstSite) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}
