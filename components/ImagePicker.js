@@ -5,8 +5,8 @@ const ImagePicker = ({ getCachedImage, firstSite }) => {
     const [selectedImage, setSelectedImage] = useState('');
     const [firstLoad, setFirstLoad] = useState(true);
     const imagePickerRef = React.useRef(null);
-    const images = [1, 2, 3, 4, 5, 6].map(num => `/models/woman_${num}.jpg`).concat(
-        [1, 2, 3, 4, 5, 6].map(num => `/models/man_${num}.jpg`));
+    const images = [1, 2, 4, 5].map(num => `/models/woman_${num}.jpg`).concat(
+        [1, 2, 4, 5].map(num => `/models/man_${num}.jpg`));
 
     useEffect(() => {
         if(imagePickerRef.current && firstLoad) {
