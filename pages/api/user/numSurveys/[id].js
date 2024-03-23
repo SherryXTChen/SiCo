@@ -9,8 +9,11 @@ export default async function GET(req, res) {
         }
         const existsUser = await prisma.user.findUnique({
             where: {
-                uid: id,
+                uid: uid,
             },
+            select: {
+                uid: true,
+            }
         });
         if(!existsUser) {
             res.setHeader('Content-Type', 'text/plain');

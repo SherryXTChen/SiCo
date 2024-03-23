@@ -24,6 +24,9 @@ export async function POST(req, res) {
             where: {
                 uid: uid,
             },
+            select: {
+                uid: true,
+            }
         });
         if(!existsUser) {
             await prisma.user.create({

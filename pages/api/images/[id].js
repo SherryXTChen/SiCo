@@ -14,6 +14,9 @@ export default async function GET(req, res) {
         where: {
             uid: uid,
         },
+        select: {
+            uid: true,
+        }
     });
     if(!existsUser) {
         await prisma.user.create({
