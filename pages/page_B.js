@@ -243,6 +243,11 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                 console.log("Continue from here 1:", parseInt(e.currentTarget.id) === 1);
                                 console.log("Continue from here 2:", parseInt(e.currentTarget.id) === 2);
                                 console.log("Continue from here 3:", parseInt(e.currentTarget.id) === 3);
+                                console.log("!isSelectSize:", !isSelectSize);
+                                console.log("tryOnBottomRef.current && !continueFromLastRef.current && parseInt(e.currentTarget.id) === 1:", tryOnBottomRef.current && !continueFromLastRef.current && parseInt(e.currentTarget.id) === 1);
+                                console.log("isSelectSize:", isSelectSize);
+                                console.log("tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current:", tryOnBottomTrueSizeRef.current && !continueFromBottomTrueSizeRef.current);
+                                console.log("tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current:", tryOnTopTrueSizeAgain2Ref.current && !continueFromBottomTrueSize2Ref.current);
                                 if(!isSelectSize) {
                                     // 1 should correspond with the last result which is tryOnBottom
                                     if(tryOnBottomRef.current && !continueFromLastRef.current && parseInt(e.currentTarget.id) === 1) {
@@ -269,6 +274,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                             return;
                                         }
                                     } else if(debug !== "true") {
+                                        console.log("invalid action here 2")
                                         setInvalidAction(true);
                                         return;
                                     }
