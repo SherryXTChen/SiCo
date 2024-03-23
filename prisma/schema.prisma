@@ -13,9 +13,9 @@ model User {
   id              Int               @unique @default(autoincrement())
   email           String?           @unique
   createdAt       DateTime          @default(now())
+  updatedAt       DateTime?         @updatedAt
   consentDate     DateTime?
   initials        String?
-  updatedAt       DateTime?         @updatedAt
   survey          Survey[]
   userImage       UserImage[]
   userImageResult UserImageResult[]
@@ -27,8 +27,8 @@ model Survey {
   uid       String
   response  Json
   createdAt DateTime  @default(now())
-  id        Int       @unique @default(autoincrement())
   updatedAt DateTime? @updatedAt
+  id        Int       @unique @default(autoincrement())
   user      User      @relation(fields: [uid], references: [uid])
 }
 
@@ -37,8 +37,8 @@ model UserImage {
   url       String
   createdAt DateTime  @default(now())
   id        Int       @unique @default(autoincrement())
-  firstSite Boolean   @default(true)
   updatedAt DateTime? @updatedAt
+  firstSite Boolean   @default(true)
   user      User      @relation(fields: [uid], references: [uid])
 }
 

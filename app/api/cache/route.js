@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
+import { NextResponse } from 'next/server';
 import { validate } from 'uuid';
 import prisma from '../../../lib/prisma';
-const sharp = require('sharp');
+// const sharp = require('sharp');
 
 export async function POST(req, res) {
     try {
@@ -19,11 +19,11 @@ export async function POST(req, res) {
             return NextResponse.error(new Error('Invalid user id'));
         }
         const firstSite = data.get('firstSite');
-        const userImageBytes = await userImageData.arrayBuffer();
-        const userImageBuffer = Buffer.from(userImageBytes);
+        // const userImageBytes = await userImageData.arrayBuffer();
+        // const userImageBuffer = Buffer.from(userImageBytes);
         const userImagePath = `${uid}/userImage.jpg`;
-        const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
-        const blob = await put(userImagePath, userImageJpeg, {
+        // const userImageJpeg = await sharp(userImageBuffer).jpeg().toBuffer();
+        const blob = await put(userImagePath, userImageData, {
             access: 'public',
         });
 

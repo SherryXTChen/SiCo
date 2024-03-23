@@ -5,7 +5,16 @@ import ImagePicker from "../components/ImagePicker";
 const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching, firstSite }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
-    const [tempImage, setTempImage] = useState(null);
+    const [uploadedImage, _setUploadedImage] = useState(null);
+
+    const uploadedImageRef = React.useRef(uploadedImage);
+
+    const setUploadedImage = data => {
+        URL.revokeObjectURL(uploadedImageRef.current);
+        localStorage.setItem("cachedImageURL", data);
+        uploadedImageRef.current = data;
+        _setUploadedImage(data);
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -28,27 +37,12 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         // convert the image to a jpeg and then set the image state
         const file = e.target.files[0];
         setImage(file);
-        setTempImage(URL.createObjectURL(file));
-        imageRef.current = file;
-        handleCaching();
+        setUploadedImage(URL.createObjectURL(file));
+        // handleCaching();
     };
 
     const handleNextPage = async () => {
-        const formData = new FormData();
-        formData.append('userImage', localStorage.getItem("cachedImageURL"));
-        formData.append('uid', localStorage.getItem("uid"));
         handleCaching();
-        // await fetch('/api/scan', {
-        //     method: 'POST',
-        //     body: formData,
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         // console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
     };
 
     const handleTopSizeChange = (e) => {
@@ -79,7 +73,7 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
             </div>)}
             {!isUploadImage && (<div>
                 To start, please select a model image from below. Virtual try-on results will be visualized with respect to the selected model image in the next page.<br />
-                <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
+                <ImagePicker setImage={setImage} />
             </div>)}
             {isSelectSize && (<div>
                 Please enter your true size for tops and bottoms.<br />
@@ -94,15 +88,9 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         accept="image/*"
                         onChange={handleImageChange}
                         style={{ position: "absolute", width: "20%", height: "auto" }} /></>)}
-                {image && tempImage && (<>
-                    <img src={tempImage} style={{ width: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
-                    <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
-                        style={{ position: "absolute", top: "0", right: "0" }}
-                    >x</button>
-                </>)}
-                {image && !tempImage && (<>
-                    <img src={localStorage.getItem("cachedImageURL")} style={{ width: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
-                    <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
+                {uploadedImage && (<>
+                    <img src={uploadedImage} style={{ width: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
+                    <button className="remove-button" id="removeButton" onClick={() => { setUploadedImage(null); setImage(null); }}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>
                 </>)}

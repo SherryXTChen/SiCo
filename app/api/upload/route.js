@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { validate } from 'uuid';
 import sendTextToNetcat from '../sendTextToNetcat';
 
@@ -30,8 +30,6 @@ export async function POST(req, res) {
         }
 
         const response = await sendTextToNetcat(`upload\n${uid}\n${userImage}\n${productImage}\n${garmentInfo}\n${firstSite}`);
-        console.log("Response:", response);
-        console.log("Response type:", typeof response);
         if(response !== 'success') {
             return NextResponse.error(new Error('Error processing files'));
         }

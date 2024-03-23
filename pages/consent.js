@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Consent({ setGivenConsent, checkConsent }) {
+function Consent({ setGivenConsent }) {
     const [wrongInitials, setWrongInitials] = useState(false);
     const [wrongDate, setWrongDate] = useState(false);
 
@@ -37,7 +37,6 @@ function Consent({ setGivenConsent, checkConsent }) {
             .then(response => response.json())
             .then(data => {
                 // console.log('Success:', data.message);
-                checkConsent();
             })
             .catch((error) => {
                 console.error('Error:', error);
