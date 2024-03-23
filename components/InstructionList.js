@@ -95,6 +95,13 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                         handleNextPage();
                     }}
                 >Continue</button>)}
+            {localStorage?.getItem("debug") === "true" && 
+                (<button className="done-button" id="nextPageButton"
+                style={{ justifyContent: 'center', width: '100%' }}
+                onClick={() => {
+                    handleNextPage();
+                }}
+            >Continue</button>)}
         </div>
     );
 };
