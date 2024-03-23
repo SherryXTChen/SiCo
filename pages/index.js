@@ -182,8 +182,16 @@ const Home = () => {
 
     useEffect(() => {
         if(mainRef.current && firstLoad) {
+            const debugState = localStorage.getItem("debug");
+            if(debugState) {
+                const seed = localStorage.getItem("seed");
+            }
             localStorage.clear()
             localStorage.setItem("uid", uuidv4());
+            if(debugState) {
+                localStorage.setItem("debug", debugState);
+                localStorage.setItem("seed", seed);
+            }
             getCachedImage();
             checkConsent();
             checkPresurvey();
