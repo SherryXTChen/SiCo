@@ -165,43 +165,34 @@ const Home = () => {
     };
 
     async function checkPresurvey() {
-        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const numSurveyResponse = await fetch(numSurveyEndpoint);
-        const numSurvey = await numSurveyResponse.text();
-        setDonePresurvey(parseInt(numSurvey) >= 1);
+        // const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        // const numSurveyResponse = await fetch(numSurveyEndpoint);
+        // const numSurvey = await numSurveyResponse.text();
+        setDonePresurvey(true);
     };
 
     async function checkFirstSite() {
-        if(localStorage.getItem("firstSite") === "false") {
-            setFirstSite(false);
-            return;
-        }
-        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const numSurveyResponse = await fetch(numSurveyEndpoint);
-        const numSurvey = await numSurveyResponse.text();
-        if(parseInt(numSurvey) === 2) {
-            setImage(null);
-            setImageBlob(null);
-            setTopSize("XXS");
-            setBottomSize("XXS");
-            setDressSize("XXS");
-            setPageAContinue(false);
-            setFinishedImage(false);
-            imageRef.current = null;
-            imageBlobRef.current = null;
-            localStorage.setItem("cachedImageURL", "shumil");
-            localStorage.setItem("continued", false)
-        }
-        setFirstSite(parseInt(numSurvey) < 2);
-        setFinalSurvey(parseInt(numSurvey) >= 3);
-        localStorage.setItem("firstSite", parseInt(numSurvey) < 2);
+        // const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        // const numSurveyResponse = await fetch(numSurveyEndpoint);
+        // const numSurvey = await numSurveyResponse.text();
+        setImage(null);
+        setImageBlob(null);
+        setTopSize("XXS");
+        setBottomSize("XXS");
+        setDressSize("XXS");
+        setPageAContinue(false);
+        setFinishedImage(false);
+        imageRef.current = null;
+        imageBlobRef.current = null;
+        localStorage.setItem("cachedImageURL", "shumil");
+        localStorage.setItem("continued", false)
+        setFirstSite(false);
+        setFinalSurvey(false);
+        localStorage.setItem("firstSite", false);
     };
 
     async function checkSecondSite() {
-        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const numSurveyResponse = await fetch(numSurveyEndpoint);
-        const numSurvey = await numSurveyResponse.text();
-        setFinalSurvey(parseInt(numSurvey) >= 3);
+        setFinalSurvey(true);
     };
 
     function checkDebug() {
