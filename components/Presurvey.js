@@ -181,7 +181,7 @@ const Presurvey = ({ checkPresurvey }) => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Success:', data.message);
+                    // console.log('Success:', data.message);
                     checkPresurvey();
                 })
                 .catch((error) => {
