@@ -5,7 +5,6 @@ import prisma from '../../../lib/prisma';
 export async function POST(req, res) {
     try {
         const data = await req.formData();
-        console.log("data:", data)
         const uid = data.get('uid');
         const initials = `${data.get('initials')}`;
         const date = `${data.get('date')}`;
