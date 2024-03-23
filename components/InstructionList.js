@@ -3,7 +3,7 @@ import React from 'react';
 const InstructionList = ({ handleNextPage, isSelectSize,
     pickTop, tryOnTop, pickBottom, tryOnBottom, continueFromLast, tryOnTopAgain,
     pickTopTrueSize, tryOnTopTrueSize, changeTopTrueSize, tryOnTopTrueSizeAgain, pickBottomTrueSize, tryOnBottomTrueSize, changeBottomTrueSize, tryOnBottomTrueSizeAgain, continueFromBottomTrueSize, tryOnTopTrueSizeAgain2, continueFromBottomTrueSize2, tryOnTopTrueSizeAgain3,
-    invalidAction }) => {
+    invalidAction, debug }) => {
     const style = {
         position: 'fixed',
         top: 0,
@@ -95,7 +95,7 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                         handleNextPage();
                     }}
                 >Continue</button>)}
-            {localStorage?.getItem("debug") === "true" && 
+            {debug === "true" && 
                 (<button className="done-button" id="nextPageButton"
                 style={{ justifyContent: 'center', width: '100%' }}
                 onClick={() => {
