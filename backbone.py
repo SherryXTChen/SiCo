@@ -64,13 +64,13 @@ def fal_api(
         if mask_only:
             return input_mask
 
-        # check if out_path exist, if so, check unmasked area
-        if os.path.exists(out_path):
-            unmask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) <= 0)
-            input_image = np.array(Image.open(user_image_path).convert('RGB'))
-            output_image = np.array(Image.open(out_path).convert('RGB'))
-            if np.mean(np.abs(input_image - output_image) * unmask_area) <= 20:
-                return None
+        # # check if out_path exist, if so, check unmasked area
+        # if os.path.exists(out_path):
+        #     unmask_area = np.uint8(np.array(Image.open(mask_image_path).convert('RGB')) <= 0)
+        #     input_image = np.array(Image.open(user_image_path).convert('RGB'))
+        #     output_image = np.array(Image.open(out_path).convert('RGB'))
+        #     if np.mean(np.abs(input_image - output_image) * unmask_area) <= 20:
+        #         return None
 
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
         additional_arguments = {
