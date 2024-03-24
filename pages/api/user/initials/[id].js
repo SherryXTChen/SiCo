@@ -27,6 +27,7 @@ export default async function GET(req, res) {
                 initials: true,
             },
         });
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${userInitials.initials}`);
     } catch(error) {

@@ -31,7 +31,7 @@ export default async function GET(req, res) {
                 id: true,
             },
         });
-
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${userId.id}`);
     } catch(error) {

@@ -32,6 +32,7 @@ export default async function GET(req, res) {
         });
 
         const latestUserImage = await userImage[0];
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${latestUserImage.url}`);
     } catch(error) {

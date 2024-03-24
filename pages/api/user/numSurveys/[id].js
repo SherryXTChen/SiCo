@@ -32,6 +32,7 @@ export default async function GET(req, res) {
             return;
         }
 
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${userSurveys.length}`);
     } catch(error) {

@@ -39,7 +39,7 @@ export async function POST(req, res) {
                 },
             },
         });
-
+        await prisma.$disconnect();
         return NextResponse.json({ message: `Successfully registered user` }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);

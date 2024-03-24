@@ -45,7 +45,7 @@ export async function POST(req, res) {
                 updatedAt: new Date(),
             },
         });
-
+        await prisma.$disconnect();
         return NextResponse.json({ message: `Successfully changed image` }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);
