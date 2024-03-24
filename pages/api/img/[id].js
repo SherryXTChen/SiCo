@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { validate } from 'uuid';
 
-export default function GET(req, res) {
+export default async function GET(req, res) {
     try {
         const { id } = req.query;
         if(!validate(id)) {
@@ -13,6 +13,7 @@ export default function GET(req, res) {
             res.status(404).json({ message: 'Image not found' });
         }
         const image = fs.readFileSync(imagePath);
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'image/jpeg');
         res.end(image);
     } catch(error) {

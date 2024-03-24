@@ -41,6 +41,7 @@ export default async function GET(req, res) {
                 },
             },
         });
+        await prisma.$disconnect();
         if(!files) {
             return res.status(200).json({ message: [] });
         }
