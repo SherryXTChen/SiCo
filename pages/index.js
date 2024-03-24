@@ -108,51 +108,65 @@ const Home = () => {
     };
 
     async function setSeed() {
-        const id = localStorage.getItem("debug")
+        const id = localStorage.getItem("debug") === "true"
             ? localStorage.getItem("seed")
             : await (await fetch(`/api/user/id/${localStorage.getItem("uid")}`)).text();
         const seed = (parseInt(id) - 1) % 24 + 1;
+        
+        // console.log('debug', localStorage.getItem("debug"), localStorage.getItem("debug") === "true");
+        // console.log('seed', localStorage.getItem("seed"));
+        // console.log('uid', await (await fetch(`/api/user/id/${localStorage.getItem("uid")}`)).text());
+        // console.log('id', id);
+        // console.log('seed', seed);
+        
         // A = true true
         // B = true false
         // C = false true
         // D = false false
         if(seed <= 4) {
+            // console.log("seed <= 4", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // AD then DA
             setIsUploadImage(seed % 2 === 0);
             setIsSelectSize(seed % 2 === 0);
             setIsUploadImage2((seed + 1) % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
         } else if(seed <= 8) {
+            // console.log("seed <= 8", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // AB then AC
             setIsUploadImage(true);
             setIsSelectSize(true);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
         } else if(seed <= 12) {
+            // console.log("seed <= 12", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // BA then BC
             setIsUploadImage(true);
             setIsSelectSize(false);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2(true);
         } else if(seed <= 16) {
+            // console.log("seed <= 16", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // BD then CA
             setIsUploadImage(seed % 2 === 0);
             setIsSelectSize((seed + 1) % 2 === 0);
             setIsUploadImage2((seed + 1) % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
         } else if(seed <= 20) {
+            // console.log("seed <= 20", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // CB then CD
             setIsUploadImage(false);
             setIsSelectSize(true);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2(false);
         } else if(seed <= 24) {
+            // console.log("seed <= 24", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // DB then DC
             setIsUploadImage(false);
             setIsSelectSize(false);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
         }
+        // console.log('2 version', isUploadImage, isUploadImage2, isSelectSize, isSelectSize2)
     };
 
     async function checkConsent() {
