@@ -667,7 +667,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                                                 selectedSize = bottomSize;
                                                 setPickBottom(true);
                                             } else {
-                                                selectedSize = 'N/A';
+                                                selectedSize = 'XXS';
                                             }
                                             garmentSize = selectedSize;
                                         } else if(isSelectSize) {
