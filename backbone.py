@@ -451,9 +451,8 @@ def main():
     garment_mask_path = f'./cache/{uid}/{body_mask_labels}/mask.png'
     existing_garment_bound_mask_path = f'./cache/{uid}/{body_mask_labels}/bound_mask.png'
 
-    
-    get_body_mask(user_image_path, uid)
-    
+    if not os.path.exists(f"./cache/{uid}/densepose.torso.png"):
+        get_body_mask(user_image_path, uid)
     if not os.path.exists(garment_mask_path):
         body_mask = combine_body_mask(**body_mask_args)
         Image.fromarray(body_mask).save(garment_mask_path)
