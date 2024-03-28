@@ -189,34 +189,9 @@ button:hover {
     margin-right: 10px; /* Space between thumbnails */
 }
 
-/* Style for selecting model images */
-.image-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 columns */
-    grid-auto-rows: auto; /* Auto row height based on content */
-    gap: 10px; /* Adjust space between grid items */
-}
-
-.image-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.image-item img {
-    width: 100%; /* Adjust based on your needs */
-    height: auto; /* Maintain aspect ratio */
-    cursor: pointer; /* Indicates clickable items */
-}
-
-.image-grid input[type="radio"]:checked + label {
-    border: 3px solid #00bfff; /* Blue border for example, customize as needed */
-    box-shadow: 0px 0px 5px #00bfff; /* Optional: add a shadow to make it pop */
-}
-
 @media (min-width: 1024px) {
     .products {
-        grid-template-columns: repeat(6, 1fr); /* Ensure 6 items per row */
+        grid-template-columns: repeat(4, 1fr); /* Ensure 6 items per row */
     }
 }
 
