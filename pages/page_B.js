@@ -322,9 +322,9 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         };
 
         const handleTryItOnHelper = async () => {
-            // setLoading(true);
-            // setPackagedData(false);
-            // setSentData(false);
+            setLoading(true);
+            setPackagedData(false);
+            setSentData(false);
             setProcessingImage(true);
             setTimeout(() => {
                 checkerRef.current = true;
