@@ -11,6 +11,9 @@ export default async function GET(req, res) {
             where: {
                 uid: id,
             },
+            select: {
+                uid: true,
+            }
         });
         if(!existsUser) {
             await prisma.user.create({
@@ -28,7 +31,7 @@ export default async function GET(req, res) {
                 id: true,
             },
         });
-
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${userId.id}`);
     } catch(error) {

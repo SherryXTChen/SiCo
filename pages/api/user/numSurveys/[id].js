@@ -11,6 +11,9 @@ export default async function GET(req, res) {
             where: {
                 uid: id,
             },
+            select: {
+                uid: true,
+            }
         });
         if(!existsUser) {
             res.setHeader('Content-Type', 'text/plain');
@@ -23,13 +26,13 @@ export default async function GET(req, res) {
                 uid: id,
             },
         });
-        console.log("testing here 2:", userSurveys)
         if(!userSurveys) {
             res.setHeader('Content-Type', 'text/plain');
             res.end('0');
             return;
         }
 
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${userSurveys.length}`);
     } catch(error) {

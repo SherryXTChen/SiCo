@@ -67,7 +67,7 @@ const surveyJson = {
                     "name": "tlx-rating-mental-demand",
                     "title": "Mental Demand: How mentally demanding was the task?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -77,7 +77,7 @@ const surveyJson = {
                     "name": "tlx-rating-physical-demand",
                     "title": "Physical Demand: How physically demanding was the task?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -87,7 +87,7 @@ const surveyJson = {
                     "name": "tlx-rating-temporal-demand",
                     "title": "Temporal Demand: How hurried or rushed was the pace of the task?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -95,11 +95,11 @@ const surveyJson = {
                 {
                     "type": "rating",
                     "name": "tlx-rating-performance",
-                    "title": "Performance: How successful were you in accomplishing what you were asked to do?",
+                    "title": "Performance: How successful were you in accomplishing what you were asked to do (lower value -> more successful)?",
                     "rateMin": 1,
-                    "rateMax": 21,
-                    "minRateDescription": "Failure",
-                    "maxRateDescription": "Perfect",
+                    "rateMax": 11,
+                    "minRateDescription": "Perfect",
+                    "maxRateDescription": "Failure",
                     "isRequired": true
                 },
                 {
@@ -107,7 +107,7 @@ const surveyJson = {
                     "name": "tlx-rating-effort",
                     "title": "Effort: How hard did you have to work to accomplish your level of performance?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -117,7 +117,7 @@ const surveyJson = {
                     "name": "tlx-rating-frustration",
                     "title": "Frustration: How insecure, discouraged, irritated, stressed, and annoyed were you?",
                     "rateMin": 1,
-                    "rateMax": 21,
+                    "rateMax": 11,
                     "minRateDescription": "Very Low",
                     "maxRateDescription": "Very High",
                     "isRequired": true
@@ -302,11 +302,11 @@ const surveyJson = {
                             "value": "sus-easy-to-use"
                         },
                         {
-                            "text": "I think that I could use the website without the suppose of a technical person.",
+                            "text": "I think that I could use the website without the support of a technical person.",
                             "value": "sus-without-tech-support"
                         },
                         {
-                            "text": "I found the variou functions in the website were well integrated.",
+                            "text": "I found the various functions in the website were well integrated.",
                             "value": "sus-well-integrated"
                         },
                         {
@@ -352,11 +352,11 @@ const surveyJson = {
         "864px"
 };
 
-const PostversionSurvey = ({ surveyCheck, firstSite, isUploadImage, isSelectSize }) => {
+const PostversionSurvey = ({ checkSurvey, firstSite, isUploadImage, isSelectSize }) => {
     const [surveyState, setSurveyState] = useState(null);
     if(!surveyState) {
         const survey = new Model(surveyJson);
-        survey.onComplete.add((result) => {
+        survey.onComplete.add(async (result) => {
             var data = result.data;
             data["survey-type"] = "postversion";
             data["first-site"] = firstSite;
@@ -365,19 +365,20 @@ const PostversionSurvey = ({ surveyCheck, firstSite, isUploadImage, isSelectSize
             const formData = new FormData();
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('data', JSON.stringify(data));
-            fetch('/api/survey', {
+            await fetch('/api/survey', {
                 method: 'POST',
                 body: formData,
             })
                 .then(response => response.json())
                 .then(data => {
                     // console.log('Success:', data.message);
-                    surveyCheck();
+                    checkSurvey();
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
         });
+        survey.showCompletedPage = false;
         setSurveyState(survey);
     }
     return surveyState ? <Survey model={surveyState} /> : null;

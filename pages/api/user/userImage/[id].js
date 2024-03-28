@@ -11,6 +11,9 @@ export default async function GET(req, res) {
             where: {
                 uid: id,
             },
+            select: {
+                uid: true,
+            }
         });
         if(!existsUser) {
             return res.status(404).json({ message: 'User not found' });
@@ -29,6 +32,7 @@ export default async function GET(req, res) {
         });
 
         const latestUserImage = await userImage[0];
+        await prisma.$disconnect();
         res.setHeader('Content-Type', 'text/plain');
         res.end(`${latestUserImage.url}`);
     } catch(error) {
