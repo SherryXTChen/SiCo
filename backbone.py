@@ -10,8 +10,12 @@ import os
 import cv2
 import requests
 import io
+import json
 os.environ["FAL_KEY"] = "150008a7-249c-4575-9fa4-e391f6ad5b33:006bf483d5b59cad3807ebac247f4a82"
-DILATE_ITERATIONS = 5
+DILATE_ITERATIONS = 3
+
+# from groundingdino.util.inference import Model
+from segment_anything_hq import sam_model_registry, SamPredictor
 
 def make_dir(path):
     """
@@ -24,7 +28,7 @@ def make_dir(path):
         os.makedirs(path)
 
 
-def image_to_base64_data_uri(image_path):
+def image_to_base64_data_uri(image_path, return_uri=True):
     if type(image_path) == str:
         with open(image_path, "rb") as img_file:
             img_data = img_file.read()
@@ -36,10 +40,140 @@ def image_to_base64_data_uri(image_path):
         # Step 3: Read the bytes object to get the image data
         img_data = img_bytes_io.read()
 
+    if not return_uri:
+            return img_data
+
     img_base64 = base64.b64encode(img_data).decode("utf-8")
-    mime_type = "image/jpeg"
-    data_uri = f"data:{mime_type};base64,{img_base64}"
+    data_uri = f"data:image/jpeg;base64,{img_base64}"
     return data_uri
+
+
+def fooocus_api(input_image_uri, input_mask_uri, prompt, garment_image_uri, out_path):
+    host = "http://127.0.0.1:8888"
+    url = f"{host}/v1/generation/image-prompt"
+    params = {
+        "performance_selection": "Speed",
+        "style_selections": [
+            "Fooocus V2",
+            "Fooocus Enhance",
+            "Fooocus Sharp"
+        ],
+        "loras": json.dumps([
+            {"model_name": "sd_xl_offset_example-lora_1.0.safetensors", "weight": 0.1},
+            {"model_name": "inpaint_v26.fooocus.patch", "weight": 1.0}
+        ]),
+        "guidance_scale": 7.5,
+    }
+    additional_params = {
+        "prompt": "a person wearing " + prompt,
+        "negative_prompt": "(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)",
+        "inpaint_additional_prompt": prompt,
+
+        "image_prompts": [
+            {
+                "cn_stop": 1.0,
+                "cn_weight": 1.6,
+                "cn_type": "ImagePrompt",
+                "cn_img": garment_image_uri,
+            },
+            {
+                "cn_stop": 0.7,
+                "cn_weight": 1.6,
+                "cn_type": "PyraCanny",
+                "cn_img": input_mask_uri,
+            },
+        ],
+
+        "cn_stop1": 1.0,
+        "cn_weight1": 1.6,
+        "cn_type1": "ImagePrompt",
+        "cn_img1": garment_image_uri,
+
+        "cn_stop2": 0.7,
+        "cn_weight2": 1.6,
+        "cn_type2": "PyraCanny",
+        "cn_img2": input_mask_uri,
+
+        "advanced_params": json.dumps({
+            "mixing_image_prompt_and_inpaint": "true",
+            "inpaint_engine": "v2.6",
+        }),
+    }
+    params.update(additional_params)
+
+    files={
+        "input_image": input_image_uri,
+        "input_mask": input_mask_uri,
+        "cn_img1": garment_image_uri,
+        "cn_img2": input_mask_uri,
+    }
+
+    response = requests.post(
+        url=url,
+        data=params,
+        files=files
+    )
+
+    url = response.json()[0]['url']
+    os.system(f'wget -O "{out_path}" "{url}"')
+
+
+def fooocus_api_naked(input_image_uri, input_mask_uri, prompt, out_path):
+    host = "http://127.0.0.1:8888"
+    url = f"{host}/v1/generation/image-prompt"
+    params = {
+        "performance_selection": "Speed",
+        "style_selections": [
+            "Fooocus V2",
+            "Fooocus Enhance",
+            "Fooocus Sharp"
+        ],
+        "loras": json.dumps([
+            {"model_name": "sd_xl_offset_example-lora_1.0.safetensors", "weight": 0.1},
+            {"model_name": "inpaint_v26.fooocus.patch", "weight": 1.0}
+        ]),
+        "guidance_scale": 7.5,
+    }
+    additional_params = {
+        "prompt": prompt,
+        "negative_prompt": "(worst quality, low quality, normal quality, lowres, low details, oversaturated, undersaturated, overexposed, underexposed, grayscale, bw, bad photo, bad photography, bad art:1.4), (watermark, signature, text font, username, error, logo, words, letters, digits, autograph, trademark, name:1.2), (blur, blurry, grainy), morbid, ugly, asymmetrical, mutated malformed, mutilated, poorly lit, bad shadow, draft, cropped, out of frame, cut off, censored, jpeg artifacts, out of focus, glitch, duplicate, (airbrushed, cartoon, anime, semi-realistic, cgi, render, blender, digital art, manga, amateur:1.3), (3D ,3D Game, 3D Game Scene, 3D Character:1.1), (bad hands, bad anatomy, bad body, bad face, bad teeth, bad arms, bad legs, deformities:1.3)",
+        "inpaint_additional_prompt": prompt,
+
+        "image_prompts": [
+            {
+                "cn_stop": 0.7,
+                "cn_weight": 1.6,
+                "cn_type": "PyraCanny",
+                "cn_img": input_mask_uri,
+            },
+        ],
+
+        "cn_stop1": 0.7,
+        "cn_weight1": 1.6,
+        "cn_type1": "PyraCanny",
+        "cn_img1": input_mask_uri,
+
+        "advanced_params": json.dumps({
+            "mixing_image_prompt_and_inpaint": "true",
+            "inpaint_engine": "v2.6",
+        }),
+    }
+    params.update(additional_params)
+
+    files={
+        "input_image": input_image_uri,
+        "input_mask": input_mask_uri,
+        "cn_img1": input_mask_uri,
+    }
+
+    response = requests.post(
+        url=url,
+        data=params,
+        files=files
+    )
+
+    url = response.json()[0]['url']
+    os.system(f'wget -O "{out_path}" "{url}"')
 
 
 def fal_api(
@@ -72,6 +206,12 @@ def fal_api(
         #     output_image = np.array(Image.open(out_path).convert('RGB'))
         #     if np.mean(np.abs(input_image - output_image) * unmask_area) <= 20:
         #         return None
+        return fooocus_api_naked(
+            image_to_base64_data_uri(user_image_path, return_uri=False),
+            image_to_base64_data_uri(mask_image_path, return_uri=False),
+            prompt,
+            out_path,
+        )
 
         input_mask_uri = image_to_base64_data_uri(mask_image_path)
         additional_arguments = {
@@ -89,12 +229,13 @@ def fal_api(
         }
     else:
         input_mask = np.array(Image.open(mask_image_path))
-        input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS-3 if garment_type == 'top' else DILATE_ITERATIONS+2)
+        input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS if garment_type == 'top' else DILATE_ITERATIONS)
         
-        if relative_fit == 0:  # regular fit
-            input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=1)
-            prompt = "fitted"
-        elif relative_fit > 0:  # over sized
+        # if relative_fit == 0:  # regular fit
+        input_mask = cv2.dilate(input_mask, kernel=np.ones((5, 5)), iterations=1)
+        prompt = "fitted"
+
+        if relative_fit > 0:  # over sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
             min_x, min_y = indices.min(axis=0)
@@ -105,7 +246,7 @@ def fal_api(
             # input_mask[:,:max(0, min_y-10)] = 0  # remove left
             # input_mask[:,min(input_mask.shape[1], max_y+10):] = 0  # remove right
             prompt = "big baggy loose overfitted"
-        else:  # under sized
+        elif relative_fit < 0:  # under sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
             min_x, _ = indices.min(axis=0)
@@ -116,12 +257,18 @@ def fal_api(
         if mask_only:
             return input_mask
 
+        assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
+        prompt = f'{garment_type}+++ , {prompt}'
+        return fooocus_api(
+            image_to_base64_data_uri(user_image_path, return_uri=False), 
+            image_to_base64_data_uri(input_mask, return_uri=False), 
+            prompt,
+            image_to_base64_data_uri(garment_image_path, return_uri=False), 
+            out_path)
+    
         # Image.fromarray(input_mask).save(mask_image_path)
         input_mask_uri = image_to_base64_data_uri(input_mask)
         garment_image_uri = image_to_base64_data_uri(garment_image_path)
-
-        assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
-        prompt = f'{garment_type}+++ , {prompt}'
 
         additional_arguments = {
             "performance": "Speed",
@@ -158,6 +305,7 @@ def fal_api(
     url = result['images'][0]['url']
     os.system(f'wget -O "{out_path}" "{url}"')
 
+
 def fal_api_segment(user_image_path, text):
     handler = fal.apps.submit(
         "fal-ai/imageutils",
@@ -174,6 +322,69 @@ def fal_api_segment(user_image_path, text):
     result = handler.get()
     url = result['image']['url']
     return url
+
+
+def select_random_points(binary_mask, k, upper):
+    # Find all non-zero indices in the binary mask
+    binary_mask = cv2.erode(binary_mask, kernel=np.ones((5, 5)), iterations=7)
+    non_zero_indices = np.transpose(np.nonzero(binary_mask))
+    
+    mean_x_value = np.mean(non_zero_indices[:, 1]) 
+    min_x_value = np.min(non_zero_indices[:, 1])
+    max_x_value = np.max(non_zero_indices[:, 1])
+    if upper:
+        filtered_indices = non_zero_indices[
+            (min_x_value + 10 < non_zero_indices[:, 1]) & 
+            (non_zero_indices[:, 1] < mean_x_value - 10)
+        ]
+    else:
+        filtered_indices = non_zero_indices[
+            (max_x_value - 10 > non_zero_indices[:, 1]) & 
+            (non_zero_indices[:, 1] > mean_x_value + 10)
+        ]
+    
+    # Randomly select 4 non-zero points
+    selected_indices = filtered_indices[np.random.choice(len(filtered_indices), size=min(k, len(filtered_indices)), replace=False)]
+    selected_indices = selected_indices.tolist()
+    selected_indices = [(y, x) for (x, y) in selected_indices]
+    
+    return selected_indices
+
+def bounding_box(mask):
+    rows = np.any(mask, axis=1)
+    cols = np.any(mask, axis=0)
+
+    ymin, ymax = np.where(rows)[0][[0, -1]]
+    xmin, xmax = np.where(cols)[0][[0, -1]]
+
+    return [xmin, ymin, xmax, ymax]
+
+@torch.no_grad()
+def local_segment(user_image_path, garment_mask_path, upper):
+    SAM_ENCODER_VERSION = "vit_tiny"
+    SAM_CHECKPOINT_PATH = "./weights/sam_hq_vit_tiny.pth"
+
+    sam = sam_model_registry[SAM_ENCODER_VERSION](checkpoint=SAM_CHECKPOINT_PATH)
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    sam = sam.to(device)
+    predictor = SamPredictor(sam)
+
+    image = np.array(Image.open(user_image_path).convert('RGB').resize((1024, 1024)))
+    predictor.set_image(image)
+
+    mask = np.array(Image.open(garment_mask_path).convert('L').resize((1024, 1024)))
+    input_point = np.array(select_random_points(mask, k=1, upper=upper))
+    input_label = np.ones(input_point.shape[0])
+    input_box = np.array(bounding_box(mask))
+
+    ret, _, _ = predictor.predict(
+        point_coords=input_point,
+        point_labels=input_label,
+        box=input_box,
+        multimask_output=False,
+        hq_token_only=True,
+    )
+    return ret
 
 
 @torch.no_grad()
@@ -328,32 +539,36 @@ def main():
     
     # get mask of existing garment
     text = ['shirt, t shirt, bra', 'pants, shorts, skirts']
-    prompt = "a naked person wearing (underwear and bra)+++, (skin color)+++,"
+    prompt = "a naked person wearing"
     if body_mask_args['garment_type'] in ['jump suit', 'dress']:
         pass
     elif body_mask_args['garment_type'] in ['pants', 'skirt']:
-        text = text[1] + ", naked lower body, wearing shirt"
+        text = text[1] + "(shirt and underwear)++++"
     else:
-        text = text[0] + ", naked upper body, wearing pants"
+        text = text[0] + "(pants and underwear)++++"
 
     body_mask_path = f'./cache/{uid}/{body_mask_labels}/body_mask.png'
     if not os.path.exists(body_mask_path):
-        if type(text) == list:
-            body_mask_url = fal_api_segment(user_image_path, text[0])
-            body_mask_path_1 = f'./cache/{uid}/{body_mask_labels}/body_mask_1.png'
-            os.system(f'wget -O "{body_mask_path_1}" "{body_mask_url}"')
-            body_mask_url = fal_api_segment(user_image_path, text[1])
-            body_mask_path_2 = f'./cache/{uid}/{body_mask_labels}/body_mask_2.png'
-            os.system(f'wget -O "{body_mask_path_2}" "{body_mask_url}"')
-            body_mask = np.array(Image.open(body_mask_path_1)) + \
-                np.array(Image.open(body_mask_path_2))
-            Image.fromarray((body_mask > 0).astype(
-                np.uint8) * 255).save(body_mask_path)
-        else:
-            body_mask_url = fal_api_segment(user_image_path, text)
-            os.system(f'wget -O "{body_mask_path}" "{body_mask_url}"')
+        # if type(text) == list:
+        #     body_mask_url = fal_api_segment(user_image_path, text[0])
+        #     body_mask_path_1 = f'./cache/{uid}/{body_mask_labels}/body_mask_1.png'
+        #     os.system(f'wget -O "{body_mask_path_1}" "{body_mask_url}"')
+        #     body_mask_url = fal_api_segment(user_image_path, text[1])
+        #     body_mask_path_2 = f'./cache/{uid}/{body_mask_labels}/body_mask_2.png'
+        #     os.system(f'wget -O "{body_mask_path_2}" "{body_mask_url}"')
+        #     body_mask = np.array(Image.open(body_mask_path_1)) + \
+        #         np.array(Image.open(body_mask_path_2))
+        #     Image.fromarray((body_mask > 0).astype(
+        #         np.uint8) * 255).save(body_mask_path)
+        # else:
+        #     body_mask_url = fal_api_segment(user_image_path, text)
+        #     os.system(f'wget -O "{body_mask_path}" "{body_mask_url}"')
+        masks = local_segment(user_image_path, garment_mask_path, upper=(body_mask_args['garment_type']=="top"))
+        masks = Image.fromarray(masks[0].astype(np.uint8) * 255)
+        masks.save(body_mask_path)
+        
         body_mask = np.array(Image.open(body_mask_path).convert('L').resize(Image.open(user_image_path).size)) # sam may resize image
-        body_mask = cv2.dilate(body_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS) # sam tend to cut inside
+        body_mask = cv2.dilate(body_mask, kernel=np.ones((5, 5)), iterations=DILATE_ITERATIONS-1) # sam tend to cut inside
         body_mask[existing_garment_bound_mask <= 0] = 0 # heuristic to reduce segmentation mask inaccuracy 
         Image.fromarray((body_mask > 0).astype(
             np.uint8) * 255).save(body_mask_path)
