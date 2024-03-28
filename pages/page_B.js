@@ -4,7 +4,7 @@ import LoadingBar from "react-top-loading-bar";
 import InstructionList from "../components/InstructionList";
 import PostversionForm from "./PostversionForm";
 
-const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching, firstSite, checkSurvey, finishedImage }) => {
+const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, bottomSize, dressSize, isSelectSize, isUploadImage, handleCaching, firstSite, checkSurvey, finishedImage, finishedImageRef }) => {
     const [, forceUpdate] = React.useReducer(x => x + 1, 0);
 
     const [tryOnItems, setTryOnItems] = useState([]);
@@ -42,6 +42,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
     const [starting, setStarting] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [debug, setDebug] = useState(false);
+    const [processingImage, setProcessingImage] = useState(false);
 
     const progressRef = React.useRef(progress);
     const loadingBarRef = React.useRef(null);
@@ -308,8 +309,23 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
 
         const handleTryItOn = async () => {
             setLoading(true);
+            setProcessingImage(false);
             setPackagedData(false);
             setSentData(false);
+            if(finishedImageRef.current) {
+                handleTryItOnHelper();
+            } else {
+                setTimeout(() => {
+                    handleTryItOnHelper();
+                }, 10000);
+            }
+        };
+
+        const handleTryItOnHelper = async () => {
+            // setLoading(true);
+            // setPackagedData(false);
+            // setSentData(false);
+            setProcessingImage(true);
             setTimeout(() => {
                 checkerRef.current = true;
             }, 30000);
@@ -507,7 +523,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         </select>
                     </div>
                 )}
-                <button className="try-on" onClick={handleTryItOn} disabled={!finishedImage}>
+                <button className="try-on" onClick={handleTryItOn}>
                     Try It On
                 </button>
                 {/* <button className="remove" onClick={handleRemove}>
@@ -587,7 +603,8 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         />
                     </div>
                     <div style={{ position: "relative" }}>
-                        <h1>{!packagedData && "Packaging your clothes..."}
+                        <h1>{!processingImage && "Processing your image..."}
+                            {processingImage && !packagedData && "Packaging your clothes..."}
                             {packagedData && !sentData && "Sending your clothes..."}
                             {sentData && !connected && "Confirming arrival..."}
                             {connected && !starting && "Trying on your clothes..."}
