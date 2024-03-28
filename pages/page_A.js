@@ -5,6 +5,16 @@ import ImagePicker from "../components/ImagePicker";
 const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobRef, topSize, setTopSize, bottomSize, setBottomSize, dressSize, setDressSize, pageAContinue, setPageAContinue, isUploadImage, isSelectSize, getCachedImage, handleCaching, firstSite }) => {
     const sectionContainerRef = React.useRef(null);
     const [windowWidth, setWindowWidth] = useState(1770);
+    const [uploadedImage, _setUploadedImage] = useState(null);
+
+    const uploadedImageRef = React.useRef(uploadedImage);
+
+    const setUploadedImage = data => {
+        URL.revokeObjectURL(uploadedImageRef.current);
+        localStorage.setItem("cachedImageURL", data);
+        uploadedImageRef.current = data;
+        _setUploadedImage(data);
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -27,26 +37,12 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         // convert the image to a jpeg and then set the image state
         const file = e.target.files[0];
         setImage(file);
-        imageRef.current = file;
-        handleCaching();
+        setUploadedImage(URL.createObjectURL(file));
+        // handleCaching();
     };
 
     const handleNextPage = async () => {
-        const formData = new FormData();
-        formData.append('userImage', localStorage.getItem("cachedImageURL"));
-        formData.append('uid', localStorage.getItem("uid"));
         handleCaching();
-        await fetch('/api/scan', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                // console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
     };
 
     const handleTopSizeChange = (e) => {
@@ -75,11 +71,12 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 Here are some acceptable and unacceptable image examples. <br />
                 <Image src="/images/examples.png" width={windowWidth / 2} height={1080 / 1770 * windowWidth / 2} alt={"Examples of desired images"} />
             </div>)}
-            {!isUploadImage && <div>
-                <ImagePicker getCachedImage={getCachedImage} firstSite={firstSite} />
-            </div>}
+            {!isUploadImage && (<div>
+                To start, please select a model image from below. Virtual try-on results will be visualized with respect to the selected model image in the next page.<br />
+                <ImagePicker setImage={setImage} />
+            </div>)}
             {isSelectSize && (<div>
-                Please enter your true size for tops, bottoms, and dresses if applicable.<br />
+                Please enter your true size for tops and bottoms.<br />
                 Your true size for any type of garment is defined by the size of the garment of the same type that leads to a regular fit on you.<br />
                 For example, if your true size for tops is M, then wearing any top with size M will leads to a regular fit on you.<br />
             </div>)}
@@ -90,10 +87,10 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                         id="imageUpload"
                         accept="image/*"
                         onChange={handleImageChange}
-                        style={{ position: "absolute", height: "90%", width: "100%" }} /></>)}
-                {image && (<>
-                    <img src={localStorage.getItem("cachedImageURL")} style={{ maxWidth: "100%", maxHeight: "100%" }} alt={<b>Upload a full-body image of yourself here</b>} />
-                    <button className="remove-button" id="removeButton" onClick={() => setImage(null)}
+                        style={{ position: "absolute", width: "20%", height: "auto" }} /></>)}
+                {uploadedImage && (<>
+                    <img src={uploadedImage} style={{ width: "20%", height: "auto" }} alt={<b>Upload a full-body image of yourself here</b>} />
+                    <button className="remove-button" id="removeButton" onClick={() => { setUploadedImage(null); setImage(null); }}
                         style={{ position: "absolute", top: "0", right: "0" }}
                     >x</button>
                 </>)}
@@ -114,19 +111,6 @@ const Page_A = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 <div>
                     <label htmlFor="bottomSize">Select Your True Size for Bottoms:</label>
                     <select id="bottomSize" name="bottomSize" value={bottomSize} onChange={handleBottomSizeChange}>
-                        <option value="XXS">XXS</option>
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="dressSize">Select Your True Size for Dresses (If Applicable):</label>
-                    <select id="dressSize" name="dressSize" value={dressSize} onChange={handleDressSizeChange}>
-                        <option value="N/A">N/A</option>
                         <option value="XXS">XXS</option>
                         <option value="XS">XS</option>
                         <option value="S">S</option>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { validate } from 'uuid';
 import sendTextToNetcat from '../sendTextToNetcat';
 
@@ -17,6 +17,7 @@ export async function POST(req, res) {
             return NextResponse.error(new Error('Invalid user id'));
         }
         sendTextToNetcat(`scan\n${uid}\n${userImage}`);
+        await prisma.$disconnect();
         return NextResponse.json({ message: 'Files began scanning successfully.' }, { status: 200 });
     } catch(err) {
         console.error('Error processing files:', err);

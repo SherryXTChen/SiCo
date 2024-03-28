@@ -75,7 +75,7 @@ const FinalSurvey = ({ isUploadImage, isSelectSize, isUploadImage2, isSelectSize
     const [surveyState, setSurveyState] = useState(null);
     if(!surveyState) {
         const survey = new Model(surveyJson);
-        survey.onComplete.add((result) => {
+        survey.onComplete.add(async (result) => {
             var data = result.data;
             data["survey-type"] = "final";
             data["is-upload-image"] = isUploadImage;
@@ -85,7 +85,7 @@ const FinalSurvey = ({ isUploadImage, isSelectSize, isUploadImage2, isSelectSize
             const formData = new FormData();
             formData.append('uid', localStorage.getItem("uid"));
             formData.append('data', JSON.stringify(data));
-            fetch('/api/survey', {
+            await fetch('/api/survey', {
                 method: 'POST',
                 body: formData,
             })

@@ -1,18 +1,19 @@
+import path from "path";
 import React, { useEffect, useState } from "react";
 import "survey-core/defaultV2.min.css";
 import { v4 as uuidv4 } from "uuid";
+import FinalSurveyForm from "./FinalSurveyForm";
 import PresurveyForm from "./PresurveyForm";
 import Consent from "./consent";
 import Page_A from "./page_A";
 import Page_B from "./page_B";
-import FinalSurveyForm from "./FinalSurveyForm";
 
 const Home = () => {
-    const [image, setImage] = useState(null);
+    const [image, _setImage] = useState(null);
     const [imageBlob, setImageBlob] = useState(null);
     const [topSize, setTopSize] = useState("XXS");
     const [bottomSize, setBottomSize] = useState("XXS");
-    const [dressSize, setDressSize] = useState("N/A");
+    const [dressSize, setDressSize] = useState("XXS");
     const [pageAContinue, setPageAContinue] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
     const [isUploadImage, setIsUploadImage] = useState(false);
@@ -23,11 +24,16 @@ const Home = () => {
     const [donePresurvey, setDonePresurvey] = useState(false);
     const [firstSite, setFirstSite] = useState(true);
     const [finalSurvey, setFinalSurvey] = useState(false);
+    const [finishedImage, setFinishedImage] = useState(false);
+    const [, forceUpdate] = React.useReducer(x => x + 1, 0);
     const mainRef = React.useRef(null);
-    const imageRef = React.useRef(null);
-    const imageBlobRef = React.useRef(null);
-    imageRef.current = image;
-    imageBlobRef.current = imageBlob;
+    const imageRef = React.useRef(image);
+    const imageBlobRef = React.useRef(imageBlob);
+
+    const setImage = (newImage) => {
+        _setImage(newImage);
+        imageRef.current = newImage;
+    };
 
     async function getCachedImage() {
         if(localStorage.getItem("cachedImageURL") && localStorage.getItem("cachedImageURL") === "shumil") {
@@ -43,40 +49,58 @@ const Home = () => {
             localStorage.setItem("cachedImageURL", imageData);
         }
         const imageDataURL = localStorage.getItem("cachedImageURL");
-        const imageFetchedData = await fetch(`${imageDataURL}`);
-        const imageBlob = await imageFetchedData.blob();
-        setImageBlob(imageBlob);
-        imageBlobRef.current = imageBlob;
-        const newImage = new File([imageBlob], "userImage.jpg", { type: "image/jpeg" });
-        setImage(newImage);
-        imageRef.current = newImage;
+        setImage(imageDataURL);
     };
 
     const handleCaching = async () => {
-        const updateBlob = async () => {
-            const imageDataURL = localStorage.getItem("cachedImageURL");
-            const imageFetchedData = await fetch(`${imageDataURL}`);
-            const imageBlob = await imageFetchedData.blob();
-            setImageBlob(imageBlob);
-            imageBlobRef.current = imageBlob;
-        };
+        function fileToJPEG(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0, img.width, img.height);
+                        canvas.toBlob((blob) => {
+                            resolve(blob);
+                        }, 'image/jpeg');
+                    };
+                    img.src = event.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        if(!imageRef.current) {
+            console.error("No image to cache");
+            return;
+        }
+        const imageURL = localStorage.getItem("cachedImageURL");
+        const apiType = typeof imageRef.current === "string";
+        const apiEndpoint = apiType ? "/api/save" : "/api/cache";
 
         const formData = new FormData();
-        const userImageBlob = await fetch(URL.createObjectURL(imageRef.current)).then(r => r.blob());
+        const userImage = apiType
+            ? path.parse(imageRef.current).base : await fileToJPEG(imageRef.current);
+        formData.append('userImage', userImage);
 
-        formData.append('userImage', userImageBlob);
         formData.append('uid', localStorage.getItem("uid"));
-        formData.append('firstSite', firstSite.toString());
-
-        await fetch('/api/cache', {
+        formData.append('firstSite', localStorage.getItem("firstSite"));
+        await fetch(apiEndpoint, {
             method: 'POST',
             body: formData,
         })
             .then(response => response.json())
             .then(data => {
                 // console.log('Success:', data.message);
+                setImage(data.message);
                 localStorage.setItem("cachedImageURL", data.message);
-                updateBlob();
+                URL.revokeObjectURL(imageURL);
+                setFinishedImage(true);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -84,120 +108,153 @@ const Home = () => {
     };
 
     async function setSeed() {
-        const id = localStorage.getItem("debug")
+        const id = localStorage.getItem("debug") === "true"
             ? localStorage.getItem("seed")
             : await (await fetch(`/api/user/id/${localStorage.getItem("uid")}`)).text();
-        const seed = (parseInt(id) - 1) % 60 + 1;
+        const seed = (parseInt(id) - 1) % 24 + 1;
+        
+        // console.log('debug', localStorage.getItem("debug"), localStorage.getItem("debug") === "true");
+        // console.log('seed', localStorage.getItem("seed"));
+        // console.log('uid', await (await fetch(`/api/user/id/${localStorage.getItem("uid")}`)).text());
+        // console.log('id', id);
+        // console.log('seed', seed);
+        
         // A = true true
         // B = true false
         // C = false true
         // D = false false
-        if(seed <= 10) {
+        if(seed <= 4) {
+            // console.log("seed <= 4", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // AD then DA
             setIsUploadImage(seed % 2 === 0);
             setIsSelectSize(seed % 2 === 0);
             setIsUploadImage2((seed + 1) % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
-        } else if(seed <= 20) {
+        } else if(seed <= 8) {
+            // console.log("seed <= 8", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // AB then AC
             setIsUploadImage(true);
             setIsSelectSize(true);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
-        } else if(seed <= 30) {
+        } else if(seed <= 12) {
+            // console.log("seed <= 12", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // BA then BC
             setIsUploadImage(true);
             setIsSelectSize(false);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2(true);
-        } else if(seed <= 40) {
+        } else if(seed <= 16) {
+            // console.log("seed <= 16", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // BD then CA
             setIsUploadImage(seed % 2 === 0);
             setIsSelectSize((seed + 1) % 2 === 0);
             setIsUploadImage2((seed + 1) % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
-        } else if(seed <= 50) {
+        } else if(seed <= 20) {
+            // console.log("seed <= 20", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // CB then CD
             setIsUploadImage(false);
             setIsSelectSize(true);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2(false);
-        } else if(seed <= 60) {
+        } else if(seed <= 24) {
+            // console.log("seed <= 24", isUploadImage, isUploadImage2, isSelectSize, isSelectSize2);
             // DB then DC
             setIsUploadImage(false);
             setIsSelectSize(false);
             setIsUploadImage2(seed % 2 === 0);
             setIsSelectSize2((seed + 1) % 2 === 0);
         }
+        // console.log('2 version', isUploadImage, isUploadImage2, isSelectSize, isSelectSize2)
     };
 
     async function checkConsent() {
         const consentEndpoint = `/api/user/initials/${localStorage.getItem("uid")}`;
         const consentResponse = await fetch(consentEndpoint);
         const consent = await consentResponse.text();
-        if(consent.length === 2) {
+        if(consent !== "null" && consent !== '{"message":"User not found"}') {
             await setSeed();
         }
-        setGivenConsent(consent.length === 2);
+        setGivenConsent(consent !== "null" && consent !== '{"message":"User not found"}');
     };
 
     async function checkPresurvey() {
-        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const numSurveyResponse = await fetch(numSurveyEndpoint);
-        const numSurvey = await numSurveyResponse.text();
-        setDonePresurvey(parseInt(numSurvey) >= 1);
+        // const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        // const numSurveyResponse = await fetch(numSurveyEndpoint);
+        // const numSurvey = await numSurveyResponse.text();
+        setDonePresurvey(true);
     };
 
     async function checkFirstSite() {
-        if(localStorage.getItem("firstSite") === "false") {
-            setFirstSite(false);
-            setFinalSurvey(true);
-            return;
-        }
-        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const numSurveyResponse = await fetch(numSurveyEndpoint);
-        const numSurvey = await numSurveyResponse.text();
-        if(parseInt(numSurvey) === 2) {
-            setImage(null);
-            setImageBlob(null);
-            setTopSize("XXS");
-            setBottomSize("XXS");
-            setDressSize("N/A");
-            setPageAContinue(false);
-            imageRef.current = null;
-            imageBlobRef.current = null;
-            localStorage.setItem("cachedImageURL", "shumil");
-        }
-        setFirstSite(parseInt(numSurvey) < 2);
-        setFinalSurvey(parseInt(numSurvey) >= 2);
-        localStorage.setItem("firstSite", parseInt(numSurvey) < 2);
+        // const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
+        // const numSurveyResponse = await fetch(numSurveyEndpoint);
+        // const numSurvey = await numSurveyResponse.text();
+        // console.log("Checking first site");
+        setImage(null);
+        setImageBlob(null);
+        setTopSize("XXS");
+        setBottomSize("XXS");
+        setDressSize("XXS");
+        setPageAContinue(false);
+        setFinishedImage(false);
+        setGivenConsent(true);
+        setDonePresurvey(true);
+        imageRef.current = null;
+        imageBlobRef.current = null;
+        localStorage.setItem("cachedImageURL", "shumil");
+        localStorage.setItem("continued", false)
+        setFirstSite(false);
+        localStorage.setItem("firstSite", false);
+        forceUpdate();
     };
 
     async function checkSecondSite() {
-        const numSurveyEndpoint = `/api/user/numSurveys/${localStorage.getItem("uid")}`;
-        const numSurveyResponse = await fetch(numSurveyEndpoint);
-        const numSurvey = await numSurveyResponse.text();
-        setFinalSurvey(parseInt(numSurvey) >= 2);
+        // console.log("Checking second site");
+        if(localStorage.getItem("firstSite") === "false") {
+            setFinalSurvey(true);
+        }
     };
+
+    function checkDebug() {
+        if(!localStorage.getItem("debug")) {
+            return;
+        }
+        setSeed();
+        const state = parseInt(localStorage.getItem("state"));
+        setGivenConsent(state >= 1);  // Skip to presurvey
+        setDonePresurvey(state >= 2); // Skip to first site
+        // console.log("setting up debug")
+        if(state >= 3) {
+            setFirstSite(true);     // Skip to second site
+            localStorage.setItem("firstSite", true);
+        }
+        if(state >= 4) {
+            setFinalSurvey(true);
+        }
+    }
 
     useEffect(() => {
         if(mainRef.current && firstLoad) {
-            if(!localStorage.getItem("uid")) {
-                localStorage.setItem("uid", uuidv4());
-            }
-            getCachedImage();
-            checkConsent();
-            checkPresurvey();
-            checkFirstSite();
+            const debugState = localStorage.getItem("debug");
+            const seed = localStorage.getItem("seed");
+            const state = parseInt(localStorage.getItem("state"));
+            localStorage.clear();
+            localStorage.setItem("firstSite", true)
+            localStorage.setItem("debug", debugState);
+            localStorage.setItem("seed", seed);
+            localStorage.setItem("state", state);
+            localStorage.setItem("uid", uuidv4());
+            checkDebug();
             setFirstLoad(false);
         }
     });
 
     return (
         <div ref={mainRef}>
-            {!givenConsent && (<Consent setGivenConsent={setGivenConsent} checkConsent={checkConsent} />)}
+            {!givenConsent && (<Consent setGivenConsent={setGivenConsent} />)}
             {givenConsent && !donePresurvey && (<PresurveyForm checkPresurvey={checkPresurvey} />)}
-            {(givenConsent && donePresurvey && firstSite) && (<div>
+            {(donePresurvey && firstSite) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}
@@ -234,9 +291,10 @@ const Home = () => {
                     handleCaching={handleCaching}
                     firstSite={firstSite}
                     checkSurvey={checkFirstSite}
+                    finishedImage={finishedImage}
                 />)}
             </div>)}
-            {(givenConsent && donePresurvey && !firstSite && !finalSurvey) && (<div>
+            {(donePresurvey && !firstSite) && (<div>
                 {!pageAContinue && (<Page_A
                     imageRef={imageRef}
                     image={image}
@@ -273,6 +331,7 @@ const Home = () => {
                     handleCaching={handleCaching}
                     firstSite={firstSite}
                     checkSurvey={checkSecondSite}
+                    finishedImage={finishedImage}
                 />)}
             </div>)}
             {finalSurvey && (<FinalSurveyForm
