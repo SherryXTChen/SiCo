@@ -244,7 +244,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                 if(!tryOnResultsRef.current?.some((item) => item.key === imageName)) {
                     const itemDiv = (
                         <div className="picked-item" key={imageName} id={tryOnResultsRef ? tryOnResultsRef.current.length : 0}>
-                            <img src={image} style={{ width: "20%", height: "auto" }} />
+                            <img src={image} style={{ width: "60%", height: "auto" }} />
                             <button className="continue" id={tryOnResultsRef ? tryOnResultsRef.current.length : 0} onClick={(e) => {
                                 const debug = localStorage.getItem("debug");
                                 if(!isSelectSize) {
@@ -540,11 +540,14 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         setTryOnItems(tryOnItemsRef.current);
     };
 
+    const [recording, setRecording] = useState(false);
+
     useEffect(() => {
         if(mainRef.current && firstLoad) {
             setImage(localStorage.getItem("cachedImageURL"));
             setFirstLoad(false);
             setDebug(localStorage.getItem("debug") === "true");
+            setRecording(localStorage.getItem("recording") === "true");
         }
     });
 
@@ -587,6 +590,7 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
                     tryOnTopTrueSizeAgain3={tryOnTopTrueSizeAgain3}
                     invalidAction={invalidAction}
                     debug={debug}
+                    recording={recording}
                 />
                 {loading && (<div className="overlay">
                     <div style={{ position: "relative" }}>
