@@ -539,7 +539,6 @@ const Page_B = ({ imageRef, image, setImage, imageBlob, setImageBlob, imageBlobR
         );
         setTryOnItems(tryOnItemsRef.current);
     };
-
     const [recording, setRecording] = useState(false);
 
     useEffect(() => {
