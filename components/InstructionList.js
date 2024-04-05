@@ -3,7 +3,7 @@ import React from 'react';
 const InstructionList = ({ handleNextPage, isSelectSize,
     pickTop, tryOnTop, pickBottom, tryOnBottom, continueFromLast, tryOnTopAgain,
     pickTopTrueSize, tryOnTopTrueSize, changeTopTrueSize, tryOnTopTrueSizeAgain, pickBottomTrueSize, tryOnBottomTrueSize, changeBottomTrueSize, tryOnBottomTrueSizeAgain, continueFromBottomTrueSize, tryOnTopTrueSizeAgain2, continueFromBottomTrueSize2, tryOnTopTrueSizeAgain3,
-    invalidAction, debug }) => {
+    invalidAction, debug, recording }) => {
     const style = {
         position: 'fixed',
         top: 0,
@@ -55,15 +55,15 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                     {(!invalidAction || !tryOnTopTrueSizeAgain) && !pickBottomTrueSize && (<li>Pick a bottom with your true size</li>)}
                     {pickBottomTrueSize && (<li style={{ color: "green" }}>Pick a bottom with your true size</li>)}
                     {invalidAction && tryOnTopTrueSizeAgain && !pickBottomTrueSize && (<li style={{ color: "red" }}>Pick a bottom with your true size</li>)}
-                    {(!invalidAction || !pickBottomTrueSize) && !tryOnBottomTrueSize && (<li>Try the bottom on</li>)}
-                    {tryOnBottomTrueSize && (<li style={{ color: "green" }}>Try the bottom on</li>)}
-                    {invalidAction && pickBottomTrueSize && !tryOnBottomTrueSize && (<li style={{ color: "red" }}>Try the bottom on</li>)}
+                    {(!invalidAction || !pickBottomTrueSize) && !tryOnBottomTrueSize && (<li>Try the bottom (with your true size) on</li>)}
+                    {tryOnBottomTrueSize && (<li style={{ color: "green" }}>Try the bottom (with your true size) on</li>)}
+                    {invalidAction && pickBottomTrueSize && !tryOnBottomTrueSize && (<li style={{ color: "red" }}>Try the bottom (with your true size) on</li>)}
                     {(!invalidAction || !tryOnBottomTrueSize) && !changeBottomTrueSize && (<li>Change the garment size of the bottom</li>)}
                     {changeBottomTrueSize && (<li style={{ color: "green" }}>Change the garment size of the bottom</li>)}
                     {invalidAction && tryOnBottomTrueSize && !changeBottomTrueSize && (<li style={{ color: "red" }}>Change the garment size of the bottom</li>)}
-                    {(!invalidAction || !changeBottomTrueSize) && !tryOnBottomTrueSizeAgain && (<li>Try the bottom on again</li>)}
-                    {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom on again</li>)}
-                    {invalidAction && changeBottomTrueSize && !tryOnBottomTrueSizeAgain && (<li style={{ color: "red" }}>Try the bottom on again</li>)}
+                    {(!invalidAction || !changeBottomTrueSize) && !tryOnBottomTrueSizeAgain && (<li>Try the bottom (with the changed size) on again</li>)}
+                    {tryOnBottomTrueSizeAgain && (<li style={{ color: "green" }}>Try the bottom (with the changed size) on again</li>)}
+                    {invalidAction && changeBottomTrueSize && !tryOnBottomTrueSizeAgain && (<li style={{ color: "red" }}>Try the bottom (with the changed size) on again</li>)}
                     {(!invalidAction || !tryOnBottomTrueSizeAgain) && !continueFromBottomTrueSize && (<li>Continue from the result in step 6 (3rd result from the top)</li>)}
                     {continueFromBottomTrueSize && (<li style={{ color: "green" }}>Continue from the result in step 6 (3rd result from the top)</li>)}
                     {invalidAction && tryOnBottomTrueSizeAgain && !continueFromBottomTrueSize && (<li style={{ color: "red" }}>Continue from the result in step 6 (3rd result from the top)</li>)}
@@ -95,7 +95,7 @@ const InstructionList = ({ handleNextPage, isSelectSize,
                         handleNextPage();
                     }}
                 >Continue</button>)}
-            {debug && 
+            {debug && !recording && 
                 (<button className="done-button" id="nextPageButton"
                 style={{ justifyContent: 'center', width: '100%' }}
                 onClick={() => {

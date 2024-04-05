@@ -24,16 +24,22 @@ const Home = () => {
     const [donePresurvey, setDonePresurvey] = useState(false);
     const [firstSite, setFirstSite] = useState(true);
     const [finalSurvey, setFinalSurvey] = useState(false);
-    const [finishedImage, setFinishedImage] = useState(false);
+    const [finishedImage, _setFinishedImage] = useState(false);
     const [, forceUpdate] = React.useReducer(x => x + 1, 0);
     const mainRef = React.useRef(null);
     const imageRef = React.useRef(image);
     const imageBlobRef = React.useRef(imageBlob);
+    const finishedImageRef = React.useRef(finishedImage);
 
     const setImage = (newImage) => {
         _setImage(newImage);
         imageRef.current = newImage;
     };
+
+    const setFinishedImage = (newFinishedImage) => {
+        _setFinishedImage(newFinishedImage);
+        finishedImageRef.current = newFinishedImage;
+    }
 
     async function getCachedImage() {
         if(localStorage.getItem("cachedImageURL") && localStorage.getItem("cachedImageURL") === "shumil") {
@@ -239,12 +245,14 @@ const Home = () => {
             const debugState = localStorage.getItem("debug");
             const seed = localStorage.getItem("seed");
             const state = parseInt(localStorage.getItem("state"));
+            const recordingState = localStorage.getItem("recording");
             localStorage.clear();
-            localStorage.setItem("firstSite", true)
+            localStorage.setItem("firstSite", true);
             localStorage.setItem("debug", debugState);
             localStorage.setItem("seed", seed);
             localStorage.setItem("state", state);
             localStorage.setItem("uid", uuidv4());
+            localStorage.setItem("recording", recordingState);
             checkDebug();
             setFirstLoad(false);
         }
@@ -292,6 +300,7 @@ const Home = () => {
                     firstSite={firstSite}
                     checkSurvey={checkFirstSite}
                     finishedImage={finishedImage}
+                    finishedImageRef={finishedImageRef}
                 />)}
             </div>)}
             {(donePresurvey && !firstSite) && (<div>
@@ -332,6 +341,7 @@ const Home = () => {
                     firstSite={firstSite}
                     checkSurvey={checkSecondSite}
                     finishedImage={finishedImage}
+                    finishedImageRef={finishedImageRef}
                 />)}
             </div>)}
             {finalSurvey && (<FinalSurveyForm

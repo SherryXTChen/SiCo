@@ -86,8 +86,8 @@ def fooocus_api(
         if relative_fit > 0:  # over sized
             indices = np.argwhere(input_mask > 0)
             assert len(indices) != 0
-            min_x, _ = indices.min(axis=0)
-            max_x, _ = indices.max(axis=0)
+            min_x, min_y = indices.min(axis=0)
+            max_x, max_y = indices.max(axis=0)
             input_mask = cv2.dilate(input_mask, kernel=np.ones(
                 (5, 5)), iterations=5 * relative_fit)
             input_mask[:max(0, min_x-5)] = 0  # remove top
@@ -102,7 +102,7 @@ def fooocus_api(
             prompt = "very tight cropped"
         if mask_only:
             return input_mask
-        
+
         assert garment_type in ['top', 'pants', 'skirt', 'dress', 'jump suit']
         prompt = f'{garment_type}+++ , {prompt}'
         
@@ -217,6 +217,69 @@ def bounding_box(mask):
 
 @torch.no_grad()
 def sam(user_image_path, garment_mask_path, upper):
+    SAM_ENCODER_VERSION = "vit_tiny"
+    SAM_CHECKPOINT_PATH = "./weights/sam_hq_vit_tiny.pth"
+
+    sam = sam_model_registry[SAM_ENCODER_VERSION](checkpoint=SAM_CHECKPOINT_PATH)
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    sam = sam.to(device)
+    predictor = SamPredictor(sam)
+
+    image = np.array(Image.open(user_image_path).convert('RGB').resize((1024, 1024)))
+    predictor.set_image(image)
+
+    mask = np.array(Image.open(garment_mask_path).convert('L').resize((1024, 1024)))
+    input_point = np.array(select_random_points(mask, k=1, upper=upper))
+    input_label = np.ones(input_point.shape[0])
+    input_box = np.array(bounding_box(mask))
+
+    ret, _, _ = predictor.predict(
+        point_coords=input_point,
+        point_labels=input_label,
+        box=input_box,
+        multimask_output=False,
+        hq_token_only=True,
+    )
+    return ret
+
+
+def select_random_points(binary_mask, k, upper):
+    # Find all non-zero indices in the binary mask
+    binary_mask = cv2.erode(binary_mask, kernel=np.ones((5, 5)), iterations=7)
+    non_zero_indices = np.transpose(np.nonzero(binary_mask))
+    
+    mean_x_value = np.mean(non_zero_indices[:, 1]) 
+    min_x_value = np.min(non_zero_indices[:, 1])
+    max_x_value = np.max(non_zero_indices[:, 1])
+    if upper:
+        filtered_indices = non_zero_indices[
+            (min_x_value + 10 < non_zero_indices[:, 1]) & 
+            (non_zero_indices[:, 1] < mean_x_value - 10)
+        ]
+    else:
+        filtered_indices = non_zero_indices[
+            (max_x_value - 10 > non_zero_indices[:, 1]) & 
+            (non_zero_indices[:, 1] > mean_x_value + 10)
+        ]
+    
+    # Randomly select 4 non-zero points
+    selected_indices = filtered_indices[np.random.choice(len(filtered_indices), size=min(k, len(filtered_indices)), replace=False)]
+    selected_indices = selected_indices.tolist()
+    selected_indices = [(y, x) for (x, y) in selected_indices]
+    
+    return selected_indices
+
+def bounding_box(mask):
+    rows = np.any(mask, axis=1)
+    cols = np.any(mask, axis=0)
+
+    ymin, ymax = np.where(rows)[0][[0, -1]]
+    xmin, xmax = np.where(cols)[0][[0, -1]]
+
+    return [xmin, ymin, xmax, ymax]
+
+@torch.no_grad()
+def local_segment(user_image_path, garment_mask_path, upper):
     SAM_ENCODER_VERSION = "vit_tiny"
     SAM_CHECKPOINT_PATH = "./weights/sam_hq_vit_tiny.pth"
 
@@ -465,7 +528,7 @@ def main():
         final_input_path = naked_out_path
     else:
         final_input_path = user_image_path
-    
+
     fooocus_api(
         user_image_path=final_input_path,
         mask_image_path=garment_mask_path,
