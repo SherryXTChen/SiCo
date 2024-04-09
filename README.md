@@ -11,7 +11,7 @@
 
 ## Backend
 
-For detailed instructions on setting up the backend server and the machine learning backbone, please refer to the [Server README](https://github.com/SherryXTChen/SiCo/blob/3204a1450467a7a70bb02937d6fc0c0d39019fb8/README_server.md).
+For detailed instructions on setting up the backend server and the machine learning backbone, please refer to the [Server README](https://github.com/SherryXTChen/SiCo/blob/3cc43b4c2aa34275973f7f4b5e190bc1fafb19f8/README.md).
 
 ## Frontend
 
