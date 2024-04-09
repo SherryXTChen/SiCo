@@ -7,7 +7,7 @@
   - [Server Environment Setup](#Server-Environment-Setup)
   - [Machine Learning Backbone Setup](#Machine-Learning-Backbone-Setup)
   - [Running Server](#Running-Server)
-- [Machine Learning Backbone (Stand-Alone)](#Machine-Learning-Backbone-(Stand-Alone))
+- [Machine Learning Backbone (Stand-Alone)](#Machine-Learning-Backbone (Stand-Alone))
 
 
 ## Back-End
