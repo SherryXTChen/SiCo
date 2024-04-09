@@ -2,11 +2,11 @@
 
 ![teaser image](assets/teaser.png)
 
-## Back-end
+## Back-End
 
 To setup the backend server and machine learning backbone, see [README.md](https://github.com/SherryXTChen/SiCo/blob/ml/README.md).
 
-## Front-end
+## Front-End
 
 To setup our website interface:
 
