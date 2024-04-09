@@ -1,5 +1,3 @@
-import base64
-import fal
 import torch
 import cv2
 import glob
