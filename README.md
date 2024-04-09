@@ -10,11 +10,11 @@ To setup the backend server and machine learning backbone, see [README.md](https
 
 Below are the instructions to setup our website interface.
 
-#### Vercel Setup
+### Vercel Setup
 
 Please make a Vercel site such as by following this [Vercel Guide](https://medium.com/@hikmohadetunji/hosting-your-first-website-on-vercel-a-step-by-step-guide-95061f1ca687).
 
-#### Local Setup
+### Local Setup
 
 ```
 # clone this repo
@@ -31,7 +31,7 @@ npx prisma generate
 npx prisma db pull
 ```
 
-#### Running
+### Running
 
 ```
 npm run dev
