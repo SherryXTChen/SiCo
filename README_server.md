@@ -2,6 +2,14 @@
 
 ![teaser image](https://github.com/SherryXTChen/SiCo/blob/0922fdf15af7942ae67ac72d07bf0f03add0ee16/assets/teaser.png)
 
+## Table of Contents
+- [Back-End](#Back-End)
+  - [Server Environment Setup](#Server-Environment-Setup)
+  - [Machine Learning Backbone Setup](#Machine-Learning-Backbone-Setup)
+  - [Running Server](#Running-Server)
+- [Machine Learning Backbone (Stand-Alone)](#Machine-Learning-Backbone-(Stand-Alone))
+
+
 ## Back-End
 
 ### Server Environment Setup
@@ -32,7 +40,7 @@ pip install -r requirements.txt
 ```
 The backbone uses [Fooocus-API](https://github.com/mrhan1993/Fooocus-API). To setup Fooocus-API, see their [README.md](https://github.com/mrhan1993/Fooocus-API/blob/2803f204776746c16fe18fb82613ae3693fdd5e1/README.md). Note that the Fooocus-API server is listening on `http://127.0.0.1:8888`. 
 
-### Running
+### Running Server
 ```
 node server.js
 ```
