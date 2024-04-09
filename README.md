@@ -16,7 +16,7 @@ Please make a Vercel site such as by following this [Vercel Guide](https://mediu
 
 #### Local Setup
 
-```python
+```
 # clone this repo
 git clone git@github.com:SherryXTChen/SiCo.git
 cd SiCo
@@ -33,6 +33,6 @@ npx prisma db pull
 
 #### Running
 
-```python
+```
 npm run dev
 ```
