@@ -14,7 +14,7 @@ Below are the instructions to setup our website interface.
 
 Please make a Vercel site such as by following this [Vercel Guide](https://medium.com/@hikmohadetunji/hosting-your-first-website-on-vercel-a-step-by-step-guide-95061f1ca687).
 
-### Local Setup
+### Local Environment Setup
 
 ```
 # clone this repo
