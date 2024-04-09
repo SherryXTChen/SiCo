@@ -1,10 +1,10 @@
 # SiCo: A Size-Controllable Virtual Try-On Approach for Informed Decision-Making
 
-![teaser image](assets/teaser.png)
+![teaser image](https://github.com/SherryXTChen/SiCo/blob/0922fdf15af7942ae67ac72d07bf0f03add0ee16/assets/teaser.png)
 
 ## Back-End
 
-To setup the backend server and machine learning backbone, see [README.md](https://github.com/SherryXTChen/SiCo/blob/ml/README.md).
+To setup the backend server and machine learning backbone, see [README.md](https://github.com/SherryXTChen/SiCo/blob/5efd3729ff2cbba1aa480bf9f6d9c59ddedc04a4/README.md).
 
 ## Front-End
 
