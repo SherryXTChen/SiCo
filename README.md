@@ -8,7 +8,7 @@ To setup the backend server and machine learning backbone, see [README.md](https
 
 ## Front-End
 
-To setup our website interface:
+Below are the instructions to setup our website interface.
 
 #### Vercel Setup
 
