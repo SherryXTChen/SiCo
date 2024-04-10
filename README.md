@@ -1,6 +1,6 @@
 # SiCo: A Size-Controllable Virtual Try-On Approach for Informed Decision-Making
 
-![Teaser Image](https://github.com/SherryXTChen/SiCo/blob/0922fdf15af7942ae67ac72d07bf0f03add0ee16/assets/teaser.png)
+![Teaser Image](https://github.com/SherryXTChen/SiCo/blob/070e63154a13006dad3efbeca27cba8c42528e1c/assets/teaser.png)
 
 ## Table of Contents
 - [Backend](#backend)
