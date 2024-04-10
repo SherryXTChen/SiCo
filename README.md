@@ -31,10 +31,12 @@ npx prisma db pull
 ```
 
 ### Machine Learning Backbone Setup
-Follow these steps to prepare the python environment required for the machine learning [backbone.py](https://github.com/SherryXTChen/SiCo/blob/5efd3729ff2cbba1aa480bf9f6d9c59ddedc04a4/backbone.py). The backbone integrates with the [Fooocus-API](https://github.com/mrhan1993/Fooocus-API), which should also be set up as per their [README.md](https://github.com/mrhan1993/Fooocus-API/blob/2803f204776746c16fe18fb82613ae3693fdd5e1/README.md).
+Follow these steps to prepare the python environment required for the machine learning [backbone.py](https://github.com/SherryXTChen/SiCo/blob/5efd3729ff2cbba1aa480bf9f6d9c59ddedc04a4/backbone.py). 
 
+1. The backbone integrates with the [Fooocus-API](https://github.com/mrhan1993/Fooocus-API), which should also be set up as per their [README.md](https://github.com/mrhan1993/Fooocus-API/blob/2803f204776746c16fe18fb82613ae3693fdd5e1/README.md). If you choose to use the [Self-hosted](https://github.com/mrhan1993/Fooocus-API/tree/2803f204776746c16fe18fb82613ae3693fdd5e1?tab=readme-ov-file#self-hosted) Fooocus-API, please make sure to create a python virtual environment and install packages following their instructions. 
+
+2. Set up the python environment and install packages to run SiCo
 ```bash
-# Set up the python environment
 conda create -n sico python=3.10
 conda activate sico
 pip install -r requirements.txt
