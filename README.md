@@ -1,4 +1,7 @@
-# SiCo: A Size-Controllable Virtual Try-On Approach for Informed Decision-Making
+# SiCo: An Interactive Size-Controllable Virtual Try-On Approach
+for Informed Decision-Making (DIS 2025)
+
+### [Arxiv](https://arxiv.org/abs/2408.02803)
 
 ![Teaser Image](https://github.com/SherryXTChen/SiCo/blob/main/assets/teaser.png)
 
